@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="app-env" content="dev" />
+    <script>
+      (() => {
+        const storageKey = 'jotigames-theme'
+        let saved = null
+        try {
+          saved = localStorage.getItem(storageKey)
+        } catch {
+          saved = null
+        }
+        const theme = saved === 'dark' || saved === 'light' ? saved : 'light'
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
+    <link rel="icon" type="image/avif" href="/image/logo-small.avif" />
+    <link rel="stylesheet" href="/assets/styles/app.css" />
+    <title>JotiGames</title>
+  </head>
+  <body data-app-env="dev">
+    <div id="root"></div>
+    <script src="/assets/scripts/ws_transport.js"></script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
