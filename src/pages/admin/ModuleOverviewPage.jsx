@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import BlindHikeAdminOverviewMap from '../../components/BlindHikeAdminOverviewMap'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -50,6 +51,7 @@ export default function ModuleOverviewPage() {
   const [judgeTeamId, setJudgeTeamId] = useState('')
   const [judgeSubmissionId, setJudgeSubmissionId] = useState('')
   const [judgeAccepted, setJudgeAccepted] = useState(true)
+  const isBlindHike = game?.game_type === 'blindhike'
   const isExplodingKittens = game?.game_type === 'exploding_kittens'
 
   function formatDate(value) {
@@ -75,13 +77,20 @@ export default function ModuleOverviewPage() {
   }
 
   const sortedTeams = [...teams].sort((a, b) => {
-    const left = Number(a?.geo_score || 0)
-    const right = Number(b?.geo_score || 0)
+    const left = isBlindHike
+      ? Number(a?.blindhike_markers ?? a?.markers ?? 0)
+      : Number(a?.geo_score || 0)
+    const right = isBlindHike
+      ? Number(b?.blindhike_markers ?? b?.markers ?? 0)
+      : Number(b?.geo_score || 0)
     if (right !== left) {
       return right - left
     }
     return String(a?.name || '').localeCompare(String(b?.name || ''))
   })
+
+  const blindHikeMarkers = isBlindHike && Array.isArray(overview?.markers) ? overview.markers : []
+  const blindHikeTarget = isBlindHike && overview?.target ? overview.target : null
 
   function getTeamNameById(teamId) {
     const normalizedTeamId = String(teamId || '').trim()
@@ -106,6 +115,40 @@ export default function ModuleOverviewPage() {
       mapped[targetTeamId].push(action)
     }
     return mapped
+  }
+
+  function applyBlindHikeMarkerCounts(teamsRows, overviewData, gameType) {
+    const sourceTeams = Array.isArray(teamsRows) ? teamsRows : []
+    if (gameType !== 'blindhike') {
+      return sourceTeams
+    }
+
+    const counts = new Map()
+    const finished = new Map()
+    for (const row of Array.isArray(overviewData?.teams) ? overviewData.teams : []) {
+      const teamId = String(row?.team_id || row?.id || '').trim()
+      if (!teamId) {
+        continue
+      }
+      counts.set(teamId, Number(row?.markers || 0))
+      finished.set(teamId, Boolean(row?.finished))
+    }
+
+    return sourceTeams.map((team) => {
+      const teamId = String(team?.id || '').trim()
+      if (!teamId || !counts.has(teamId)) {
+        return {
+          ...team,
+          blindhike_markers: Number(team?.blindhike_markers || 0),
+          blindhike_finished: Boolean(team?.blindhike_finished),
+        }
+      }
+      return {
+        ...team,
+        blindhike_markers: Number(counts.get(teamId) || 0),
+        blindhike_finished: Boolean(finished.get(teamId)),
+      }
+    })
   }
 
   async function loadModuleDetails(gameType, id) {
@@ -252,7 +295,7 @@ export default function ModuleOverviewPage() {
       setGame(gameRecord)
       setOverview(overviewData)
       setModuleDetails(details)
-      setTeams(Array.isArray(teamsData) ? teamsData : [])
+      setTeams(applyBlindHikeMarkerCounts(teamsData, overviewData, gameRecord.game_type))
       setMembers(Array.isArray(membersData) ? membersData : [])
       if (gameRecord.game_type === 'exploding_kittens') {
         const counts = {}
@@ -310,7 +353,7 @@ export default function ModuleOverviewPage() {
         setGame(gameRecord)
         setOverview(data)
         setModuleDetails(details)
-        setTeams(Array.isArray(teamsData) ? teamsData : [])
+        setTeams(applyBlindHikeMarkerCounts(teamsData, data, gameRecord.game_type))
         setMembers(Array.isArray(membersData) ? membersData : [])
         if (gameRecord.game_type === 'exploding_kittens') {
           const counts = {}
@@ -421,6 +464,67 @@ export default function ModuleOverviewPage() {
             return normalized
           }
           return teamId
+        })
+        return
+      }
+
+      if (eventName === 'admin.blind_hike.marker.added') {
+        if (!isBlindHike) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const markerCount = Number(payload?.marker_count)
+        const teamFinished = Boolean(payload?.team_finished)
+        const marker = payload?.marker && typeof payload.marker === 'object' ? payload.marker : null
+        const markerId = String(marker?.id || '').trim()
+        const markerLat = Number(marker?.lat)
+        const markerLon = Number(marker?.lon)
+
+        if (!changedTeamId || Number.isNaN(markerCount)) {
+          return
+        }
+
+        setTeams((previous) => (Array.isArray(previous) ? previous : []).map((team) => (
+          String(team?.id || '') === changedTeamId
+            ? { ...team, blindhike_markers: markerCount, blindhike_finished: teamFinished }
+            : team
+        )))
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? { ...row, markers: markerCount, finished: teamFinished }
+                : row
+            ))
+            : [...previousTeams, { team_id: changedTeamId, name: changedTeamId, markers: markerCount, finished: teamFinished }]
+
+          let nextMarkers = Array.isArray(previousOverview.markers) ? previousOverview.markers : []
+          if (markerId && !Number.isNaN(markerLat) && !Number.isNaN(markerLon)) {
+            const exists = nextMarkers.some((entry) => String(entry?.id || '') === markerId)
+            if (!exists) {
+              nextMarkers = [
+                ...nextMarkers,
+                {
+                  id: markerId,
+                  team_id: changedTeamId,
+                  lat: markerLat,
+                  lon: markerLon,
+                  placed_at: String(marker?.placed_at || ''),
+                },
+              ]
+            }
+          }
+
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+            markers: nextMarkers,
+          }
         })
         return
       }
@@ -570,7 +674,7 @@ export default function ModuleOverviewPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, gameId, isExplodingKittens])
+  }, [auth?.token, gameId, isBlindHike, isExplodingKittens])
 
   async function handleCreateTeam(event) {
     event.preventDefault()
@@ -583,7 +687,7 @@ export default function ModuleOverviewPage() {
       setNewTeamCode('')
       await loadAll()
     } catch (err) {
-      setError(err.message || 'Failed to create team')
+      setError(err.message || t('moduleOverview.createTeamFailed', {}, 'Failed to create team'))
     }
   }
 
@@ -592,7 +696,7 @@ export default function ModuleOverviewPage() {
       await gameApi.deleteTeam(auth.token, gameId, teamId)
       await loadAll()
     } catch (err) {
-      setError(err.message || 'Failed to delete team')
+      setError(err.message || t('moduleOverview.deleteTeamFailed', {}, 'Failed to delete team'))
     }
   }
 
@@ -602,7 +706,7 @@ export default function ModuleOverviewPage() {
       await gameApi.sendTeamMessage(auth.token, gameId, teamMessageTeamId, teamMessageText)
       setTeamMessageText('')
     } catch (err) {
-      setError(err.message || 'Failed to send team message')
+      setError(err.message || t('moduleOverview.sendTeamMessageFailed', {}, 'Failed to send team message'))
     }
   }
 
@@ -617,7 +721,7 @@ export default function ModuleOverviewPage() {
       setMemberEmail('')
       await loadAll()
     } catch (err) {
-      setError(err.message || 'Failed to add member')
+      setError(err.message || t('moduleOverview.addMemberFailed', {}, 'Failed to add member'))
     }
   }
 
@@ -630,7 +734,7 @@ export default function ModuleOverviewPage() {
       }
       await loadAll()
     } catch (err) {
-      setError(err.message || 'Failed to remove member')
+      setError(err.message || t('moduleOverview.removeMemberFailed', {}, 'Failed to remove member'))
     }
   }
 
@@ -645,7 +749,7 @@ export default function ModuleOverviewPage() {
       setJudgeSubmissionId('')
       await loadAll()
     } catch (err) {
-      setError(err.message || 'Failed to judge submission')
+      setError(err.message || t('moduleOverview.judgeFailed', {}, 'Failed to judge submission'))
     }
   }
 
@@ -693,13 +797,46 @@ export default function ModuleOverviewPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="overview-stack">
+        {game?.game_type === 'blindhike' && moduleDetails?.kind === 'blindhike' ? (
+          <section className="overview-panel">
+            <h2>{t('blindhike.admin.configure_title', {}, 'Blind Hike live state')}</h2>
+            <BlindHikeAdminOverviewMap
+              target={blindHikeTarget}
+              markers={blindHikeMarkers}
+              teams={sortedTeams}
+              t={t}
+            />
+            <table className="admin-table" style={{ marginTop: '1rem' }}>
+              <tbody>
+                <tr>
+                  <th>{t('teamDashboard.markers', {}, 'Markers')}</th>
+                  <td>{blindHikeMarkers.length}</td>
+                </tr>
+                <tr>
+                  <th>{t('blindhike.max_markers', {}, 'Max markers')}</th>
+                  <td>{moduleDetails.config?.max_markers ?? '-'}</td>
+                </tr>
+                <tr>
+                  <th>{t('blindhike.marker_cooldown', {}, 'Marker cooldown')}</th>
+                  <td>{moduleDetails.config?.marker_cooldown ?? 0}</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        ) : null}
+
         <section className="overview-panel">
           <h2>{t('moduleOverview.overviewData')}</h2>
           {sortedTeams.length === 0 ? <p>{t('gamePage.noTeams', {}, 'No teams')}</p> : null}
           {sortedTeams.length > 0 ? (
             <section className="overview-grid overview-grid-ek" id="overview-grid">
               {sortedTeams.map((team) => {
+                const markers = Number(team?.blindhike_markers ?? team?.markers ?? 0)
                 const lives = Number(team?.lives || 0)
+                const metricValue = isBlindHike ? markers : lives
+                const metricLabel = isBlindHike
+                  ? t('teamDashboard.markers', {}, 'Markers')
+                  : t('teamDashboard.lives', {}, 'Lives')
                 return (
                   <article key={team.id} className="team-card" data-team-id={team.id}>
                     <div className="team-card-header">
@@ -707,12 +844,13 @@ export default function ModuleOverviewPage() {
                         {team.logo_path ? <img className="team-logo" src={toAssetUrl(team.logo_path)} alt={team.name} /> : null}
                         <div className="team-identity-meta">
                           <h2>{team.name}</h2>
+                          {isBlindHike && team?.blindhike_finished ? <p className="team-code">✅ {t('teamDashboard.blindhike.finished', {}, 'Finished')}</p> : null}
                           <p className="team-code">{team.code}</p>
                         </div>
                       </div>
                       <div className="team-lives">
-                        <span className="team-lives-value">{lives}</span>
-                        <span className="team-lives-label">{t('teamDashboard.lives', {}, 'Lives')}</span>
+                        <span className="team-lives-value">{metricValue}</span>
+                        <span className="team-lives-label">{metricLabel}</span>
                         {isExplodingKittens ? (
                           <div className="team-hand-controls" data-team-lives-controls>
                             <button
@@ -805,7 +943,7 @@ export default function ModuleOverviewPage() {
         </section>
 
         {game?.game_type === 'geohunter' && moduleDetails?.kind === 'geohunter' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('geoHunter.admin.points', {}, 'GeoHunter live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -819,7 +957,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'resource_run' && moduleDetails?.kind === 'resource_run' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('resource_run.admin.nodes', {}, 'Resource Run live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -833,7 +971,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'territory_control' && moduleDetails?.kind === 'territory_control' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('territory_control.admin.zone_count', {}, 'Territory Control live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -846,26 +984,8 @@ export default function ModuleOverviewPage() {
           </section>
         ) : null}
 
-        {game?.game_type === 'blindhike' && moduleDetails?.kind === 'blindhike' ? (
-          <section className="geo-panel">
-            <h2>{t('blindhike.admin.configure_title', {}, 'Blind Hike live state')}</h2>
-            <table className="admin-table">
-              <tbody>
-                <tr>
-                  <th>{t('blindhike.admin.allow_manual_markers', {}, 'Allow manual markers')}</th>
-                  <td>{moduleDetails.config?.allow_manual_markers ? 'yes' : 'no'}</td>
-                </tr>
-                <tr>
-                  <th>{t('blindhike.admin.max_markers_per_team', {}, 'Max markers per team')}</th>
-                  <td>{moduleDetails.config?.max_markers_per_team ?? '-'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-        ) : null}
-
         {game?.game_type === 'echo_hunt' && moduleDetails?.kind === 'echo_hunt' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('echo_hunt.admin.beacons', {}, 'Echo Hunt live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -879,7 +999,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'checkpoint_heist' && moduleDetails?.kind === 'checkpoint_heist' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('checkpoint_heist.admin.checkpoints', {}, 'Checkpoint Heist live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -893,7 +1013,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'courier_rush' && moduleDetails?.kind === 'courier_rush' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('courier_rush.admin.settings_title', {}, 'Courier Rush live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -952,7 +1072,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'pandemic_response' && moduleDetails?.kind === 'pandemic_response' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('pandemic_response.admin.hotspots_subtitle', {}, 'Pandemic live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -1009,7 +1129,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'market_crash' && moduleDetails?.kind === 'market_crash' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('market_crash.admin.overview_subtitle', {}, 'Market Crash live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -1050,7 +1170,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'crazy_88' && moduleDetails?.kind === 'crazy_88' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('crazy88.admin.tasks_subtitle', {}, 'Crazy88 live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -1082,7 +1202,7 @@ export default function ModuleOverviewPage() {
                     <td>
                       {task.latitude !== null && task.longitude !== null
                         ? `${task.latitude}, ${task.longitude} · ${task.radius_meters}m`
-                        : '—'}
+                        : t('moduleOverview.notAvailable', {}, '—')}
                     </td>
                   </tr>
                 ))}
@@ -1097,7 +1217,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'birds_of_prey' && moduleDetails?.kind === 'birds_of_prey' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('birds_of_prey.admin.config', {}, 'Birds of Prey live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -1119,7 +1239,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'code_conspiracy' && moduleDetails?.kind === 'code_conspiracy' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('code_conspiracy.admin.config', {}, 'Code Conspiracy live state')}</h2>
             <table className="admin-table">
               <tbody>
@@ -1149,7 +1269,7 @@ export default function ModuleOverviewPage() {
         ) : null}
 
         {game?.game_type === 'crazy_88' ? (
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('moduleOverview.crazyReview', {}, 'Crazy 88 review')}</h2>
             <form onSubmit={handleJudgeSubmission} className="admin-inline-form">
               <input value={judgeTeamId} onChange={(event) => setJudgeTeamId(event.target.value)} placeholder={t('moduleOverview.teamId', {}, 'Team ID')} required />

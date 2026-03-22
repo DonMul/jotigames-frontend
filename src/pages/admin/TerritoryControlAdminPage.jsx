@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -140,7 +141,7 @@ export default function TerritoryControlAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('common.map', {}, 'Map')}</h2>
           <div className="game-map" style={{ minHeight: 280 }}>
             <p className="muted" style={{ padding: '0.8rem' }}>
@@ -149,7 +150,7 @@ export default function TerritoryControlAdminPage() {
           </div>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('territory_control.admin.zone_list', {}, 'Zone list')}</h2>
           {zones.length === 0 ? <p className="muted">{t('territory_control.admin.zone_empty', {}, 'No zones yet')}</p> : null}
           {zones.length > 0 ? (
@@ -183,7 +184,7 @@ export default function TerritoryControlAdminPage() {
           ) : null}
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{isEdit ? t('territory_control.admin.zone_edit_heading', { name: form.title }, 'Edit zone') : t('territory_control.admin.zone_new_heading', { game: game?.name || '' }, 'New zone')}</h2>
 
           <form onSubmit={handleSubmitZone}>
@@ -198,6 +199,12 @@ export default function TerritoryControlAdminPage() {
             </div>
 
             <div className="form-row form-row-inline">
+              <GeoLocationPicker
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+                ariaLabel={t('territory_control.admin.zone_field_name', {}, 'Zone location')}
+              />
               <div>
                 <label htmlFor="zone-lat">{t('territory_control.admin.zone_field_lat', {}, 'Latitude')}</label>
                 <input

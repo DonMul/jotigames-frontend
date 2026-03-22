@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -152,7 +153,7 @@ export default function EchoHuntAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('echo_hunt.admin.beacons_list', {}, 'Beacons')}</h2>
           <table className="admin-table">
             <thead>
@@ -196,7 +197,7 @@ export default function EchoHuntAdminPage() {
           </table>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{isEdit ? t('button.edit', {}, 'Edit') : t('echo_hunt.admin.create_beacon', {}, 'Create beacon')}</h2>
           <form onSubmit={handleSubmitBeacon} className="form-grid">
             <div className="form-row">
@@ -217,6 +218,12 @@ export default function EchoHuntAdminPage() {
               />
             </div>
             <div className="form-row form-row-inline">
+              <GeoLocationPicker
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+                ariaLabel={t('echo_hunt.admin.table_title', {}, 'Beacon location')}
+              />
               <div>
                 <label htmlFor="beacon-lat">{t('echo_hunt.admin.latitude', {}, 'Latitude')}</label>
                 <input

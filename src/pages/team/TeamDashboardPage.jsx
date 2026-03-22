@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
+import BlindHikeTeamPanel from '../../components/BlindHikeTeamPanel'
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
@@ -300,6 +301,8 @@ export default function TeamDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionError, setActionError] = useState('')
+  const [actionSuccess, setActionSuccess] = useState('')
+  const [placingBlindHikeMarker, setPlacingBlindHikeMarker] = useState(false)
   const [targetTeamByCard, setTargetTeamByCard] = useState({})
   const [popupQueue, setPopupQueue] = useState([])
   const [selectedComboCards, setSelectedComboCards] = useState([])
@@ -307,12 +310,16 @@ export default function TeamDashboardPage() {
   const [comboRequestedType, setComboRequestedType] = useState('')
   const [comboModeEnabled, setComboModeEnabled] = useState(false)
   const [countdownNowMs, setCountdownNowMs] = useState(() => Date.now())
+  const [showBlindHikeConfetti, setShowBlindHikeConfetti] = useState(false)
   const leaderboardItemRefs = useRef(new Map())
   const leaderboardPreviousTopById = useRef(new Map())
+  const blindHikeFinishedRef = useRef(false)
+  const confettiTimeoutRef = useRef(0)
 
   const gameId = bootstrap?.game_id || ''
   const teamId = bootstrap?.team_id || auth.principalId
   const isExplodingKittens = bootstrap?.game_type === 'exploding_kittens'
+  const isBlindHike = bootstrap?.game_type === 'blindhike'
   const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
 
   const otherTeams = useMemo(() => {
@@ -324,6 +331,16 @@ export default function TeamDashboardPage() {
   const pendingActions = Array.isArray(state?.pending_actions) ? state.pending_actions : []
   const hasNopeCard = hand.some((card) => String(card?.type || '').trim() === 'nope')
   const activePopup = popupQueue.length > 0 ? popupQueue[0] : null
+
+  function triggerBlindHikeConfetti() {
+    if (confettiTimeoutRef.current) {
+      window.clearTimeout(confettiTimeoutRef.current)
+    }
+    setShowBlindHikeConfetti(true)
+    confettiTimeoutRef.current = window.setTimeout(() => {
+      setShowBlindHikeConfetti(false)
+    }, 4300)
+  }
 
   function dismissPopup() {
     setPopupQueue((previous) => previous.slice(1))
@@ -499,6 +516,92 @@ export default function TeamDashboardPage() {
             }))
           }
         }
+        return
+      }
+
+      if (eventName === 'team.blind_hike.marker.added') {
+        if (!isBlindHike) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const marker = payload?.marker && typeof payload.marker === 'object' ? payload.marker : null
+        const markerId = String(marker?.id || '').trim()
+        const markerLat = Number(marker?.lat)
+        const markerLon = Number(marker?.lon)
+        const markerCount = Number(payload?.marker_count)
+        const teamFinished = Boolean(payload?.team_finished)
+
+        if (!markerId || Number.isNaN(markerLat) || Number.isNaN(markerLon)) {
+          return
+        }
+
+        if (teamFinished && !blindHikeFinishedRef.current) {
+          triggerBlindHikeConfetti()
+        }
+        blindHikeFinishedRef.current = teamFinished
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousMarkers = Array.isArray(previousState.team_markers) ? previousState.team_markers : []
+          const exists = previousMarkers.some((entry) => String(entry?.id || '') === markerId)
+          const nextMarkers = exists
+            ? previousMarkers
+            : [
+              ...previousMarkers,
+              {
+                id: markerId,
+                lat: markerLat,
+                lon: markerLon,
+                placed_at: String(marker?.placed_at || ''),
+              },
+            ]
+
+          return {
+            ...previousState,
+            team_markers: nextMarkers,
+            actions: Number.isNaN(markerCount) ? nextMarkers.length : markerCount,
+            finished: teamFinished,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'game.blind_hike.marker.added') {
+        if (!isBlindHike) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const markerCount = Number(payload?.marker_count)
+        const teamFinished = Boolean(payload?.team_finished)
+        if (!changedTeamId || Number.isNaN(markerCount)) {
+          return
+        }
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousRows = Array.isArray(previousState.highscore) ? previousState.highscore : []
+          const hasExisting = previousRows.some((row) => String(row?.team_id || '') === changedTeamId)
+
+          const nextRows = hasExisting
+            ? previousRows.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? { ...row, markers: markerCount, finished: teamFinished }
+                : row
+            ))
+            : [...previousRows, { team_id: changedTeamId, name: changedTeamId, markers: markerCount, finished: teamFinished }]
+
+          return {
+            ...previousState,
+            highscore: nextRows,
+            ...(changedTeamId === String(teamId) ? { finished: teamFinished } : {}),
+          }
+        })
         return
       }
 
@@ -726,7 +829,17 @@ export default function TeamDashboardPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, gameId, isExplodingKittens, teamId])
+  }, [auth?.token, gameId, isBlindHike, isExplodingKittens, teamId])
+
+  useEffect(() => {
+    blindHikeFinishedRef.current = Boolean(state?.finished)
+  }, [state?.finished])
+
+  useEffect(() => () => {
+    if (confettiTimeoutRef.current) {
+      window.clearTimeout(confettiTimeoutRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     setSelectedComboCards((previous) => {
@@ -740,11 +853,45 @@ export default function TeamDashboardPage() {
   }
 
   async function refreshState() {
-    if (!bootstrap || !isExplodingKittens) {
+    if (!bootstrap) {
       return
     }
     const nextState = await moduleApi.getBootstrap(auth.token, bootstrap.game_type, bootstrap.game_id, bootstrap.team_id)
     setState(nextState)
+  }
+
+  async function handlePlaceBlindHikeMarker(position) {
+    if (!bootstrap || !isBlindHike || !position) {
+      return
+    }
+
+    const latitude = Number(position.latitude)
+    const longitude = Number(position.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      setActionError(t('teamDashboard.blindhike.waitingLocation', {}, 'Waiting for location…'))
+      return
+    }
+
+    setActionError('')
+    setActionSuccess('')
+    setPlacingBlindHikeMarker(true)
+
+    try {
+      const markerId = `${latitude.toFixed(7)},${longitude.toFixed(7)},${Date.now()}`
+      const result = await moduleApi.submitAction(auth.token, 'blindhike', gameId, teamId, {
+        marker_id: markerId,
+      })
+      const successKey = String(result?.message_key || '').trim()
+      setActionSuccess(
+        successKey
+          ? t(successKey, {}, t('teamDashboard.blindhike.markerAdded', {}, 'Marker added'))
+          : t('teamDashboard.blindhike.markerAdded', {}, 'Marker added'),
+      )
+    } catch (err) {
+      setActionError(err.message || t('teamDashboard.blindhike.placeFailed', {}, 'Could not place marker'))
+    } finally {
+      setPlacingBlindHikeMarker(false)
+    }
   }
 
   async function handlePlayCard(cardId) {
@@ -960,6 +1107,24 @@ export default function TeamDashboardPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
       {actionError ? <div className="flash flash-error">{actionError}</div> : null}
+      {actionSuccess ? <div className="flash flash-success">{actionSuccess}</div> : null}
+
+      {isBlindHike && showBlindHikeConfetti ? (
+        <div className="blindhike-finish-confetti" aria-hidden="true">
+          {Array.from({ length: 24 }).map((_, index) => (
+            <span
+              key={`blindhike-confetti-${index + 1}`}
+              className="blindhike-finish-confetti-piece"
+              style={{
+                '--confetti-index': index,
+                '--confetti-delay': `${(index % 6) * 70}ms`,
+                '--confetti-duration': `${2800 + ((index * 43) % 1300)}ms`,
+                '--confetti-drift': `${(index % 2 === 0 ? 1 : -1) * (20 + ((index % 5) * 10))}px`,
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {activePopup ? (
         <div
@@ -1205,6 +1370,16 @@ export default function TeamDashboardPage() {
           ) : (
             null
           )}
+
+          {isBlindHike ? (
+            <BlindHikeTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              placingMarker={placingBlindHikeMarker}
+              onPlaceMarker={handlePlaceBlindHikeMarker}
+            />
+          ) : null}
         </>
       ) : null}
     </main>

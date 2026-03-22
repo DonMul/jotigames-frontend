@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -146,7 +147,7 @@ export default function ResourceRunAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('common.map', {}, 'Map')}</h2>
           <div className="game-map" style={{ minHeight: 280 }}>
             <p className="muted" style={{ padding: '0.8rem' }}>
@@ -155,7 +156,7 @@ export default function ResourceRunAdminPage() {
           </div>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('resource_run.admin.node_list', {}, 'Node list')}</h2>
           {nodes.length === 0 ? <p className="muted">{t('resource_run.admin.node_empty', {}, 'No nodes yet')}</p> : null}
           {nodes.length > 0 ? (
@@ -204,7 +205,7 @@ export default function ResourceRunAdminPage() {
           ) : null}
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{isEdit ? t('resource_run.admin.node_edit_heading', { title: form.title }, 'Edit node') : t('resource_run.admin.node_new_heading', { game: game?.name || '' }, 'New node')}</h2>
 
           <form onSubmit={handleSubmitNode}>
@@ -229,6 +230,12 @@ export default function ResourceRunAdminPage() {
             </div>
 
             <div className="form-row form-row-inline">
+              <GeoLocationPicker
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+                ariaLabel={t('resource_run.admin.node_field_title', {}, 'Node location')}
+              />
               <div>
                 <label htmlFor="node-lat">{t('resource_run.admin.node_field_lat', {}, 'Latitude')}</label>
                 <input

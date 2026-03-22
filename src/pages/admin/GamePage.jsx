@@ -270,7 +270,7 @@ export default function GamePage() {
       </section>
 
       <section className="game-show-layout" style={{ marginTop: '1rem' }}>
-        <section className="geo-panel">
+        <section className="overview-panel">
           <div className="game-panel-header-row">
             <h2>{t('gamePage.managersTitle')}</h2>
             <Link className="btn btn-add btn-small game-panel-header-row__action" to={`/admin/games/${gameId}/members/new`}>
@@ -325,7 +325,7 @@ export default function GamePage() {
           ) : null}
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <div className="game-panel-header-row">
             <h2>{t('gamePage.teams')}</h2>
             <Link className="btn btn-add btn-small game-panel-header-row__action" to={`/admin/games/${gameId}/teams/new`}>

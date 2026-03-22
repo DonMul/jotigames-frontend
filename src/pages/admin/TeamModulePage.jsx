@@ -306,7 +306,7 @@ export default function TeamModulePage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout" style={{ marginTop: '1rem' }}>
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('teamModule.submitAction')}</h2>
           <p>{bodyHint}</p>
 
@@ -589,7 +589,7 @@ export default function TeamModulePage() {
           ) : null}
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('teamModule.bootstrapState')}</h2>
           <pre style={{ whiteSpace: 'pre-wrap', overflowX: 'auto' }}>{JSON.stringify(bootstrapState, null, 2)}</pre>
         </section>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -223,7 +224,7 @@ export default function GeoHunterAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('geohunter.admin.retry_settings', {}, 'Answer retry settings')}</h2>
           <form onSubmit={handleSaveSettings} className="team-message">
             <label>
@@ -251,7 +252,7 @@ export default function GeoHunterAdminPage() {
           </form>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('common.map', {}, 'Map')}</h2>
           <div
             className="game-map"
@@ -265,7 +266,7 @@ export default function GeoHunterAdminPage() {
           </div>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('geohunter.admin.poi_list', {}, 'POI list')}</h2>
           {pois.length === 0 ? <p className="muted">{t('geohunter.admin.poi_empty', {}, 'No POIs yet')}</p> : null}
           {pois.length > 0 ? (
@@ -299,7 +300,7 @@ export default function GeoHunterAdminPage() {
           ) : null}
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{isEdit ? t('geohunter.admin.poi_edit_heading', { title: form.title }, 'Edit POI') : t('geohunter.admin.poi_new_heading', { game: game?.name || '' }, 'New POI')}</h2>
 
           <form onSubmit={handleSubmitPoi}>
@@ -328,6 +329,12 @@ export default function GeoHunterAdminPage() {
             </div>
 
             <div className="form-row form-row-inline">
+              <GeoLocationPicker
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+                ariaLabel={t('geohunter.admin.poi_field_title', {}, 'POI location')}
+              />
               <div>
                 <label htmlFor="poi-lat">{t('geohunter.admin.poi_field_lat', {}, 'Latitude')}</label>
                 <input

@@ -72,7 +72,7 @@ export default function BulkToolsPage() {
       {createdCount > 0 ? <div className="flash flash-success">{t('bulkTools.created', { count: createdCount }, `Created ${createdCount} teams`)}</div> : null}
 
       <section className="geo-layout">
-        <div className="geo-panel">
+        <div className="overview-panel">
           <h2>{t('bulkTools.teamsTitle', {}, 'Teams')}</h2>
           <form className="admin-inline-form" onSubmit={handleBulkCreate}>
             <label htmlFor="bulk-team-amount">{t('bulkTools.amount', {}, 'Amount')}</label>

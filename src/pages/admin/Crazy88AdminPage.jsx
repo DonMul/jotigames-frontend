@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -227,7 +228,7 @@ export default function Crazy88AdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('crazy88.admin.settings', {}, 'Settings')}</h2>
           <form onSubmit={saveConfig}>
             <div className="form-row">
@@ -245,7 +246,7 @@ export default function Crazy88AdminPage() {
           </form>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('crazy88.admin.task_list', {}, 'Task list')}</h2>
           <table className="admin-table">
             <thead>
@@ -335,6 +336,13 @@ export default function Crazy88AdminPage() {
             </div>
           </div>
 
+          <GeoLocationPicker
+            latitude={taskForm.latitude}
+            longitude={taskForm.longitude}
+            onChange={(nextLat, nextLon) => setTaskForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+            ariaLabel={t('crazy88.admin.task_add', {}, 'Task location map')}
+          />
+
           <div className="form-row form-row-inline">
             <div>
               <label htmlFor="crazy88-latitude">{t('crazy88.admin.form_latitude', {}, 'Latitude')}</label>
@@ -409,7 +417,7 @@ export default function Crazy88AdminPage() {
 
         <div className="geo-layout">
           {reviews.threads.map((thread) => (
-            <section key={`${thread.task_id}:${thread.team_id}`} className="geo-panel">
+            <section key={`${thread.task_id}:${thread.team_id}`} className="overview-panel">
               <h3>{thread.task_title} · {thread.team_name}</h3>
               <p className="muted">{t('crazy88.admin.task_points', { points: thread.task_points || 0 }, `Points: ${thread.task_points || 0}`)}</p>
 

@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
 
 import { AuthProvider, useAuth } from './lib/auth'
 import { I18nProvider } from './lib/i18n'
@@ -49,7 +50,62 @@ function ProtectedRoute({ children }) {
   return children
 }
 
+function useAutoScrollSuccessFlash() {
+  useEffect(() => {
+    const scrolledFlashes = new WeakSet()
+
+    const scrollToLatestSuccessFlash = () => {
+      const successFlashes = Array.from(document.querySelectorAll('.flash.flash-success'))
+      const target = successFlashes[successFlashes.length - 1]
+      if (!target || scrolledFlashes.has(target)) {
+        return
+      }
+
+      scrolledFlashes.add(target)
+      target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      const hasRelevantChange = mutations.some((mutation) => {
+        if (mutation.type === 'childList') {
+          const addedNodes = Array.from(mutation.addedNodes)
+          return addedNodes.some((node) => {
+            if (!(node instanceof Element)) {
+              return false
+            }
+            return node.matches('.flash.flash-success') || node.querySelector('.flash.flash-success')
+          })
+        }
+
+        if (mutation.type === 'attributes' && mutation.target instanceof Element) {
+          const element = mutation.target
+          return element.matches('.flash.flash-success') || element.querySelector('.flash.flash-success')
+        }
+
+        return false
+      })
+
+      if (hasRelevantChange) {
+        window.requestAnimationFrame(scrollToLatestSuccessFlash)
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+}
+
 function AppRoutes() {
+  useAutoScrollSuccessFlash()
+
   const renderProtected = (element) => <ProtectedRoute>{element}</ProtectedRoute>
   const renderProtectedAdminGame = (element) => (
     <ProtectedRoute>

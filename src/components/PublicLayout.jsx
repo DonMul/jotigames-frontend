@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { GAME_CATALOG } from '../lib/gameCatalog'
+import { gameApi } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import { useI18n } from '../lib/i18n'
 import { LOCALE_LABELS, useLocale } from '../lib/locale'
@@ -15,7 +16,11 @@ export default function PublicLayout({ children }) {
   const { auth, isAuthenticated, logout } = useAuth()
   const { locale, supportedLocales, setLocale } = useLocale()
   const { t } = useI18n()
-  const gameLinks = useMemo(() => GAME_CATALOG, [])
+  const [enabledTypes, setEnabledTypes] = useState([])
+  const gameLinks = useMemo(() => {
+    const allowedTypes = new Set(enabledTypes)
+    return GAME_CATALOG.filter((game) => allowedTypes.has(game.type))
+  }, [enabledTypes])
   const shellRef = useRef(null)
   const navRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -25,6 +30,29 @@ export default function PublicLayout({ children }) {
     }
     return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
   })
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadEnabledTypes() {
+      try {
+        const types = await gameApi.listGameTypes(undefined)
+        if (!cancelled) {
+          setEnabledTypes(Array.isArray(types) ? types : [])
+        }
+      } catch {
+        if (!cancelled) {
+          setEnabledTypes([])
+        }
+      }
+    }
+
+    loadEnabledTypes()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     const closeAllDropdowns = () => {
@@ -94,11 +122,16 @@ export default function PublicLayout({ children }) {
   }
 
   function handleDropdownToggle(currentDetails) {
-    if (!currentDetails?.open || !navRef.current) {
+    if (!currentDetails?.open) {
       return
     }
 
-    navRef.current.querySelectorAll('details[open]').forEach((node) => {
+    const parentElement = currentDetails.parentElement
+    if (!parentElement) {
+      return
+    }
+
+    parentElement.querySelectorAll(':scope > details[open]').forEach((node) => {
       if (node !== currentDetails) {
         node.removeAttribute('open')
       }

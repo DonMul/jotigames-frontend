@@ -120,7 +120,7 @@ export default function TeamPlayPage() {
 
       {!loading && dashboard ? (
         <div className="geo-layout" style={{ marginTop: '1rem' }}>
-          <section className="geo-panel">
+          <section className="overview-panel">
             {dashboard?.game_type === 'courier_rush' ? (
               <>
                 <h2>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h2>
@@ -320,7 +320,7 @@ export default function TeamPlayPage() {
             ) : null}
           </section>
 
-          <section className="geo-panel">
+          <section className="overview-panel">
             <h2>{t('moduleOverview.score', {}, 'Score')}</h2>
             <p>{Number(bootstrapState?.score || bootstrapState?.geo_score || 0)}</p>
             {actionResult ? (

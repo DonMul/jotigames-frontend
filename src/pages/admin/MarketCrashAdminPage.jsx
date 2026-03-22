@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -266,7 +267,7 @@ export default function MarketCrashAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('market_crash.admin.resource_list', {}, 'Resources')}</h2>
 
           <form onSubmit={submitNewResource} className="admin-inline-form" style={{ marginBottom: '0.75rem' }}>
@@ -330,7 +331,7 @@ export default function MarketCrashAdminPage() {
           </table>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('market_crash.admin.point_list', {}, 'Points')}</h2>
           <table className="admin-table">
             <thead>
@@ -518,6 +519,12 @@ export default function MarketCrashAdminPage() {
 
           <section className="market-crash-form-section">
             <h3>{t('market_crash.admin.form_map', {}, 'Map')}</h3>
+            <GeoLocationPicker
+              latitude={pointForm.latitude}
+              longitude={pointForm.longitude}
+              onChange={(nextLat, nextLon) => setPointForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+              ariaLabel={t('market_crash.admin.form_map', {}, 'Point location map')}
+            />
             <div className="market-crash-inline-grid">
               <label>
                 <span>{t('market_crash.admin.form_radius', {}, 'Radius')}</span>

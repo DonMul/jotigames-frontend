@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -117,9 +118,16 @@ export default function PandemicResponseAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('pandemic_response.admin.config', {}, 'Auto outbreak configuration')}</h2>
           <form onSubmit={submitConfig} className="form-grid">
+            <GeoLocationPicker
+              latitude={form.center_lat}
+              longitude={form.center_lon}
+              onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, center_lat: nextLat, center_lon: nextLon }))}
+              ariaLabel={t('pandemic_response.admin.config', {}, 'Outbreak center map')}
+            />
+
             <div className="form-row form-row-inline">
               <div>
                 <label htmlFor="pandemic-center-lat">{t('common.lat', {}, 'Lat')}</label>
@@ -213,7 +221,7 @@ export default function PandemicResponseAdminPage() {
           </form>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('pandemic_response.admin.current_hotspots', {}, 'Current hotspots')}</h2>
           <table className="admin-table">
             <thead>

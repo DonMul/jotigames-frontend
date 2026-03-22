@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoLocationPicker from '../../components/GeoLocationPicker'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -317,7 +318,7 @@ export default function CourierRushAdminPage() {
       </section>
 
       <div className="geo-layout">
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('courier_rush.admin.settings_title', {}, 'Settings')}</h2>
           <form onSubmit={submitConfig} className="form-grid">
             <div className="form-row">
@@ -379,7 +380,7 @@ export default function CourierRushAdminPage() {
           </form>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h2>
           <table className="admin-table">
             <thead>
@@ -433,6 +434,12 @@ export default function CourierRushAdminPage() {
                 required
               />
             </div>
+            <GeoLocationPicker
+              latitude={pickupForm.latitude}
+              longitude={pickupForm.longitude}
+              onChange={(nextLat, nextLon) => setPickupForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+              ariaLabel={t('courier_rush.admin.pickup_new_heading', {}, 'Pickup location')}
+            />
             <div className="form-row form-row-inline">
               <div>
                 <label htmlFor="pickup-lat">{t('courier_rush.admin.latitude', {}, 'Latitude')}</label>
@@ -510,7 +517,7 @@ export default function CourierRushAdminPage() {
           </form>
         </section>
 
-        <section className="geo-panel">
+        <section className="overview-panel">
           <h2>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</h2>
           <table className="admin-table">
             <thead>
@@ -562,6 +569,12 @@ export default function CourierRushAdminPage() {
                 required
               />
             </div>
+            <GeoLocationPicker
+              latitude={dropoffForm.latitude}
+              longitude={dropoffForm.longitude}
+              onChange={(nextLat, nextLon) => setDropoffForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
+              ariaLabel={t('courier_rush.admin.dropoff_new_heading', {}, 'Dropoff location')}
+            />
             <div className="form-row form-row-inline">
               <div>
                 <label htmlFor="dropoff-lat">{t('courier_rush.admin.latitude', {}, 'Latitude')}</label>

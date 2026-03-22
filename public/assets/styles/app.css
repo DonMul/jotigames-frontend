@@ -215,12 +215,11 @@ html[data-theme="dark"] {
     grid-template-columns: minmax(0, 1fr);
 }
 
-.geo-layout.geo-layout-single .geo-panel {
+.geo-layout.geo-layout-single .overview-panel {
     grid-column: 1 / -1;
     width: 100%;
 }
 
-.geo-panel,
 .overview-panel {
     background: var(--surface);
     border-radius: 20px;
@@ -229,11 +228,151 @@ html[data-theme="dark"] {
     box-shadow: var(--shadow);
 }
 
+.overview-stack {
+    display: grid;
+    gap: 2rem;
+}
+
 .game-map {
     height: 420px;
     border-radius: 18px;
     border: 1px solid var(--stroke);
     position: relative;
+}
+
+.game-map-compact {
+    height: 280px;
+}
+
+.team-dashboard-blindhike-layout {
+    display: grid;
+    gap: 1rem;
+}
+
+.team-dashboard-blindhike-map-panel {
+    overflow: hidden;
+}
+
+.team-dashboard-blindhike-map {
+    min-height: 420px;
+    background: var(--color-black);
+    position: relative;
+    z-index: 1;
+}
+
+.blindhike-finish-confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1200;
+    overflow: hidden;
+}
+
+.blindhike-finish-confetti-piece {
+    --confetti-size: 0.55rem;
+    position: absolute;
+    top: -8%;
+    left: calc((var(--confetti-index) + 1) * 4%);
+    width: var(--confetti-size);
+    height: calc(var(--confetti-size) * 1.7);
+    border-radius: 2px;
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    background: var(--accent);
+    box-shadow: 0 0 0 1px var(--alpha-black-12);
+    animation-name: blindhike-confetti-fall;
+    animation-duration: var(--confetti-duration, 3200ms);
+    animation-delay: var(--confetti-delay, 0ms);
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.blindhike-finish-confetti-piece:nth-child(4n+2) {
+    background: var(--accent-2);
+}
+
+.blindhike-finish-confetti-piece:nth-child(4n+3) {
+    background: var(--accent-3);
+}
+
+.blindhike-finish-confetti-piece:nth-child(4n) {
+    background: var(--success);
+}
+
+@keyframes blindhike-confetti-fall {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -10vh, 0) rotate(0deg);
+    }
+    8% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--confetti-drift, 28px), 112vh, 0) rotate(540deg);
+    }
+}
+
+.blindhike-target-icon {
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.blindhike-admin-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    gap: 1rem;
+    align-items: start;
+}
+
+.blindhike-admin-overview-map {
+    min-height: 420px;
+}
+
+.blindhike-admin-legend {
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 0.9rem;
+}
+
+.blindhike-admin-legend h3 {
+    margin: 0 0 0.6rem;
+}
+
+.blindhike-admin-legend ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+}
+
+.blindhike-admin-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.blindhike-admin-legend-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--alpha-black-24);
+    flex-shrink: 0;
+}
+
+@media (max-width: 960px) {
+    .blindhike-admin-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .blindhike-admin-overview-map {
+        min-height: 320px;
+    }
 }
 
 .game-bulk-block {
@@ -706,7 +845,7 @@ p {
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 1000;
     backdrop-filter: blur(10px);
     background: var(--alpha-paper-85);
     border-bottom: 1px solid var(--alpha-stroke-70);
@@ -831,7 +970,6 @@ html[data-theme="dark"] .site-header {
 }
 
 html[data-theme="dark"] .nav-dropdown-menu,
-html[data-theme="dark"] .geo-panel,
 html[data-theme="dark"] .overview-panel,
 html[data-theme="dark"] .geo-card,
 html[data-theme="dark"] .game-info-card,
@@ -4501,6 +4639,24 @@ html[data-theme="dark"] .admin-inline-form input[type="number"] {
     margin-left: 2rem;
     margin-top: 0.5rem;
     font-weight: normal;
+}
+
+.blindhike-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    background: var(--surface);
+    margin-top: 0.5rem;
+}
+
+.blindhike-toggle-label {
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
 }
 
 .crazy88-task-card {
