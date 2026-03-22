@@ -25,4 +25,7 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    allowedHosts: ['jotigames.nl', 'www.jotigames.nl'],
+  },
 })
