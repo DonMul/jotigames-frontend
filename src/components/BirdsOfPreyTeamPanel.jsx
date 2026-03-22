@@ -1,52 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
-
-let markerDefaultsConfigured = false
-
-function configureDefaultMarkerIcons() {
-  if (markerDefaultsConfigured) {
-    return
-  }
-
-  delete L.Icon.Default.prototype._getIconUrl
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x,
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
-  })
-
-  markerDefaultsConfigured = true
-}
-
-function toNumber(value) {
-  if (value === null || value === undefined) {
-    return null
-  }
-  if (typeof value === 'string' && value.trim() === '') {
-    return null
-  }
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : null
-}
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `/${raw}`
-}
+import { buildEggIcon } from './shared/birdsMapIcons'
+import {
+  configureLeafletDefaultMarkerIcons,
+  createTeamLogoIcon,
+  toNumberOrNull,
+} from './shared/leafletMapCommon'
+import { toAssetUrl } from '../lib/assetUrl'
 
 export default function BirdsOfPreyTeamPanel({
   state,
   currentTeamId,
+  currentTeamLogoPath,
   t,
   droppingEgg,
   destroyingEggId,
@@ -195,7 +161,7 @@ export default function BirdsOfPreyTeamPanel({
       return
     }
 
-    configureDefaultMarkerIcons()
+    configureLeafletDefaultMarkerIcons()
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
@@ -231,25 +197,29 @@ export default function BirdsOfPreyTeamPanel({
 
     const map = mapRef.current
     const stateLocation = state?.team_location && typeof state.team_location === 'object' ? state.team_location : null
-    const gpsLat = toNumber(currentPosition?.latitude)
-    const gpsLon = toNumber(currentPosition?.longitude)
-    const fallbackLat = toNumber(stateLocation?.lat)
-    const fallbackLon = toNumber(stateLocation?.lon)
+    const gpsLat = toNumberOrNull(currentPosition?.latitude)
+    const gpsLon = toNumberOrNull(currentPosition?.longitude)
+    const fallbackLat = toNumberOrNull(stateLocation?.lat)
+    const fallbackLon = toNumberOrNull(stateLocation?.lon)
     const lat = gpsLat ?? fallbackLat
     const lon = gpsLon ?? fallbackLon
 
     if (lat !== null && lon !== null) {
       const latLng = [lat, lon]
+      const teamLogoIcon = createTeamLogoIcon(currentTeamLogoPath)
       if (!locationMarkerRef.current) {
-        locationMarkerRef.current = L.marker(latLng).addTo(map)
+        locationMarkerRef.current = L.marker(latLng, teamLogoIcon ? { icon: teamLogoIcon } : undefined).addTo(map)
       } else {
         locationMarkerRef.current.setLatLng(latLng)
+        if (teamLogoIcon) {
+          locationMarkerRef.current.setIcon(teamLogoIcon)
+        }
       }
       if (gpsLat !== null && gpsLon !== null) {
         map.setView(latLng, Math.max(Number(map.getZoom() || 13), 13))
       }
     }
-  }, [currentPosition, state?.team_location])
+  }, [currentPosition, currentTeamLogoPath, state?.team_location])
 
   useEffect(() => {
     if (!ownEggLayerRef.current) {
@@ -258,19 +228,14 @@ export default function BirdsOfPreyTeamPanel({
     ownEggLayerRef.current.clearLayers()
 
     ownEggs.forEach((egg) => {
-      const lat = toNumber(egg?.lat)
-      const lon = toNumber(egg?.lon)
+      const lat = toNumberOrNull(egg?.lat)
+      const lon = toNumberOrNull(egg?.lon)
       if (lat === null || lon === null) {
         return
       }
 
-      L.circleMarker([lat, lon], {
-        radius: 7,
-        color: '#16a34a',
-        fillColor: '#16a34a',
-        fillOpacity: 0.88,
-        weight: 1,
-      }).addTo(ownEggLayerRef.current)
+      const eggKey = String(egg?.id || `${lat}:${lon}:own`)
+      L.marker([lat, lon], { icon: buildEggIcon('#16a34a', eggKey), zIndexOffset: 2000 }).addTo(ownEggLayerRef.current)
     })
   }, [ownEggs])
 
@@ -281,20 +246,15 @@ export default function BirdsOfPreyTeamPanel({
     enemyEggLayerRef.current.clearLayers()
 
     visibleEnemyEggs.forEach((egg) => {
-      const lat = toNumber(egg?.lat)
-      const lon = toNumber(egg?.lon)
+      const lat = toNumberOrNull(egg?.lat)
+      const lon = toNumberOrNull(egg?.lon)
       if (lat === null || lon === null) {
         return
       }
 
       const canDestroy = Boolean(egg?.can_destroy)
-      L.circleMarker([lat, lon], {
-        radius: 7,
-        color: canDestroy ? '#dc2626' : '#f59e0b',
-        fillColor: canDestroy ? '#dc2626' : '#f59e0b',
-        fillOpacity: 0.9,
-        weight: 1,
-      }).addTo(enemyEggLayerRef.current)
+      const eggKey = String(egg?.id || `${lat}:${lon}:${String(egg?.owner_team_id || 'enemy')}`)
+      L.marker([lat, lon], { icon: buildEggIcon(canDestroy ? '#dc2626' : '#f59e0b', eggKey), zIndexOffset: 2000 }).addTo(enemyEggLayerRef.current)
     })
   }, [visibleEnemyEggs])
 
@@ -328,6 +288,11 @@ export default function BirdsOfPreyTeamPanel({
         <div className="team-panel team-dashboard-blindhike-map-panel">
           <h2>{t('teamDashboard.birdsOfPrey.mapTitle', {}, 'Map')}</h2>
           <p className="muted">{t('teamDashboard.birdsOfPrey.mapHint', {}, 'Your location, your eggs, and visible enemy eggs are shown on the map.')}</p>
+          <button className="btn btn-primary" type="button" onClick={onDropEgg} disabled={droppingEgg}>
+            {droppingEgg
+              ? t('teamDashboard.birdsOfPrey.dropping', {}, 'Dropping egg…')
+              : t('teamDashboard.birdsOfPrey.dropEgg', {}, 'Drop egg')}
+          </button>
           <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('teamDashboard.birdsOfPrey.mapTitle', {}, 'Map')} />
         </div>
 
@@ -360,29 +325,6 @@ export default function BirdsOfPreyTeamPanel({
             {visibleEnemyEggs.length === 0 ? <li className="muted">{t('teamDashboard.birdsOfPrey.noVisibleEnemyEggs', {}, 'No enemy eggs in range')}</li> : null}
           </ul>
         </div>
-      </div>
-
-      <div className="team-panel">
-        <h2>{t('teamDashboard.birdsOfPrey.ownEggs', {}, 'Your eggs')}</h2>
-        <p>
-          <strong>{t('teamDashboard.birdsOfPrey.eggCount', {}, 'Eggs')}:</strong>{' '}
-          {ownEggs.length}
-        </p>
-        <button className="btn btn-primary" type="button" onClick={onDropEgg} disabled={droppingEgg}>
-          {droppingEgg
-            ? t('teamDashboard.birdsOfPrey.dropping', {}, 'Dropping egg…')
-            : t('teamDashboard.birdsOfPrey.dropEgg', {}, 'Drop egg')}
-        </button>
-
-        <ul className="team-hand-list">
-          {ownEggs.map((egg) => (
-            <li key={`own-egg-${egg.id}`} className="team-hand-row">
-              <span className="team-hand-label">{t('teamDashboard.birdsOfPrey.egg', {}, 'Egg')} #{egg.id}</span>
-              <span className="chip-meta">{egg.automatic ? t('teamDashboard.birdsOfPrey.auto', {}, 'auto') : t('teamDashboard.birdsOfPrey.manual', {}, 'manual')}</span>
-            </li>
-          ))}
-          {ownEggs.length === 0 ? <li className="muted">{t('teamDashboard.birdsOfPrey.noEggs', {}, 'No eggs yet')}</li> : null}
-        </ul>
       </div>
 
       <div className="team-panel">

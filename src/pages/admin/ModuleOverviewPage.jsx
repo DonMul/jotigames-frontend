@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import BlindHikeAdminOverviewMap from '../../components/BlindHikeAdminOverviewMap'
 import BirdsOfPreyAdminOverviewMap from '../../components/BirdsOfPreyAdminOverviewMap'
 import { gameApi, moduleApi } from '../../lib/api'
+import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
 
@@ -65,17 +66,6 @@ export default function ModuleOverviewPage() {
       return String(value)
     }
     return parsed.toLocaleString()
-  }
-
-  function toAssetUrl(path) {
-    const raw = String(path || '').trim()
-    if (!raw) {
-      return ''
-    }
-    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-      return raw
-    }
-    return `/${raw}`
   }
 
   const sortedTeams = [...teams].sort((a, b) => {
@@ -466,6 +456,35 @@ export default function ModuleOverviewPage() {
             return normalized
           }
           return teamId
+        })
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          if (previousTeams.length === 0) {
+            return previousOverview
+          }
+
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || row?.id || '') === teamId)
+          if (!hasTeam) {
+            return previousOverview
+          }
+
+          const nextTeams = previousTeams.map((row) => (
+            String(row?.team_id || row?.id || '') === teamId
+              ? {
+                ...row,
+                ...(nextName ? { name: nextName } : {}),
+                logo_path: nextLogo || null,
+                logoPath: nextLogo || null,
+              }
+              : row
+          ))
+
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+          }
         })
         return
       }
@@ -982,6 +1001,7 @@ export default function ModuleOverviewPage() {
               teams={(Array.isArray(overview?.teams) ? overview.teams : []).map((team) => ({
                 id: String(team?.team_id || team?.id || ''),
                 name: String(team?.name || ''),
+                logo_path: String(team?.logo_path || team?.logoPath || ''),
                 lat: Number(team?.lat),
                 lon: Number(team?.lon),
                 score: Number(team?.score || 0),

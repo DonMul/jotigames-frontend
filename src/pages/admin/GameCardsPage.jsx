@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { gameApi, moduleApi } from '../../lib/api'
+import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
 
@@ -21,17 +22,6 @@ const CARD_TYPES = [
   'random4',
   'random5',
 ]
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `/${raw}`
-}
 
 export default function GameCardsPage() {
   const { gameId } = useParams()

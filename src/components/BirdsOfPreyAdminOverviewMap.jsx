@@ -1,31 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react'
 import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
-
-let markerDefaultsConfigured = false
-
-function configureDefaultMarkerIcons() {
-  if (markerDefaultsConfigured) {
-    return
-  }
-
-  delete L.Icon.Default.prototype._getIconUrl
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x,
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
-  })
-
-  markerDefaultsConfigured = true
-}
-
-function toNumber(value) {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : null
-}
+import { buildEggIcon } from './shared/birdsMapIcons'
+import {
+  configureLeafletDefaultMarkerIcons,
+  createTeamLogoIcon,
+  toNumberOrNull,
+} from './shared/leafletMapCommon'
 
 function buildTeamColor(teamId, alpha = 1) {
   const raw = String(teamId || '')
@@ -65,7 +46,7 @@ export default function BirdsOfPreyAdminOverviewMap({ teams, eggs, t }) {
       return
     }
 
-    configureDefaultMarkerIcons()
+    configureLeafletDefaultMarkerIcons()
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
@@ -107,42 +88,48 @@ export default function BirdsOfPreyAdminOverviewMap({ teams, eggs, t }) {
     for (const team of Array.isArray(teams) ? teams : []) {
       const teamId = String(team?.id || team?.team_id || '')
       const teamName = String(team?.name || '-')
-      const lat = toNumber(team?.lat)
-      const lon = toNumber(team?.lon)
+      const teamLogoPath = String(team?.logo_path || team?.logoPath || '')
+      const lat = toNumberOrNull(team?.lat)
+      const lon = toNumberOrNull(team?.lon)
       if (!teamId || lat === null || lon === null) {
         continue
       }
 
       const teamColor = teamColorById.get(teamId) || buildTeamColor(teamId)
-      L.circleMarker([lat, lon], {
-        radius: 8,
-        color: teamColor,
-        fillColor: teamColor,
-        fillOpacity: 0.9,
-        weight: 2,
-      })
-        .bindPopup(`${teamName}`)
-        .addTo(teamLayerRef.current)
+      const teamLogoIcon = createTeamLogoIcon(teamLogoPath)
+      if (teamLogoIcon) {
+        L.marker([lat, lon], { icon: teamLogoIcon, zIndexOffset: 500 })
+          .bindPopup(`${teamName}`)
+          .addTo(teamLayerRef.current)
+      } else {
+        L.circleMarker([lat, lon], {
+          radius: 8,
+          color: teamColor,
+          fillColor: teamColor,
+          fillOpacity: 0.9,
+          weight: 2,
+        })
+          .bindPopup(`${teamName}`)
+          .addTo(teamLayerRef.current)
+      }
 
       bounds.push([lat, lon])
     }
 
     for (const egg of Array.isArray(eggs) ? eggs : []) {
-      const lat = toNumber(egg?.lat)
-      const lon = toNumber(egg?.lon)
+      const lat = toNumberOrNull(egg?.lat)
+      const lon = toNumberOrNull(egg?.lon)
       const ownerTeamId = String(egg?.owner_team_id || '')
       if (lat === null || lon === null || !ownerTeamId) {
         continue
       }
 
       const ownerTeamName = String(egg?.owner_team_name || ownerTeamId)
-      const eggColor = buildTeamColor(ownerTeamId, 0.42)
-      L.circleMarker([lat, lon], {
-        radius: 6,
-        color: eggColor,
-        fillColor: eggColor,
-        fillOpacity: 1,
-        weight: 1,
+      const eggColor = buildTeamColor(ownerTeamId)
+      const eggKey = String(egg?.id || `${lat}:${lon}:${ownerTeamId}`)
+      L.marker([lat, lon], {
+        icon: buildEggIcon(eggColor, eggKey),
+        zIndexOffset: 2000,
       })
         .bindPopup(`${ownerTeamName}`)
         .addTo(eggLayerRef.current)

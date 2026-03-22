@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
-function toNumber(value) {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : null
-}
+import { toNumberOrNull } from './shared/leafletMapCommon'
 
 function buildTeamColor(teamId) {
   const raw = String(teamId || '')
@@ -73,8 +69,8 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
     }
 
     const map = mapRef.current
-    const targetLat = toNumber(target?.lat)
-    const targetLon = toNumber(target?.lon)
+    const targetLat = toNumberOrNull(target?.lat)
+    const targetLon = toNumberOrNull(target?.lon)
     const latLngBounds = []
 
     if (targetLat !== null && targetLon !== null) {
@@ -101,8 +97,8 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
     markerLayerRef.current.clearLayers()
 
     for (const marker of Array.isArray(markers) ? markers : []) {
-      const lat = toNumber(marker?.lat)
-      const lon = toNumber(marker?.lon)
+      const lat = toNumberOrNull(marker?.lat)
+      const lon = toNumberOrNull(marker?.lon)
       const teamId = String(marker?.team_id || '')
       if (lat === null || lon === null || !teamId) {
         continue

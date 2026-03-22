@@ -5,6 +5,7 @@ import BlindHikeTeamPanel from '../../components/BlindHikeTeamPanel'
 import BirdsOfPreyTeamPanel from '../../components/BirdsOfPreyTeamPanel'
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
+import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
 
@@ -30,17 +31,6 @@ function getCardTypeLabel(type, t) {
 
   const normalized = raw.startsWith('card.type.') ? raw.replace('card.type.', '') : raw
   return t(`explodingKittens.cardTypes.${normalized}`, {}, normalized.replaceAll('_', ' '))
-}
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `/${raw}`
 }
 
 const EK_PLAYABLE_CARD_TYPES = new Set(['attack', 'favor', 'see_the_future', 'shuffle', 'skip'])
@@ -329,6 +319,12 @@ export default function TeamDashboardPage() {
   const otherTeams = useMemo(() => {
     const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
     return teams.filter((team) => String(team.id) !== String(teamId))
+  }, [bootstrap?.teams, teamId])
+
+  const currentTeamLogoPath = useMemo(() => {
+    const rows = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
+    const current = rows.find((team) => String(team?.id || '') === String(teamId || ''))
+    return String(current?.logo_path || current?.logoPath || '')
   }, [bootstrap?.teams, teamId])
 
   const hand = useMemo(() => (Array.isArray(state?.hand) ? state.hand : []), [state?.hand])
@@ -1606,6 +1602,7 @@ export default function TeamDashboardPage() {
             <BirdsOfPreyTeamPanel
               state={state}
               currentTeamId={teamId}
+              currentTeamLogoPath={currentTeamLogoPath}
               t={t}
               droppingEgg={droppingBirdEgg}
               destroyingEggId={destroyingBirdEggId}

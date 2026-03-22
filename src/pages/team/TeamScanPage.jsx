@@ -3,19 +3,9 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
+import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `/${raw}`
-}
 
 function getCardTypeLabel(type, t) {
   const raw = String(type || '').trim()

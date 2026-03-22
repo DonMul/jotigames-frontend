@@ -1,36 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
+import {
+  configureLeafletDefaultMarkerIcons,
+  toNumberOrNull,
+} from './shared/leafletMapCommon'
 
 const FALLBACK_CENTER = [52.1326, 5.2913]
 
-let markerDefaultsConfigured = false
-
-function configureDefaultMarkerIcons() {
-  if (markerDefaultsConfigured) {
-    return
-  }
-
-  delete L.Icon.Default.prototype._getIconUrl
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x,
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
-  })
-
-  markerDefaultsConfigured = true
-}
-
 function parseCoordinate(value) {
-  if (value === '' || value === null || value === undefined) {
-    return null
-  }
-
-  const number = Number(value)
-  return Number.isFinite(number) ? number : null
+  return toNumberOrNull(value)
 }
 
 export default function GeoLocationPicker({
@@ -60,7 +39,7 @@ export default function GeoLocationPicker({
       return
     }
 
-    configureDefaultMarkerIcons()
+    configureLeafletDefaultMarkerIcons()
 
     const map = L.map(mapContainerRef.current)
     mapRef.current = map

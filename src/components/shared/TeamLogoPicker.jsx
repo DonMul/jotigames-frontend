@@ -1,21 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { gameApi } from '../../lib/api'
+import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-
-  return `/${raw}`
-}
 
 export default function TeamLogoPicker({ value, onChange, disabled = false }) {
   const { auth } = useAuth()

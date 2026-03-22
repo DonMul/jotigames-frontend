@@ -1,42 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
-
-let markerDefaultsConfigured = false
-
-function configureDefaultMarkerIcons() {
-  if (markerDefaultsConfigured) {
-    return
-  }
-
-  delete L.Icon.Default.prototype._getIconUrl
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x,
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
-  })
-
-  markerDefaultsConfigured = true
-}
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `/${raw}`
-}
-
-function toNumber(value) {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : null
-}
+import {
+  configureLeafletDefaultMarkerIcons,
+  toNumberOrNull,
+} from './shared/leafletMapCommon'
+import { toAssetUrl } from '../lib/assetUrl'
 
 export default function BlindHikeTeamPanel({
   state,
@@ -113,7 +82,7 @@ export default function BlindHikeTeamPanel({
       return
     }
 
-    configureDefaultMarkerIcons()
+    configureLeafletDefaultMarkerIcons()
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
@@ -158,8 +127,8 @@ export default function BlindHikeTeamPanel({
     }
 
     const map = mapRef.current
-    const targetLat = toNumber(state?.target?.lat)
-    const targetLon = toNumber(state?.target?.lon)
+    const targetLat = toNumberOrNull(state?.target?.lat)
+    const targetLon = toNumberOrNull(state?.target?.lon)
 
     if (targetLat !== null && targetLon !== null) {
       const targetLocation = [targetLat, targetLon]
@@ -192,8 +161,8 @@ export default function BlindHikeTeamPanel({
     teamMarkersLayerRef.current.clearLayers()
     const markers = Array.isArray(state?.team_markers) ? state.team_markers : []
     markers.forEach((marker) => {
-      const lat = toNumber(marker?.lat)
-      const lon = toNumber(marker?.lon)
+      const lat = toNumberOrNull(marker?.lat)
+      const lon = toNumberOrNull(marker?.lon)
       if (lat === null || lon === null) {
         return
       }

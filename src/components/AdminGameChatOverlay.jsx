@@ -2,23 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { gameApi } from '../lib/api'
+import { toAssetUrl } from '../lib/assetUrl'
 import { useAuth } from '../lib/auth'
 import { useI18n } from '../lib/i18n'
 
 const MAX_MESSAGE_LENGTH = 512
-
-function toAssetUrl(path) {
-  const raw = String(path || '').trim()
-  if (!raw) {
-    return ''
-  }
-
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-
-  return `/${raw}`
-}
 
 function formatTime(value) {
   if (!value) {
