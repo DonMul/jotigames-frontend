@@ -433,6 +433,46 @@
       "finishedWaitMessage": "Je bent gefinisht! Wacht tot de andere teams ook klaar zijn om de definitieve highscore te zien.",
       "markerAdded": "Marker geplaatst",
       "placeFailed": "Marker plaatsen mislukt"
+    },
+    "birdsOfPrey": {
+      "mapTitle": "Live kaart",
+      "mapHint": "Je locatie, je eigen eggs en zichtbare enemy-eggs staan op de kaart.",
+      "ownEggs": "Jouw eggs",
+      "visibleEnemyEggs": "Zichtbare enemy-eggs",
+      "eggCount": "Eggs",
+      "egg": "Egg",
+      "auto": "auto",
+      "manual": "handmatig",
+      "noEggs": "Nog geen eggs",
+      "noVisibleEnemyEggs": "Geen enemy-eggs in bereik",
+      "dropEgg": "Egg plaatsen",
+      "dropping": "Egg plaatsen…",
+      "dropped": "Egg geplaatst",
+      "dropFailed": "Egg plaatsen mislukt",
+      "destroyEgg": "Vernietig",
+      "destroying": "Vernietigen…",
+      "destroyed": "Egg vernietigd",
+      "destroyFailed": "Egg vernietigen mislukt",
+      "protected": "Beschermd",
+      "autoDroppedMessage": "Er is automatisch een egg geplaatst voor je team."
+    }
+  },
+  "birds_of_prey": {
+    "configure": "Birds of Prey configureren",
+    "back": "Terug",
+    "save": "Opslaan",
+    "saved": "Opgeslagen",
+    "load_failed": "Birds of Prey-configuratie laden mislukt",
+    "save_failed": "Birds of Prey-configuratie opslaan mislukt",
+    "admin": {
+      "config": "Configuratie",
+      "visibility_radius": "Zichtbaarheidsradius (m)",
+      "protection_radius": "Beschermingsradius (m)",
+      "auto_drop_seconds": "Auto-drop interval (seconden)",
+      "liveMap": "Live kaart",
+      "eggsLegend": "Eggs",
+      "teamCount": "Teams",
+      "eggCount": "Eggs"
     }
   },
   "explodingKittens": {

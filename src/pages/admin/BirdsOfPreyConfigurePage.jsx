@@ -41,7 +41,7 @@ export default function BirdsOfPreyConfigurePage() {
         auto_drop_seconds: String(Number(config?.auto_drop_seconds || 300)),
       })
     } catch (err) {
-      setError(err.message || 'Failed to load Birds of Prey settings')
+      setError(err.message || t('birds_of_prey.load_failed', {}, 'Failed to load Birds of Prey config'))
     } finally {
       setLoading(false)
     }
@@ -65,9 +65,9 @@ export default function BirdsOfPreyConfigurePage() {
     try {
       await moduleApi.updateBirdsOfPreyConfig(auth.token, gameId, payload)
       await loadAll()
-      setSuccess(t('button.save', {}, 'Saved'))
+      setSuccess(t('birds_of_prey.saved', {}, 'Saved'))
     } catch (err) {
-      setError(err.message || 'Failed to save settings')
+      setError(err.message || t('birds_of_prey.save_failed', {}, 'Failed to save Birds of Prey config'))
     }
   }
 
@@ -75,13 +75,13 @@ export default function BirdsOfPreyConfigurePage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <p className="overview-kicker">{t('game.type.birds_of_prey', {}, 'Birds of Prey')}</p>
+          <p className="overview-kicker">{t('gameCatalog.birds_of_prey.name', {}, 'Birds of Prey')}</p>
           <h1>{game?.name || '-'}</h1>
-          <p className="overview-subtitle">{t('birds_of_prey.admin.config', {}, 'Configuration')}</p>
+          <p className="overview-subtitle">{t('birds_of_prey.configure', {}, 'Configure Birds of Prey')}</p>
         </div>
         <div className="overview-actions">
             <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('games.show.back', {}, 'Back')}
+            {t('birds_of_prey.back', {}, 'Back')}
           </Link>
         </div>
       </section>
@@ -119,7 +119,7 @@ export default function BirdsOfPreyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="bop-auto-drop">{t('birds_of_prey.admin.auto_drop_seconds', {}, 'Auto drop seconds')}</label>
+            <label htmlFor="bop-auto-drop">{t('birds_of_prey.admin.auto_drop_seconds', {}, 'Auto drop interval (seconds)')}</label>
             <input
               id="bop-auto-drop"
               type="number"
@@ -131,7 +131,7 @@ export default function BirdsOfPreyConfigurePage() {
             />
           </div>
 
-          <button className="btn btn-primary" type="submit">{t('button.save', {}, 'Save')}</button>
+          <button className="btn btn-primary" type="submit">{t('birds_of_prey.save', {}, 'Save')}</button>
         </form>
       </section>
     </main>

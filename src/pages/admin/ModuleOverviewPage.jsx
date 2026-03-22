@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import BlindHikeAdminOverviewMap from '../../components/BlindHikeAdminOverviewMap'
+import BirdsOfPreyAdminOverviewMap from '../../components/BirdsOfPreyAdminOverviewMap'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -53,6 +54,7 @@ export default function ModuleOverviewPage() {
   const [judgeAccepted, setJudgeAccepted] = useState(true)
   const isBlindHike = game?.game_type === 'blindhike'
   const isExplodingKittens = game?.game_type === 'exploding_kittens'
+  const isBirdsOfPrey = game?.game_type === 'birds_of_prey'
 
   function formatDate(value) {
     if (!value) {
@@ -529,6 +531,154 @@ export default function ModuleOverviewPage() {
         return
       }
 
+      if (eventName === 'admin.birds_of_prey.team.location.updated') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const lat = Number(payload?.lat)
+        const lon = Number(payload?.lon)
+        const updatedAt = String(payload?.updated_at || payload?.updatedAt || '').trim()
+        if (!changedTeamId || Number.isNaN(lat) || Number.isNaN(lon)) {
+          return
+        }
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? { ...row, lat, lon, location_updated_at: updatedAt || row?.location_updated_at }
+                : row
+            ))
+            : [...previousTeams, { team_id: changedTeamId, name: changedTeamId, score: 0, lat, lon, egg_count: 0, location_updated_at: updatedAt }]
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.birds_of_prey.egg.added') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const eggId = String(payload?.id || '').trim()
+        const ownerTeamId = String(payload?.owner_team_id || payload?.ownerTeamId || '').trim()
+        const ownerTeamName = String(payload?.owner_team_name || payload?.ownerTeamName || '').trim()
+        const lat = Number(payload?.lat)
+        const lon = Number(payload?.lon)
+        if (!eggId || !ownerTeamId || Number.isNaN(lat) || Number.isNaN(lon)) {
+          return
+        }
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousEggs = Array.isArray(previousOverview.eggs) ? previousOverview.eggs : []
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const eggExists = previousEggs.some((row) => String(row?.id || '') === eggId)
+          const nextEggs = eggExists
+            ? previousEggs
+            : [
+              {
+                id: eggId,
+                owner_team_id: ownerTeamId,
+                owner_team_name: ownerTeamName || ownerTeamId,
+                lat,
+                lon,
+                dropped_at: String(payload?.dropped_at || ''),
+                automatic: Boolean(payload?.automatic),
+              },
+              ...previousEggs,
+            ]
+
+          const nextTeams = previousTeams.map((row) => (
+            String(row?.team_id || '') === ownerTeamId
+              ? { ...row, egg_count: Number(row?.egg_count || 0) + (eggExists ? 0 : 1) }
+              : row
+          ))
+
+          return {
+            ...previousOverview,
+            eggs: nextEggs,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.birds_of_prey.egg.removed') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const eggId = String(payload?.egg_id || payload?.eggId || '').trim()
+        const ownerTeamId = String(payload?.owner_team_id || payload?.ownerTeamId || '').trim()
+        if (!eggId) {
+          return
+        }
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousEggs = Array.isArray(previousOverview.eggs) ? previousOverview.eggs : []
+          const existed = previousEggs.some((row) => String(row?.id || '') === eggId)
+          const nextEggs = previousEggs.filter((row) => String(row?.id || '') !== eggId)
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const nextTeams = previousTeams.map((row) => (
+            String(row?.team_id || '') === ownerTeamId
+              ? { ...row, egg_count: Math.max(0, Number(row?.egg_count || 0) - (existed ? 1 : 0)) }
+              : row
+          ))
+          return {
+            ...previousOverview,
+            eggs: nextEggs,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.birds_of_prey.team.score') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const score = Number(payload?.score)
+        if (!changedTeamId || Number.isNaN(score)) {
+          return
+        }
+
+        setTeams((previous) => (Array.isArray(previous) ? previous : []).map((team) => (
+          String(team?.id || '') === changedTeamId
+            ? { ...team, geo_score: score }
+            : team
+        )))
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? { ...row, score }
+                : row
+            ))
+            : [...previousTeams, { team_id: changedTeamId, name: changedTeamId, score, egg_count: 0 }]
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
       if (eventName === 'admin.general.team.remove') {
         const teamId = String(payload.team_id || payload.teamId || '').trim()
         if (!teamId) {
@@ -674,7 +824,7 @@ export default function ModuleOverviewPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, gameId, isBlindHike, isExplodingKittens])
+  }, [auth?.token, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens])
 
   async function handleCreateTeam(event) {
     event.preventDefault()
@@ -819,6 +969,47 @@ export default function ModuleOverviewPage() {
                 <tr>
                   <th>{t('blindhike.marker_cooldown', {}, 'Marker cooldown')}</th>
                   <td>{moduleDetails.config?.marker_cooldown ?? 0}</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        ) : null}
+
+        {game?.game_type === 'birds_of_prey' && moduleDetails?.kind === 'birds_of_prey' ? (
+          <section className="overview-panel">
+            <h2>{t('birds_of_prey.admin.liveMap', {}, 'Live map')}</h2>
+            <BirdsOfPreyAdminOverviewMap
+              teams={(Array.isArray(overview?.teams) ? overview.teams : []).map((team) => ({
+                id: String(team?.team_id || team?.id || ''),
+                name: String(team?.name || ''),
+                lat: Number(team?.lat),
+                lon: Number(team?.lon),
+                score: Number(team?.score || 0),
+              }))}
+              eggs={Array.isArray(overview?.eggs) ? overview.eggs : []}
+              t={t}
+            />
+            <table className="admin-table">
+              <tbody>
+                <tr>
+                  <th>{t('birds_of_prey.admin.visibility_radius', {}, 'Visibility radius')}</th>
+                  <td>{moduleDetails.config?.visibility_radius_meters ?? '-'}m</td>
+                </tr>
+                <tr>
+                  <th>{t('birds_of_prey.admin.protection_radius', {}, 'Protection radius')}</th>
+                  <td>{moduleDetails.config?.protection_radius_meters ?? '-'}m</td>
+                </tr>
+                <tr>
+                  <th>{t('birds_of_prey.admin.auto_drop_seconds', {}, 'Auto drop')}</th>
+                  <td>{moduleDetails.config?.auto_drop_seconds ?? '-'}s</td>
+                </tr>
+                <tr>
+                  <th>{t('birds_of_prey.admin.teamCount', {}, 'Teams')}</th>
+                  <td>{Array.isArray(overview?.teams) ? overview.teams.length : 0}</td>
+                </tr>
+                <tr>
+                  <th>{t('birds_of_prey.admin.eggCount', {}, 'Eggs')}</th>
+                  <td>{Array.isArray(overview?.eggs) ? overview.eggs.length : 0}</td>
                 </tr>
               </tbody>
             </table>
@@ -1211,28 +1402,6 @@ export default function ModuleOverviewPage() {
                     <td colSpan={3} className="muted">{t('crazy88.admin.task_empty', {}, 'No tasks')}</td>
                   </tr>
                 ) : null}
-              </tbody>
-            </table>
-          </section>
-        ) : null}
-
-        {game?.game_type === 'birds_of_prey' && moduleDetails?.kind === 'birds_of_prey' ? (
-          <section className="overview-panel">
-            <h2>{t('birds_of_prey.admin.config', {}, 'Birds of Prey live state')}</h2>
-            <table className="admin-table">
-              <tbody>
-                <tr>
-                  <th>{t('birds_of_prey.admin.visibility_radius', {}, 'Visibility radius')}</th>
-                  <td>{moduleDetails.config?.visibility_radius_meters ?? '-'}m</td>
-                </tr>
-                <tr>
-                  <th>{t('birds_of_prey.admin.protection_radius', {}, 'Protection radius')}</th>
-                  <td>{moduleDetails.config?.protection_radius_meters ?? '-'}m</td>
-                </tr>
-                <tr>
-                  <th>{t('birds_of_prey.admin.auto_drop_seconds', {}, 'Auto drop')}</th>
-                  <td>{moduleDetails.config?.auto_drop_seconds ?? '-'}s</td>
-                </tr>
               </tbody>
             </table>
           </section>

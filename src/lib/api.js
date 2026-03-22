@@ -446,6 +446,12 @@ export const moduleApi = {
     apiRequest(`/api/market-crash/${gameId}/points/${pointId}`, { method: 'DELETE', token }),
   getBirdsOfPreyConfig: (token, gameId) => apiRequest(`/api/birds-of-prey/${gameId}/config`, { token }),
   updateBirdsOfPreyConfig: (token, gameId, body) => apiRequest(`/api/birds-of-prey/${gameId}/config`, { method: 'PUT', token, body }),
+  dropBirdsOfPreyEgg: (token, gameId, teamId, body = {}) =>
+    apiRequest(`/api/birds-of-prey/${gameId}/teams/${teamId}/egg/drop`, { method: 'POST', token, body }),
+  destroyBirdsOfPreyEgg: (token, gameId, teamId, body) =>
+    apiRequest(`/api/birds-of-prey/${gameId}/teams/${teamId}/egg/destroy`, { method: 'POST', token, body }),
+  updateBirdsOfPreyLocation: (token, gameId, teamId, body) =>
+    apiRequest(`/api/birds-of-prey/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),
   getCodeConspiracyConfig: (token, gameId) => apiRequest(`/api/code-conspiracy/${gameId}/config`, { token }),
   updateCodeConspiracyConfig: (token, gameId, body) => apiRequest(`/api/code-conspiracy/${gameId}/config`, { method: 'PUT', token, body }),
   endCodeConspiracyGame: (token, gameId) => apiRequest(`/api/code-conspiracy/${gameId}/end`, { method: 'POST', token }),

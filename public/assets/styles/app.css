@@ -260,6 +260,22 @@ html[data-theme="dark"] {
     z-index: 1;
 }
 
+.team-dashboard-birds-top-row {
+    display: grid;
+    gap: 1rem;
+}
+
+.team-dashboard-birds-enemy-panel {
+    align-self: stretch;
+}
+
+@media (min-width: 1100px) {
+    .team-dashboard-birds-top-row {
+        grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+        align-items: start;
+    }
+}
+
 .blindhike-finish-confetti {
     position: fixed;
     inset: 0;

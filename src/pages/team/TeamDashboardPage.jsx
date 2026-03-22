@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
 import BlindHikeTeamPanel from '../../components/BlindHikeTeamPanel'
+import BirdsOfPreyTeamPanel from '../../components/BirdsOfPreyTeamPanel'
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
@@ -320,14 +321,17 @@ export default function TeamDashboardPage() {
   const teamId = bootstrap?.team_id || auth.principalId
   const isExplodingKittens = bootstrap?.game_type === 'exploding_kittens'
   const isBlindHike = bootstrap?.game_type === 'blindhike'
+  const isBirdsOfPrey = bootstrap?.game_type === 'birds_of_prey'
   const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
+  const [droppingBirdEgg, setDroppingBirdEgg] = useState(false)
+  const [destroyingBirdEggId, setDestroyingBirdEggId] = useState('')
 
   const otherTeams = useMemo(() => {
     const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
     return teams.filter((team) => String(team.id) !== String(teamId))
   }, [bootstrap?.teams, teamId])
 
-  const hand = Array.isArray(state?.hand) ? state.hand : []
+  const hand = useMemo(() => (Array.isArray(state?.hand) ? state.hand : []), [state?.hand])
   const pendingActions = Array.isArray(state?.pending_actions) ? state.pending_actions : []
   const hasNopeCard = hand.some((card) => String(card?.type || '').trim() === 'nope')
   const activePopup = popupQueue.length > 0 ? popupQueue[0] : null
@@ -436,9 +440,13 @@ export default function TeamDashboardPage() {
     const teamChannel = `channel:${gameId}:${teamId}`
     const gameChannel = `channel:${gameId}`
 
+    const currentGameType = String(bootstrap?.game_type || '').trim()
     const reloadTeamState = async () => {
+      if (!currentGameType) {
+        return
+      }
       try {
-        const nextState = await moduleApi.getBootstrap(auth.token, 'exploding_kittens', gameId, teamId)
+        const nextState = await moduleApi.getBootstrap(auth.token, currentGameType, gameId, teamId)
         setState(nextState)
       } catch {
       }
@@ -566,6 +574,114 @@ export default function TeamDashboardPage() {
             team_markers: nextMarkers,
             actions: Number.isNaN(markerCount) ? nextMarkers.length : markerCount,
             finished: teamFinished,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'team.birds_of_prey.enemy_eggs.visible') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const eggs = Array.isArray(payload?.eggs) ? payload.eggs : []
+        setState((previous) => ({
+          ...(previous && typeof previous === 'object' ? previous : {}),
+          visible_enemy_eggs: eggs,
+        }))
+        return
+      }
+
+      if (eventName === 'team.birds_of_prey.self.updated') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const score = Number(payload?.score)
+        const location = payload?.location && typeof payload.location === 'object' ? payload.location : null
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          return {
+            ...previousState,
+            ...(Number.isNaN(score) ? {} : { score }),
+            ...(location ? { team_location: location } : {}),
+          }
+        })
+        return
+      }
+
+      if (eventName === 'team.birds_of_prey.egg.added') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const ownerTeamId = String(payload?.owner_team_id || payload?.ownerTeamId || '').trim()
+        if (!ownerTeamId || ownerTeamId !== String(teamId)) {
+          return
+        }
+
+        const eggId = String(payload?.id || '').trim()
+        const eggLat = Number(payload?.lat)
+        const eggLon = Number(payload?.lon)
+        if (!eggId || Number.isNaN(eggLat) || Number.isNaN(eggLon)) {
+          return
+        }
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousEggs = Array.isArray(previousState.own_eggs) ? previousState.own_eggs : []
+          const alreadyExists = previousEggs.some((egg) => String(egg?.id || '') === eggId)
+          if (alreadyExists) {
+            return previousState
+          }
+
+          return {
+            ...previousState,
+            own_eggs: [
+              {
+                id: eggId,
+                owner_team_id: ownerTeamId,
+                owner_team_name: String(payload?.owner_team_name || payload?.ownerTeamName || ''),
+                lat: eggLat,
+                lon: eggLon,
+                dropped_at: String(payload?.dropped_at || ''),
+                automatic: Boolean(payload?.automatic),
+              },
+              ...previousEggs,
+            ],
+          }
+        })
+        return
+      }
+
+      if (eventName === 'team.birds_of_prey.egg.removed') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const eggId = String(payload?.egg_id || payload?.eggId || '').trim()
+        if (!eggId) {
+          return
+        }
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousOwnEggs = Array.isArray(previousState.own_eggs) ? previousState.own_eggs : []
+          const previousVisibleEnemyEggs = Array.isArray(previousState.visible_enemy_eggs) ? previousState.visible_enemy_eggs : []
+          return {
+            ...previousState,
+            own_eggs: previousOwnEggs.filter((egg) => String(egg?.id || '') !== eggId),
+            visible_enemy_eggs: previousVisibleEnemyEggs.filter((egg) => String(egg?.id || '') !== eggId),
           }
         })
         return
@@ -805,6 +921,43 @@ export default function TeamDashboardPage() {
         return
       }
 
+      if (eventName === 'game.birds_of_prey.team.score') {
+        if (!isBirdsOfPrey) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const score = Number(payload?.score)
+        if (!changedTeamId || Number.isNaN(score)) {
+          return
+        }
+
+        if (changedTeamId === String(teamId)) {
+          setState((previous) => ({
+            ...(previous && typeof previous === 'object' ? previous : {}),
+            score,
+          }))
+        }
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousLeaderboard = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+          const hasTeam = previousLeaderboard.some((row) => String(row?.team_id || '') === changedTeamId)
+          const nextLeaderboard = hasTeam
+            ? previousLeaderboard.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? { ...row, score }
+                : row
+            ))
+            : [...previousLeaderboard, { team_id: changedTeamId, name: changedTeamId, score, egg_count: 0 }]
+          return {
+            ...previousState,
+            leaderboard: nextLeaderboard,
+          }
+        })
+        return
+      }
+
       if (eventName !== 'team.exploding_kittens.state.activate' && eventName !== 'team.exploding_kittens.state.deactivate') {
         return
       }
@@ -829,7 +982,7 @@ export default function TeamDashboardPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, gameId, isBlindHike, isExplodingKittens, teamId])
+  }, [auth?.token, bootstrap?.game_type, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens, teamId])
 
   useEffect(() => {
     blindHikeFinishedRef.current = Boolean(state?.finished)
@@ -844,7 +997,11 @@ export default function TeamDashboardPage() {
   useEffect(() => {
     setSelectedComboCards((previous) => {
       const handIds = new Set(hand.map((card) => String(card?.id || '')))
-      return previous.filter((id) => handIds.has(String(id || '')))
+      const next = previous.filter((id) => handIds.has(String(id || '')))
+      if (next.length === previous.length && next.every((value, index) => value === previous[index])) {
+        return previous
+      }
+      return next
     })
   }, [hand])
 
@@ -905,6 +1062,70 @@ export default function TeamDashboardPage() {
       await refreshState()
     } catch (err) {
       setActionError(err.message || t('teamDashboard.cardPlayFailed', {}, 'Could not play card'))
+    }
+  }
+
+  async function handleBirdsDropEgg() {
+    if (!isBirdsOfPrey || !gameId || !teamId) {
+      return
+    }
+    setActionError('')
+    setActionSuccess('')
+    setDroppingBirdEgg(true)
+    try {
+      const result = await moduleApi.dropBirdsOfPreyEgg(auth.token, gameId, teamId, {})
+      const successKey = String(result?.message_key || '').trim()
+      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.dropped', {}, 'Egg dropped'))
+    } catch (err) {
+      setActionError(err.message || t('teamDashboard.birdsOfPrey.dropFailed', {}, 'Could not drop egg'))
+    } finally {
+      setDroppingBirdEgg(false)
+    }
+  }
+
+  async function handleBirdsDestroyEgg(eggId) {
+    const normalizedEggId = String(eggId || '').trim()
+    if (!isBirdsOfPrey || !gameId || !teamId || !normalizedEggId) {
+      return
+    }
+    setActionError('')
+    setActionSuccess('')
+    setDestroyingBirdEggId(normalizedEggId)
+    try {
+      const result = await moduleApi.destroyBirdsOfPreyEgg(auth.token, gameId, teamId, { egg_id: normalizedEggId })
+      const successKey = String(result?.message_key || '').trim()
+      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.destroyed', {}, 'Egg destroyed'))
+    } catch (err) {
+      setActionError(err.message || t('teamDashboard.birdsOfPrey.destroyFailed', {}, 'Could not destroy egg'))
+    } finally {
+      setDestroyingBirdEggId('')
+    }
+  }
+
+  async function handleBirdsLocationUpdate(position) {
+    if (!isBirdsOfPrey || !gameId || !teamId || !position) {
+      return
+    }
+    const latitude = Number(position?.latitude)
+    const longitude = Number(position?.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    try {
+      const response = await moduleApi.updateBirdsOfPreyLocation(auth.token, gameId, teamId, { latitude, longitude })
+      const location = response?.location && typeof response.location === 'object' ? response.location : null
+      const visibleEnemyEggs = Array.isArray(response?.visible_enemy_eggs) ? response.visible_enemy_eggs : null
+
+      setState((previous) => {
+        const previousState = previous && typeof previous === 'object' ? previous : {}
+        return {
+          ...previousState,
+          ...(location ? { team_location: location } : {}),
+          ...(visibleEnemyEggs ? { visible_enemy_eggs: visibleEnemyEggs } : {}),
+        }
+      })
+    } catch {
     }
   }
 
@@ -1378,6 +1599,19 @@ export default function TeamDashboardPage() {
               t={t}
               placingMarker={placingBlindHikeMarker}
               onPlaceMarker={handlePlaceBlindHikeMarker}
+            />
+          ) : null}
+
+          {isBirdsOfPrey ? (
+            <BirdsOfPreyTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              droppingEgg={droppingBirdEgg}
+              destroyingEggId={destroyingBirdEggId}
+              onDropEgg={handleBirdsDropEgg}
+              onDestroyEgg={handleBirdsDestroyEgg}
+              onLocationUpdate={handleBirdsLocationUpdate}
             />
           ) : null}
         </>

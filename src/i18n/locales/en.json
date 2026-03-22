@@ -433,6 +433,46 @@
       "finishedWaitMessage": "You finished! Wait for the other teams to finish to see the final highscore.",
       "markerAdded": "Marker added",
       "placeFailed": "Could not place marker"
+    },
+    "birdsOfPrey": {
+      "mapTitle": "Live map",
+      "mapHint": "Your location, your eggs, and visible enemy eggs are shown on the map.",
+      "ownEggs": "Your eggs",
+      "visibleEnemyEggs": "Visible enemy eggs",
+      "eggCount": "Eggs",
+      "egg": "Egg",
+      "auto": "auto",
+      "manual": "manual",
+      "noEggs": "No eggs yet",
+      "noVisibleEnemyEggs": "No enemy eggs in range",
+      "dropEgg": "Drop egg",
+      "dropping": "Dropping egg…",
+      "dropped": "Egg dropped",
+      "dropFailed": "Could not drop egg",
+      "destroyEgg": "Destroy",
+      "destroying": "Destroying…",
+      "destroyed": "Egg destroyed",
+      "destroyFailed": "Could not destroy egg",
+      "protected": "Protected",
+      "autoDroppedMessage": "An egg was auto-dropped for your team."
+    }
+  },
+  "birds_of_prey": {
+    "configure": "Configure Birds of Prey",
+    "back": "Back",
+    "save": "Save",
+    "saved": "Saved",
+    "load_failed": "Failed to load Birds of Prey config",
+    "save_failed": "Failed to save Birds of Prey config",
+    "admin": {
+      "config": "Configuration",
+      "visibility_radius": "Visibility radius (m)",
+      "protection_radius": "Protection radius (m)",
+      "auto_drop_seconds": "Auto drop interval (seconds)",
+      "liveMap": "Live map",
+      "eggsLegend": "Eggs",
+      "teamCount": "Teams",
+      "eggCount": "Eggs"
     }
   },
   "explodingKittens": {
