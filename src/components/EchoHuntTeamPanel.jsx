@@ -81,7 +81,7 @@ export default function EchoHuntTeamPanel({
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return
     configureLeafletDefaultMarkerIcons()
-    const map = L.map(mapContainerRef.current, { center: [52.1326, 5.2913], zoom: 14, minZoom: 8, maxZoom: 19 })
+    const map = L.map(mapContainerRef.current, { center: [52.1326, 5.2913], zoom: 18, minZoom: 8, maxZoom: 19 })
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map)
     markersLayerRef.current = L.layerGroup().addTo(map)
     rangeCirclesLayerRef.current = L.layerGroup().addTo(map)

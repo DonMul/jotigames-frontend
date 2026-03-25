@@ -92,7 +92,7 @@ export default function CheckpointHeistTeamPanel({
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 14,
+      zoom: 18,
       minZoom: 8,
       maxZoom: 19,
     })

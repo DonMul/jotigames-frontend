@@ -148,16 +148,12 @@
     "title": "Spellen",
     "signedInAs": "Ingelogd als {role}",
     "signOut": "Uitloggen",
-    "loading": "Laden…",
+    "loading": "Beladen…",
     "loadFailed": "Spellen laden mislukt",
     "start": "Begin",
     "actions": "Acties",
     "openGame": "Open spel",
-    "moduleOverview": "Module-overzicht",
-    "create": "Spel aanmaken",
-    "empty": "Geen spellen gevonden",
-    "emptyHint": "Maak je eerste spel aan om te beginnen.",
-    "liveOverview": "Live-overzicht"
+    "moduleOverview": "Module-overzicht"
   },
   "gameForm": {
     "loadFailed": "Spelformulier laden mislukt",
@@ -232,23 +228,7 @@
     "messagePlaceholder": "Typ een bericht",
     "send": "Versturen",
     "loadFailed": "Speldetails laden mislukt",
-    "sendFailed": "Bericht verzenden mislukt",
-    "confirmDeleteGame": "Dit spel verwijderen?",
-    "deleteFailed": "Spel verwijderen mislukt",
-    "deleteTeamFailed": "Team verwijderen mislukt"
-  },
-  "bulkTools": {
-    "title": "Bulkgereedschap",
-    "subtitle": "Maak teams in bulk aan voor dit spel",
-    "back": "Terug",
-    "teamsTitle": "Teams",
-    "amount": "Aantal",
-    "prefix": "Voorvoegsel",
-    "start": "Startnummer",
-    "creating": "Aanmaken…",
-    "submit": "Teams aanmaken",
-    "created": "{count} teams aangemaakt",
-    "createFailed": "Bulk aanmaken mislukt"
+    "sendFailed": "Bericht verzenden mislukt"
   },
   "teamForm": {
     "loadFailed": "Team laden mislukt",

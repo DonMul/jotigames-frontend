@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { toNumberOrNull } from './shared/leafletMapCommon'
+import { attachUserLocationCentering, toNumberOrNull } from './shared/leafletMapCommon'
 
 function buildTeamColor(teamId) {
   const raw = String(teamId || '')
@@ -40,7 +40,7 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 8,
+      zoom: 15,
       minZoom: 3,
       maxZoom: 19,
     })
@@ -51,9 +51,18 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
       maxZoom: 19,
     }).addTo(map)
 
+    const detachUserCentering = attachUserLocationCentering(map, {
+      zoom: 15,
+      follow: true,
+      onFirstCenter: () => {
+        hasInitializedViewportRef.current = true
+      },
+    })
+
     markerLayerRef.current = L.layerGroup().addTo(map)
 
     return () => {
+      detachUserCentering()
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
@@ -120,7 +129,7 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
       if (latLngBounds.length > 1) {
         map.fitBounds(latLngBounds, { padding: [20, 20] })
       } else if (latLngBounds.length === 1) {
-        map.setView(latLngBounds[0], 12)
+        map.setView(latLngBounds[0], 15)
       }
       hasInitializedViewportRef.current = true
     }

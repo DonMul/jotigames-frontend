@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { authApi } from '../lib/api'
 import { useAuth } from '../lib/auth'
@@ -53,45 +53,61 @@ export default function LoginPage({ defaultMode = 'user' }) {
   }
 
   return (
-    <main className="page-shell">
-      <section className="admin-panel" style={{ maxWidth: 520, margin: '3rem auto' }}>
-        <h1>{t('auth.loginTitle')}</h1>
-
-        <div className="admin-tabs" style={{ marginBottom: '1rem' }}>
-          <button type="button" className={`btn ${mode === 'user' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setMode('user')}>
-            {t('auth.user')}
-          </button>
-          <button type="button" className={`btn ${mode === 'team' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setMode('team')}>
-            {t('auth.team')}
-          </button>
+    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl font-bold text-navy-900">{t('auth.loginTitle')}</h1>
+          <p className="mt-2 text-navy-500">{t('auth.loginSubtitle')}</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {mode === 'user' ? (
-            <>
-              <label htmlFor="email">{t('auth.email')}</label>
-              <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8">
+          {/* Mode tabs */}
+          <div className="inline-flex w-full rounded-full border border-warm-200 bg-warm-50 p-1 mb-6">
+            <button type="button" onClick={() => setMode('user')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'user' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900'}`}>
+              {t('auth.user')}
+            </button>
+            <button type="button" onClick={() => setMode('team')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'team' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900'}`}>
+              {t('auth.team')}
+            </button>
+          </div>
 
-              <label htmlFor="password">{t('auth.password')}</label>
-              <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </>
-          ) : (
-            <>
-              <label htmlFor="gameCode">{t('auth.gameCode')}</label>
-              <input id="gameCode" value={gameCode} onChange={(e) => setGameCode(e.target.value)} required />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === 'user' ? (
+              <>
+                <div>
+                  <label htmlFor="email" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.email')}</label>
+                  <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                </div>
+                <div>
+                  <label htmlFor="password" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.password')}</label>
+                  <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label htmlFor="gameCode" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.gameCode')}</label>
+                  <input id="gameCode" value={gameCode} onChange={(e) => setGameCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                </div>
+                <div>
+                  <label htmlFor="teamCode" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.teamCode')}</label>
+                  <input id="teamCode" value={teamCode} onChange={(e) => setTeamCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                </div>
+              </>
+            )}
 
-              <label htmlFor="teamCode">{t('auth.teamCode')}</label>
-              <input id="teamCode" value={teamCode} onChange={(e) => setTeamCode(e.target.value)} required />
-            </>
-          )}
+            {error ? <div className="flash flash-error">{error}</div> : null}
 
-          {error ? <div className="flash flash-error">{error}</div> : null}
+            <button type="submit" disabled={loading} className="w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 transition-all">
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
+            </button>
+          </form>
 
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? t('auth.signingIn') : t('auth.signIn')}
-          </button>
-        </form>
-      </section>
-    </main>
+          <p className="text-center text-sm text-navy-500 mt-6">
+            {t('auth.noAccount')} <Link to="/register" className="font-medium text-brand-600 hover:text-brand-700">{t('auth.register')}</Link>
+          </p>
+        </div>
+      </div>
+    </section>
   )
 }

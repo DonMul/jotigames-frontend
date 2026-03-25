@@ -86,7 +86,7 @@ export default function BlindHikeTeamPanel({
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 14,
+      zoom: 18,
       minZoom: 10,
       maxZoom: 19,
     })
@@ -176,6 +176,20 @@ export default function BlindHikeTeamPanel({
       }).addTo(teamMarkersLayerRef.current)
     })
   }, [state?.team_markers])
+
+  useEffect(() => {
+    if (!mapRef.current || !currentPosition) {
+      return
+    }
+
+    const lat = toNumberOrNull(currentPosition.latitude)
+    const lon = toNumberOrNull(currentPosition.longitude)
+    if (lat === null || lon === null) {
+      return
+    }
+
+    mapRef.current.setView([lat, lon], 18)
+  }, [currentPosition])
 
   useEffect(() => {
     let secondFrameId = 0

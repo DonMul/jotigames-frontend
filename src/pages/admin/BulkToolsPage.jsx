@@ -55,41 +55,68 @@ export default function BulkToolsPage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="overview-header">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1>{t('bulkTools.title', {}, 'Bulk tools')}</h1>
-          <p className="overview-subtitle">{t('bulkTools.subtitle', {}, 'Bulk create teams for this game')}</p>
+          <h1 className="text-2xl font-bold text-navy-900">{t('bulkTools.title', {}, 'Bulk tools')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('bulkTools.subtitle', {}, 'Bulk create teams for this game')}</p>
         </div>
-        <div className="overview-actions">
-          <Link className="btn btn-ghost" to={backPath}>
-            {t('bulkTools.back', {}, 'Back')}
-          </Link>
-        </div>
-      </section>
+        <Link className="btn btn-ghost" to={backPath}>
+          {t('bulkTools.back', {}, 'Back')}
+        </Link>
+      </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {createdCount > 0 ? <div className="flash flash-success">{t('bulkTools.created', { count: createdCount }, `Created ${createdCount} teams`)}</div> : null}
 
-      <section className="geo-layout">
-        <div className="overview-panel">
-          <h2>{t('bulkTools.teamsTitle', {}, 'Teams')}</h2>
-          <form className="admin-inline-form" onSubmit={handleBulkCreate}>
-            <label htmlFor="bulk-team-amount">{t('bulkTools.amount', {}, 'Amount')}</label>
-            <input id="bulk-team-amount" type="number" min="1" max="200" value={amount} onChange={(event) => setAmount(event.target.value)} />
-
-            <label htmlFor="bulk-team-prefix">{t('bulkTools.prefix', {}, 'Prefix')}</label>
-            <input id="bulk-team-prefix" type="text" value={prefix} onChange={(event) => setPrefix(event.target.value)} />
-
-            <label htmlFor="bulk-team-start">{t('bulkTools.start', {}, 'Start')}</label>
-            <input id="bulk-team-start" type="number" min="1" value={startIndex} onChange={(event) => setStartIndex(event.target.value)} />
-
-            <button className="btn btn-primary btn-small" type="submit" disabled={saving}>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-navy-900 mb-4">{t('bulkTools.teamsTitle', {}, 'Teams')}</h2>
+        <form className="grid grid-cols-1 sm:grid-cols-3 gap-4" onSubmit={handleBulkCreate}>
+          <div className="space-y-1.5">
+            <label htmlFor="bulk-team-amount" className="block text-sm font-medium text-navy-700">{t('bulkTools.amount', {}, 'Amount')}</label>
+            <input
+              id="bulk-team-amount"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              type="number"
+              min="1"
+              max="200"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="bulk-team-prefix" className="block text-sm font-medium text-navy-700">{t('bulkTools.prefix', {}, 'Prefix')}</label>
+            <input
+              id="bulk-team-prefix"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              type="text"
+              value={prefix}
+              onChange={(event) => setPrefix(event.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="bulk-team-start" className="block text-sm font-medium text-navy-700">{t('bulkTools.start', {}, 'Start')}</label>
+            <input
+              id="bulk-team-start"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              type="number"
+              min="1"
+              value={startIndex}
+              onChange={(event) => setStartIndex(event.target.value)}
+            />
+          </div>
+          <div className="sm:col-span-3 pt-2">
+            <button
+              className="w-full sm:w-auto rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              type="submit"
+              disabled={saving}
+            >
               {saving ? t('bulkTools.creating', {}, 'Creating…') : t('bulkTools.submit', {}, 'Create teams')}
             </button>
-          </form>
-        </div>
-      </section>
+          </div>
+        </form>
+      </div>
     </main>
   )
 }

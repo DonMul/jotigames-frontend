@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 
 import { AuthProvider, useAuth } from './lib/auth'
@@ -104,11 +104,22 @@ function useAutoScrollSuccessFlash() {
   }, [])
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
 function AppRoutes() {
   useAutoScrollSuccessFlash()
 
   const renderProtected = (element) => <ProtectedRoute>{element}</ProtectedRoute>
   const renderProtectedAdminGame = (element) => (
+    <ProtectedRoute>{element}</ProtectedRoute>
+  )
+  const renderProtectedLiveOverview = (element) => (
     <ProtectedRoute>
       <>
         {element}
@@ -119,6 +130,7 @@ function AppRoutes() {
 
   return (
     <PublicLayout>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -193,11 +205,11 @@ function AppRoutes() {
         />
         <Route
           path="/admin/games/:gameId/overview"
-          element={renderProtectedAdminGame(<ModuleOverviewPage />)}
+          element={renderProtectedLiveOverview(<ModuleOverviewPage />)}
         />
         <Route
           path="/admin/games/:gameId/live-overview"
-          element={renderProtectedAdminGame(<ModuleOverviewPage />)}
+          element={renderProtectedLiveOverview(<ModuleOverviewPage />)}
         />
         <Route
           path="/admin/geohunter/:gameId/pois"

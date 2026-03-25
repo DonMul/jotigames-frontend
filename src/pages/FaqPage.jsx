@@ -1,7 +1,22 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAuth } from '../lib/auth'
 import { useI18n } from '../lib/i18n'
+
+function FaqItem({ question, answer }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="border-b border-warm-200 last:border-0">
+      <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-start justify-between py-5 text-left">
+        <span className="font-medium text-navy-900 pr-4">{question}</span>
+        <svg className={`w-5 h-5 text-navy-400 shrink-0 mt-0.5 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+      </button>
+      {open && <p className="pb-5 text-sm text-navy-600 leading-relaxed -mt-1">{answer}</p>}
+    </div>
+  )
+}
 
 export default function FaqPage() {
   const { isAuthenticated } = useAuth()
@@ -36,42 +51,50 @@ export default function FaqPage() {
 
   return (
     <>
-      <section className="overview-header">
-        <div>
-          <h1>{t('faq.title')}</h1>
-          <p className="overview-subtitle">{t('faq.subtitle')}</p>
-        </div>
-        <div className="overview-actions">
-          <Link className="btn btn-ghost" to="/">
-            {t('faq.backHome')}
-          </Link>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-warm-50 via-white to-brand-50">
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-brand-200/20 rounded-full blur-3xl" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="max-w-3xl">
+            <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-navy-900">{t('faq.title')}</h1>
+            <p className="mt-6 text-xl text-navy-500 leading-relaxed">{t('faq.subtitle')}</p>
+          </div>
         </div>
       </section>
 
-      <div className="info-content">
-        {faqSections.map((section) => (
-          <section key={section.title} className="faq-section">
-            <h2>{section.title}</h2>
-            {section.items.map((item) => (
-              <div key={item.q} className="faq-item">
-                <h4>{item.q}</h4>
-                <p>{item.a}</p>
+      {/* FAQ Sections */}
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-12">
+          {faqSections.map((section) => (
+            <div key={section.title}>
+              <h2 className="font-display text-xl font-bold text-navy-900 mb-6">{section.title}</h2>
+              <div className="rounded-2xl border border-warm-200 bg-white divide-y divide-warm-200 px-6">
+                {section.items.map((item) => (
+                  <FaqItem key={item.q} question={item.q} answer={item.a} />
+                ))}
               </div>
-            ))}
-          </section>
-        ))}
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <section className="info-cta">
-          {!isAuthenticated ? (
-            <Link className="btn btn-primary" to="/register">
-              {t('faq.getStarted')}
+      {/* CTA */}
+      <section className="py-16 sm:py-20 bg-gradient-to-b from-warm-50 to-white">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-navy-900 mb-4">{t('faq.ctaTitle')}</h2>
+          <p className="text-navy-500 mb-8">{t('faq.ctaText')}</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            {!isAuthenticated && (
+              <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
+                {t('faq.getStarted')}
+              </Link>
+            )}
+            <Link to="/team-login" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all">
+              {t('faq.teamLogin')}
             </Link>
-          ) : null}
-          <Link className="btn btn-ghost" to="/team-login">
-            {t('faq.teamLogin')}
-          </Link>
-        </section>
-      </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }

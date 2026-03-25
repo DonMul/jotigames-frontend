@@ -1,0 +1,768 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-warm-50 text-navy-900 font-sans;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer components {
+  /* ── Flash messages ───────────────────────────────────────────────── */
+  .flash {
+    @apply rounded-lg px-4 py-3 text-sm font-medium mb-4;
+  }
+  .flash-error {
+    @apply bg-red-50 text-red-700 border border-red-200;
+  }
+  .flash-success {
+    @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
+  }
+
+  /* ── Page shell (shared outer wrapper for admin pages) ────────────── */
+  .page-shell {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  }
+
+  /* ── Admin panel container ────────────────────────────────────────── */
+  .admin-panel {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+
+  /* ── Admin block (lighter container) ──────────────────────────────── */
+  .admin-block {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6;
+  }
+
+  /* ── Overview header ──────────────────────────────────────────────── */
+  .overview-header {
+    @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6;
+  }
+  .overview-header h1 {
+    @apply text-2xl font-bold text-navy-900;
+  }
+
+  /* ── Geo header (alternative header layout) ───────────────────────── */
+  .geo-header {
+    @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6;
+  }
+  .geo-header h1 {
+    @apply text-2xl font-bold text-navy-900;
+  }
+
+  /* ── Overview kicker & subtitle ───────────────────────────────────── */
+  .overview-kicker {
+    @apply text-xs font-semibold uppercase tracking-wider text-brand-500 mb-1;
+  }
+  .overview-subtitle {
+    @apply text-sm text-gray-500;
+  }
+
+  /* ── Overview actions row ─────────────────────────────────────────── */
+  .overview-actions {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+
+  /* ── Overview stats / stat cards ──────────────────────────────────── */
+  .overview-stats {
+    @apply grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6;
+  }
+  .stat-card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1;
+  }
+  .stat-label {
+    @apply text-xs font-medium uppercase tracking-wider text-gray-400;
+  }
+  .stat-value {
+    @apply text-lg font-semibold text-navy-900;
+  }
+
+  /* ── Overview panel (white card container) ─────────────────────────── */
+  .overview-panel {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-6;
+  }
+  .overview-panel h2 {
+    @apply text-lg font-semibold text-navy-900 mb-3;
+  }
+  .overview-panel h3 {
+    @apply text-base font-semibold text-navy-800 mb-2;
+  }
+
+  /* ── Overview stack & grid ────────────────────────────────────────── */
+  .overview-stack {
+    @apply space-y-6;
+  }
+  .overview-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4;
+  }
+  .overview-grid-ek {
+    @apply grid-cols-1 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  /* ── Geo layout (sidebar + main) ──────────────────────────────────── */
+  .geo-layout {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  /* ── Game show layout (two-column for teams/members) ──────────────── */
+  .game-show-layout {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  /* ── Game show action stack / board / groups ──────────────────────── */
+  .game-show-action-stack {
+    @apply space-y-3 mb-6;
+  }
+  .game-show-action-board {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+  .game-show-action-group {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+  .game-show-action-group--danger {
+    @apply border-l-2 border-red-200 pl-3;
+  }
+
+  /* ── Game panel header row ────────────────────────────────────────── */
+  .game-panel-header-row {
+    @apply flex items-center justify-between mb-4;
+  }
+  .game-panel-header-row h2 {
+    @apply text-lg font-semibold text-navy-900 mb-0;
+  }
+  .game-panel-header-row__action {
+    @apply shrink-0;
+  }
+
+  /* ── Admin game header (GamePage top) ─────────────────────────────── */
+  .admin-game-header {
+    @apply flex items-center gap-4 mb-6;
+  }
+  .admin-game-header__logo-col {
+    @apply shrink-0;
+  }
+  .admin-game-header__logo {
+    @apply w-16 h-16 object-contain rounded-lg;
+  }
+  .admin-game-header__content {
+    @apply flex-1 min-w-0;
+  }
+  .admin-game-header__content h1 {
+    @apply text-2xl font-bold text-navy-900 truncate;
+  }
+  .admin-game-header__actions {
+    @apply shrink-0 flex items-center gap-2;
+  }
+
+  /* ── Game show summary stats (alias) ──────────────────────────────── */
+  .game-show-summary-stats {
+    /* inherits from .overview-stats */
+  }
+
+  /* ── Admin table ──────────────────────────────────────────────────── */
+  .admin-table {
+    @apply w-full text-sm border-collapse;
+  }
+  .admin-table thead th {
+    @apply px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200 bg-gray-50;
+  }
+  .admin-table tbody td {
+    @apply px-3 py-3 text-navy-800 border-b border-gray-100;
+  }
+  .admin-table tbody tr:hover {
+    @apply bg-gray-50;
+  }
+  .admin-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* ── Table helpers ────────────────────────────────────────────────── */
+  .text-right {
+    text-align: right;
+  }
+  .table-actions-inline {
+    @apply flex items-center justify-end gap-1.5;
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-all duration-150 cursor-pointer border-0 text-sm leading-5 px-4 py-2.5;
+  }
+  .btn:focus-visible {
+    @apply ring-2 ring-brand-400 ring-offset-2 outline-none;
+  }
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-navy-700 hover:bg-gray-100 active:bg-gray-200;
+  }
+  .btn-add {
+    @apply bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700;
+  }
+  .btn-edit {
+    @apply bg-sky-500 text-white hover:bg-sky-600 active:bg-sky-700;
+  }
+  .btn-remove {
+    @apply bg-red-500 text-white hover:bg-red-600 active:bg-red-700;
+  }
+
+  .btn-small {
+    @apply text-xs px-3 py-1.5 rounded-md;
+  }
+
+  /* ── Tags / badges ────────────────────────────────────────────────── */
+  .tag {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .tag-cool {
+    @apply bg-sky-100 text-sky-700;
+  }
+  .tag-alert {
+    @apply bg-amber-100 text-amber-700;
+  }
+  .tag-warm {
+    @apply bg-purple-100 text-purple-700;
+  }
+  .tag.is-inactive,
+  .is-inactive {
+    @apply opacity-30;
+  }
+
+  /* ── Muted text ───────────────────────────────────────────────────── */
+  .muted {
+    @apply text-gray-400 text-sm;
+  }
+
+  /* ── Form elements ────────────────────────────────────────────────── */
+  .form-row {
+    @apply flex flex-col gap-1.5 mb-4;
+  }
+  .form-row label {
+    @apply text-sm font-medium text-navy-700;
+  }
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-navy-900 placeholder-gray-400 transition-colors;
+  }
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+
+  .form-row-inline {
+    @apply flex-row items-end gap-3;
+  }
+
+  .form-grid {
+    @apply space-y-4;
+  }
+
+  .stack {
+    @apply space-y-4;
+  }
+
+  /* ── Admin inline form (horizontal form) ──────────────────────────── */
+  .admin-inline-form {
+    @apply flex items-end gap-3 flex-wrap;
+  }
+  .admin-inline-form input,
+  .admin-inline-form select {
+    @apply rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-navy-900;
+  }
+  .admin-inline-form input:focus,
+  .admin-inline-form select:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+
+  /* ── Game type selector (GameFormPage) ────────────────────────────── */
+  .game-type-select-row {
+    @apply flex flex-col gap-2;
+  }
+  .game-type-select-row label {
+    @apply text-sm font-medium text-navy-700;
+  }
+
+  .game-type-option-logo {
+    @apply w-8 h-8 object-contain;
+  }
+  .game-type-option-label {
+    @apply text-sm font-medium text-navy-800;
+  }
+
+  /* ── Game datetime row ────────────────────────────────────────────── */
+  .game-datetime-row {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4;
+  }
+  .game-datetime-field {
+    @apply flex flex-col gap-1.5 mb-0;
+  }
+  .game-datetime-input {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-navy-900;
+  }
+  .game-datetime-input:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+
+  /* ── Games table type wrap (logo in games list) ───────────────────── */
+  .games-table-type-wrap {
+    @apply flex items-center gap-2;
+  }
+  .games-table-logo {
+    @apply w-8 h-8 object-contain rounded;
+  }
+
+  /* ── Game map (Leaflet container) ───────────────────────────────────── */
+  .game-map {
+    @apply bg-gray-100 rounded-lg border border-gray-200;
+    min-height: 320px;
+    width: 100%;
+    z-index: 0;
+  }
+  .game-map-compact {
+    min-height: 260px;
+  }
+
+  /* ── Leaflet team logo icon ───────────────────────────────────────── */
+  .geo-team-icon {
+    @apply rounded-full border-2 border-white shadow;
+  }
+
+  /* ── Blindhike target icon ────────────────────────────────────────── */
+  .blindhike-target-icon {
+    @apply text-center leading-7 text-xl;
+  }
+
+  /* ── Team cards (ModuleOverviewPage) ──────────────────────────────── */
+  .team-card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-3;
+  }
+  .team-card-header {
+    @apply flex items-center justify-between gap-3;
+  }
+  .team-identity {
+    @apply flex items-center gap-3 min-w-0;
+  }
+  .team-logo {
+    @apply w-10 h-10 rounded-full object-cover border border-gray-200;
+  }
+  .team-identity-meta {
+    @apply min-w-0;
+  }
+  .team-identity-meta h3 {
+    @apply text-sm font-semibold text-navy-900 truncate;
+  }
+  .team-code {
+    @apply text-xs text-gray-400 mt-0.5;
+  }
+  .team-lives {
+    @apply flex flex-col items-end gap-0.5 shrink-0;
+  }
+  .team-lives-value {
+    @apply text-xl font-bold text-brand-500;
+  }
+  .team-lives-label {
+    @apply text-xs text-gray-400;
+  }
+  .team-hand-controls {
+    @apply flex items-center gap-1;
+  }
+  .team-flags {
+    @apply flex gap-1 flex-wrap;
+  }
+  .team-section {
+    @apply space-y-2;
+  }
+  .team-hand-list {
+    @apply list-none p-0 m-0 space-y-1;
+  }
+  .team-hand-row {
+    @apply flex items-center justify-between gap-2 text-sm py-1 border-b border-gray-100 last:border-0;
+  }
+  .team-hand-label {
+    @apply text-navy-700;
+  }
+  .team-hand-amount {
+    @apply flex items-center gap-2 font-medium text-navy-900;
+  }
+  .chip-meta {
+    @apply inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500;
+  }
+
+  /* ── Market Crash form styles ─────────────────────────────────────── */
+  .market-crash-point-form {
+    @apply space-y-6;
+  }
+  .market-crash-form-section {
+    @apply space-y-3;
+  }
+  .market-crash-form-section h3 {
+    @apply text-base font-semibold text-navy-800;
+  }
+  .market-crash-resource-list {
+    @apply space-y-3;
+  }
+  .market-crash-resource-row {
+    @apply bg-gray-50 rounded-lg p-3 space-y-2;
+  }
+  .market-crash-resource-toggle {
+    @apply flex items-center gap-2 cursor-pointer;
+  }
+  .market-crash-resource-toggle input[type="checkbox"] {
+    @apply w-4 h-4 rounded border-gray-300 text-brand-500;
+  }
+  .market-crash-default-price {
+    @apply text-xs text-gray-400 ml-2;
+  }
+  .market-crash-resource-fields {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6;
+  }
+  .market-crash-resource-pair {
+    @apply space-y-2;
+  }
+  .market-crash-resource-pair label {
+    @apply text-xs font-medium text-gray-500;
+  }
+  .market-crash-resource-pair input {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm;
+  }
+  .market-crash-resource-pair input:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+  .market-crash-inline-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 gap-3;
+  }
+  .market-crash-inline-grid label {
+    @apply text-xs font-medium text-gray-500;
+  }
+  .market-crash-inline-grid input {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm;
+  }
+  .market-crash-inline-grid input:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+  .market-crash-resource-price-cell {
+    @apply px-2 py-1;
+  }
+  .market-crash-resource-price-input {
+    @apply w-full rounded border border-gray-300 px-2 py-1 text-sm;
+  }
+  .market-crash-resource-price-input:focus {
+    @apply border-brand-400 ring-1 ring-brand-100 outline-none;
+  }
+
+  /* ── Team dashboard target (score display) ────────────────────────── */
+  .team-dashboard-target {
+    @apply text-center;
+  }
+  .team-dashboard-target-value {
+    @apply text-3xl font-bold text-brand-500;
+  }
+
+  /* ── Team panel ───────────────────────────────────────────────────── */
+  .team-panel {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-4;
+  }
+
+  /* ── Team action items (pending actions list) ─────────────────────── */
+  .team-action-item {
+    @apply flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50 mb-2;
+  }
+  .team-action-text {
+    @apply text-sm text-navy-800 flex-1;
+  }
+  .team-action-btn {
+    @apply shrink-0;
+  }
+  .team-action-form-accept {}
+  .team-action-form-nope {}
+
+  /* ── Team combo form ──────────────────────────────────────────────── */
+  .team-combo-form {
+    @apply flex flex-wrap items-end gap-3;
+  }
+  .team-combo-rules {
+    @apply text-xs text-gray-400 space-y-1;
+  }
+
+  /* ── Hand grid (card display for Exploding Kittens team) ──────────── */
+  .hand-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 list-none p-0 m-0;
+  }
+  .hand-card-target-field {
+    @apply flex flex-col gap-1 mt-2;
+  }
+  .hand-card-target-label {
+    @apply text-xs text-gray-500;
+  }
+  .hand-card-target-select {
+    @apply w-full rounded border border-gray-300 px-2 py-1 text-xs;
+  }
+
+  /* ── Team leaderboard ─────────────────────────────────────────────── */
+  .team-leaderboard-list {
+    @apply list-none p-0 m-0 space-y-1;
+  }
+  .team-leaderboard-item {
+    @apply flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50;
+  }
+  .team-leaderboard-rank {
+    @apply w-6 text-center text-sm font-bold text-gray-400;
+  }
+  .team-leaderboard-logo {
+    @apply w-8 h-8 rounded-full object-cover border border-gray-200;
+  }
+  .team-leaderboard-name {
+    @apply flex-1 text-sm font-medium text-navy-800;
+  }
+  .team-leaderboard-value {
+    @apply text-sm font-bold text-brand-500;
+  }
+
+  /* ── Modal ────────────────────────────────────────────────────────── */
+  .modal {
+    @apply fixed inset-0 z-50 hidden items-center justify-center;
+  }
+  .modal.is-open {
+    @apply flex;
+  }
+  .modal-backdrop {
+    @apply absolute inset-0 bg-black/40;
+  }
+  .modal-card {
+    @apply relative bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 z-10;
+  }
+  .modal-card h2,
+  .modal-card h3 {
+    @apply text-lg font-semibold text-navy-900 mb-2;
+  }
+  .modal-actions {
+    @apply flex items-center justify-end gap-2 mt-4;
+  }
+
+  /* ── Blindhike admin overview (map + legend) ────────────────────────── */
+  .blindhike-admin-overview {
+    @apply flex flex-col gap-3;
+  }
+  .blindhike-admin-overview-map {
+    min-height: 400px;
+  }
+  .blindhike-admin-legend {
+    @apply bg-gray-50 rounded-lg p-3;
+  }
+  .blindhike-admin-legend h3 {
+    @apply text-sm font-semibold text-navy-800 mb-2;
+  }
+  .blindhike-admin-legend ul {
+    @apply list-none p-0 m-0 flex flex-wrap gap-3;
+  }
+  .blindhike-admin-legend li {
+    @apply flex items-center gap-1.5 text-sm text-navy-700;
+  }
+  .blindhike-admin-legend-dot {
+    @apply inline-block w-3 h-3 rounded-full shrink-0;
+  }
+
+  /* ── Team dashboard map (blindhike / birds of prey / market crash) ── */
+  .team-dashboard-blindhike-map {
+    min-height: 350px;
+  }
+
+  /* ── Blindhike finish confetti ────────────────────────────────────── */
+  .blindhike-finish-confetti {
+    @apply fixed inset-0 pointer-events-none z-40 overflow-hidden;
+  }
+  .blindhike-finish-confetti-piece {
+    @apply absolute w-2 h-2 rounded-full;
+    animation: confetti-fall 3s ease-out forwards;
+  }
+
+  /* ── Blindhike toggle (configure page) ────────────────────────────── */
+  .blindhike-toggle-row {
+    @apply flex items-center gap-3;
+  }
+  .blindhike-toggle-label {
+    @apply text-sm font-medium text-navy-700;
+  }
+
+  /* ── Game type availability (SuperAdminGameTypesPage) ──────────────── */
+  .game-type-availability-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+  .game-type-availability-card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-4;
+  }
+  .game-type-availability-logo {
+    @apply w-12 h-12 object-contain rounded-lg shrink-0;
+  }
+  .game-type-availability-main {
+    @apply flex-1 min-w-0;
+  }
+  .game-type-availability-name {
+    @apply text-sm font-semibold text-navy-900 truncate;
+  }
+  .game-type-switch {
+    @apply relative inline-flex items-center cursor-pointer;
+  }
+  .game-type-switch input {
+    @apply sr-only;
+  }
+  .game-type-switch-track {
+    @apply w-10 h-5 bg-gray-300 rounded-full transition-colors;
+  }
+  .game-type-switch-track::after {
+    content: '';
+    @apply absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform;
+  }
+  .game-type-switch input:checked + .game-type-switch-track {
+    @apply bg-brand-500;
+  }
+  .game-type-switch input:checked + .game-type-switch-track::after {
+    @apply translate-x-5;
+  }
+
+  /* ── Form section (BlindHike, BirdsOfPrey configure) ──────────────── */
+  .form-section {
+    @apply space-y-4 mb-6;
+  }
+  .form-section h3 {
+    @apply text-base font-semibold text-navy-800;
+  }
+
+  /* ── Crazy88 chat panel ───────────────────────────────────────────── */
+  .crazy88-chat {
+    @apply bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto space-y-2;
+  }
+
+  /* ── Geo card (generic entity card) ───────────────────────────────── */
+  .geo-card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm p-4;
+  }
+
+  /* ── Card thumbnail (Exploding Kittens) ───────────────────────────── */
+  .card-thumb {
+    @apply w-12 h-16 object-cover rounded border border-gray-200;
+  }
+
+  /* ── Game chat overlay ────────────────────────────────────────────── */
+  .game-chat-root {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1200;
+  }
+  .game-chat-launcher {
+    @apply relative inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-500 text-white font-medium text-sm px-5 py-3 shadow-lg hover:bg-brand-600 transition-colors cursor-pointer border-0;
+  }
+  .game-chat-unread {
+    @apply absolute -top-1.5 -right-1.5 min-w-[22px] h-[22px] rounded-full bg-red-500 text-white text-[0.7rem] font-bold inline-flex items-center justify-center px-1 border-2 border-white;
+  }
+  .game-chat-panel {
+    @apply fixed inset-0 bg-white grid z-[1199];
+    grid-template-rows: auto 1fr auto;
+    transform: translateY(100%);
+    transition: transform 0.22s ease;
+  }
+  .game-chat-panel.is-open {
+    transform: translateY(0);
+  }
+  .game-chat-head {
+    @apply px-4 py-3 border-b border-gray-200 flex items-center justify-between gap-3 bg-gray-50;
+  }
+  .game-chat-head h2 {
+    @apply text-base font-semibold text-navy-900 m-0;
+  }
+  .game-chat-list {
+    @apply list-none m-0 p-4 overflow-y-auto space-y-3;
+    scrollbar-width: thin;
+  }
+  .game-chat-message {
+    @apply flex items-end gap-2 max-w-[760px];
+  }
+  .game-chat-message.is-self {
+    @apply ml-auto;
+  }
+  .game-chat-message.is-other {
+    @apply mr-auto;
+  }
+  .game-chat-avatar {
+    @apply w-8 h-8 rounded-full border border-gray-200 bg-gray-100 text-navy-800 text-xs font-bold inline-flex items-center justify-center overflow-hidden shrink-0;
+  }
+  .game-chat-avatar img {
+    @apply w-full h-full object-cover;
+  }
+  .game-chat-bubble-wrap {
+    @apply flex flex-col gap-0.5;
+  }
+  .game-chat-name-row {
+    @apply inline-flex items-center gap-1.5;
+  }
+  .game-chat-name {
+    @apply text-xs font-semibold text-gray-500 m-0;
+  }
+  .game-chat-admin-badge {
+    @apply inline-flex items-center rounded-full px-1.5 py-0.5 text-[0.65rem] font-bold bg-brand-500 text-white;
+  }
+  .game-chat-bubble {
+    @apply px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm whitespace-pre-wrap break-words;
+  }
+  .game-chat-message.is-self .game-chat-bubble {
+    @apply bg-brand-500 border-brand-500 text-white;
+  }
+  .game-chat-message.is-admin .game-chat-bubble {
+    @apply bg-amber-50 border-amber-200 text-amber-900;
+  }
+  .game-chat-message.is-self.is-admin .game-chat-bubble {
+    @apply bg-brand-600 border-brand-600 text-white;
+  }
+  .game-chat-meta {
+    @apply text-[0.7rem] text-gray-400 m-0;
+  }
+  .game-chat-composer {
+    @apply border-t border-gray-200 p-3 flex gap-2 items-end;
+  }
+  .game-chat-composer textarea {
+    @apply flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none;
+  }
+  .game-chat-composer textarea:focus {
+    @apply border-brand-400 ring-2 ring-brand-100 outline-none;
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}

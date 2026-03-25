@@ -114,13 +114,6 @@ export default function GamePage() {
     return pathMap[game.game_type] || `/admin/games/${gameId}/live-overview`
   }, [game?.game_type, gameId])
 
-  function roleBadge(role) {
-    if (role === 'owner') {
-      return 'tag tag-alert'
-    }
-    return 'tag tag-cool'
-  }
-
   async function handleDeleteGame() {
     if (!window.confirm(t('gamePage.confirmDeleteGame', {}, 'Delete this game?'))) {
       return
@@ -189,67 +182,69 @@ export default function GamePage() {
   }
 
   return (
-    <main className="page-shell">
-      <div className="admin-game-header">
-        <div className="admin-game-header__logo-col">
-          {gameMeta?.logo ? <img className="admin-game-header__logo" src={gameMeta.logo} alt={localizedGameTypeName} /> : null}
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* ── Header ──────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-4 mb-8">
+        <div className="shrink-0">
+          {gameMeta?.logo ? (
+            <img className="w-14 h-14 object-contain rounded-xl border border-gray-100 shadow-sm" src={gameMeta.logo} alt={localizedGameTypeName} />
+          ) : (
+            <div className="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-brand-400" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            </div>
+          )}
         </div>
-        <div className="admin-game-header__content">
-          <h1>{game?.name || t('gamePage.fallbackTitle')}</h1>
-          <p className="overview-subtitle">{localizedGameTypeName}</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl font-bold text-navy-900 truncate">{game?.name || t('gamePage.fallbackTitle')}</h1>
+          <p className="text-sm text-gray-500">{localizedGameTypeName}</p>
         </div>
-        <div className="admin-game-header__actions">
-          <Link className="btn btn-ghost" to="/admin/games">
-            {t('gamePage.backToGames')}
-          </Link>
-        </div>
+        <Link className="btn btn-ghost" to="/admin/games">
+          {t('gamePage.backToGames')}
+        </Link>
       </div>
 
-      <section className="overview-stats game-show-summary-stats">
-        <article className="stat-card">
-          <span className="stat-label">{t('gamePage.type')}</span>
-          <span className="stat-value">{localizedGameTypeName}</span>
+      {/* ── Stat cards ──────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.type')}</span>
+          <span className="text-base font-semibold text-navy-900">{localizedGameTypeName}</span>
         </article>
-        <article className="stat-card">
-          <span className="stat-label">{t('gamePage.code')}</span>
-          <span className="stat-value">{game?.code || '-'}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.code')}</span>
+          <span className="text-base font-semibold text-navy-900 font-mono tracking-wide">{game?.code || '-'}</span>
         </article>
-        <article className="stat-card">
-          <span className="stat-label">{t('gamePage.starts')}</span>
-          <span className="stat-value">{formatDate(game?.start_at)}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.starts')}</span>
+          <span className="text-base font-semibold text-navy-900">{formatDate(game?.start_at)}</span>
         </article>
-        <article className="stat-card">
-          <span className="stat-label">{t('gamePage.ends')}</span>
-          <span className="stat-value">{formatDate(game?.end_at)}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.ends')}</span>
+          <span className="text-base font-semibold text-navy-900">{formatDate(game?.end_at)}</span>
         </article>
-      </section>
+      </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
 
-      <section className="game-show-action-stack">
-        <div className="game-show-action-board">
-          <div className="game-show-action-group">
-            {gameTypeActionLabel && gameTypeActionPath ? (
-              <Link className="btn btn-primary btn-small" to={gameTypeActionPath}>
-                {gameTypeActionLabel}
-              </Link>
-            ) : null}
-          </div>
-
-          <div className="game-show-action-group">
-            {gameMeta?.slug ? (
-              <Link className="btn btn-ghost btn-small" to={`/info/games/${gameMeta.slug}`}>
-                {t('gamePage.howToPlay')}
-              </Link>
-            ) : null}
-            <Link className="btn btn-primary btn-small" to={`/admin/games/${gameId}/live-overview`}>
-              {t('gamePage.liveOverview')}
+      {/* ── Quick actions ───────────────────────────────────────────── */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-8">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          {gameTypeActionLabel && gameTypeActionPath ? (
+            <Link className="btn btn-primary btn-small" to={gameTypeActionPath}>
+              {gameTypeActionLabel}
             </Link>
-          </div>
+          ) : null}
+          <Link className="inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-navy-800 transition-colors" to={`/admin/games/${gameId}/live-overview`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" /></svg>
+            {t('gamePage.liveOverview')}
+          </Link>
+          {gameMeta?.slug ? (
+            <Link className="btn btn-ghost btn-small" to={`/info/games/${gameMeta.slug}`}>
+              {t('gamePage.howToPlay')}
+            </Link>
+          ) : null}
         </div>
-
-        <div className="game-show-action-board">
-          <div className="game-show-action-group">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-2">
             <Link className="btn btn-ghost btn-small" to={`/admin/games/${gameId}/bulk-tools`}>
               {t('gamePage.bulkTools')}
             </Link>
@@ -257,8 +252,7 @@ export default function GamePage() {
               {t('gamePage.editGame')}
             </Link>
           </div>
-
-          <div className="game-show-action-group game-show-action-group--danger">
+          <div className="flex items-center gap-2 border-l border-red-200 pl-3">
             <button className="btn btn-remove btn-small" type="button" onClick={handleResetGame}>
               {t('gamePage.resetGame')}
             </button>
@@ -267,17 +261,23 @@ export default function GamePage() {
             </button>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="game-show-layout" style={{ marginTop: '1rem' }}>
-        <section className="overview-panel">
-          <div className="game-panel-header-row">
-            <h2>{t('gamePage.managersTitle')}</h2>
-            <Link className="btn btn-add btn-small game-panel-header-row__action" to={`/admin/games/${gameId}/members/new`}>
+      {/* ── Members + Teams two-column ──────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Managers */}
+        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-navy-900">{t('gamePage.managersTitle')}</h2>
+            <Link
+              className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors"
+              to={`/admin/games/${gameId}/members/new`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
               {t('gamePage.addMember')}
             </Link>
           </div>
-          {members.length === 0 ? <p>{t('gamePage.noMembers')}</p> : null}
+          {members.length === 0 ? <p className="text-sm text-gray-400">{t('gamePage.noMembers')}</p> : null}
           {members.length > 0 ? (
             <table className="admin-table">
               <thead>
@@ -297,25 +297,30 @@ export default function GamePage() {
                       <td>
                         {roles.length > 0
                           ? roles.map((role) => (
-                              <span key={`${member.user_id}-${role}`} className={roleBadge(role)} style={{ marginRight: '0.4rem' }}>
+                              <span
+                                key={`${member.user_id}-${role}`}
+                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium mr-1 ${role === 'owner' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}
+                              >
                                 {t(`gamePage.role.${role}`, {}, role)}
                               </span>
                             ))
                           : '—'}
                       </td>
-                      <td className="text-right table-actions-inline">
-                        {canModify ? (
-                          <>
-                            <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/members/${member.user_id}/edit`}>
-                              {t('gamePage.editMember')}
-                            </Link>
-                            <button className="btn btn-remove btn-small" type="button" onClick={() => handleRemoveMember(member)}>
-                              {t('gamePage.removeMember')}
-                            </button>
-                          </>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {canModify ? (
+                            <>
+                              <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/members/${member.user_id}/edit`}>
+                                {t('gamePage.editMember')}
+                              </Link>
+                              <button className="btn btn-remove btn-small" type="button" onClick={() => handleRemoveMember(member)}>
+                                {t('gamePage.removeMember')}
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-gray-400 text-sm">—</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   )
@@ -325,14 +330,19 @@ export default function GamePage() {
           ) : null}
         </section>
 
-        <section className="overview-panel">
-          <div className="game-panel-header-row">
-            <h2>{t('gamePage.teams')}</h2>
-            <Link className="btn btn-add btn-small game-panel-header-row__action" to={`/admin/games/${gameId}/teams/new`}>
+        {/* Teams */}
+        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-navy-900">{t('gamePage.teams')}</h2>
+            <Link
+              className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors"
+              to={`/admin/games/${gameId}/teams/new`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
               {t('gamePage.addTeam')}
             </Link>
           </div>
-          {teams.length === 0 ? <p>{t('gamePage.noTeams')}</p> : null}
+          {teams.length === 0 ? <p className="text-sm text-gray-400">{t('gamePage.noTeams')}</p> : null}
           {teams.length > 0 ? (
             <table className="admin-table">
               <thead>
@@ -348,14 +358,16 @@ export default function GamePage() {
                     <td>
                       <strong>{team.name}</strong>
                     </td>
-                    <td>{team.code}</td>
-                    <td className="text-right table-actions-inline">
-                      <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/teams/${team.id}/edit`}>
-                        {t('gamePage.editTeam')}
-                      </Link>
-                      <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteTeam(team.id, team.name)}>
-                        {t('gamePage.deleteTeam')}
-                      </button>
+                    <td><span className="font-mono text-gray-500">{team.code}</span></td>
+                    <td className="text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/teams/${team.id}/edit`}>
+                          {t('gamePage.editTeam')}
+                        </Link>
+                        <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteTeam(team.id, team.name)}>
+                          {t('gamePage.deleteTeam')}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -363,8 +375,7 @@ export default function GamePage() {
             </table>
           ) : null}
         </section>
-      </section>
-
+      </div>
     </main>
   )
 }

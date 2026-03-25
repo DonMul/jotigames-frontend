@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="app-env" content="dev" />
+    <meta name="description" content="JotiGames — the all-in-one platform for outdoor adventure games, GPS challenges, and team-based competitions. Perfect for scouting events, youth camps, and group activities." />
+    <meta name="theme-color" content="#f97316" />
     <script>
       (() => {
         const storageKey = 'jotigames-theme'
@@ -14,14 +16,15 @@
           saved = null
         }
         const theme = saved === 'dark' || saved === 'light' ? saved : 'light'
-        document.documentElement.setAttribute('data-theme', theme)
+        if (theme === 'dark') document.documentElement.classList.add('dark')
       })()
     </script>
     <link rel="icon" type="image/avif" href="/image/logo-small.avif" />
-    <link rel="stylesheet" href="/assets/styles/app.css" />
-    <title>JotiGames</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>JotiGames — Adventure Games for Teams &amp; Events</title>
   </head>
-  <body data-app-env="dev">
+  <body>
     <div id="root"></div>
     <script src="/assets/scripts/ws_transport.js"></script>
     <script type="module" src="/src/main.jsx"></script>

@@ -3,6 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 import {
+  attachUserLocationCentering,
   configureLeafletDefaultMarkerIcons,
   toNumberOrNull,
 } from './shared/leafletMapCommon'
@@ -25,7 +26,7 @@ export default function MarketCrashPointsMap({ points, t }) {
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 8,
+      zoom: 15,
       minZoom: 3,
       maxZoom: 19,
     })
@@ -38,24 +39,18 @@ export default function MarketCrashPointsMap({ points, t }) {
 
     layerRef.current = L.layerGroup().addTo(map)
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          if (!mapRef.current || hasAppliedBrowserCenterRef.current) {
-            return
-          }
-          hasAppliedBrowserCenterRef.current = true
-          hasInitializedViewportRef.current = true
-          mapRef.current.setView([position.coords.latitude, position.coords.longitude], 14)
-        },
-        () => {
-          hasAppliedBrowserCenterRef.current = false
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-      )
-    }
+    const detachUserCentering = attachUserLocationCentering(map, {
+      zoom: 15,
+      follow: true,
+      maximumAge: 60000,
+      onFirstCenter: () => {
+        hasAppliedBrowserCenterRef.current = true
+        hasInitializedViewportRef.current = true
+      },
+    })
 
     return () => {
+      detachUserCentering()
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
@@ -114,9 +109,9 @@ export default function MarketCrashPointsMap({ points, t }) {
 
     if (!hasInitializedViewportRef.current && !hasAppliedBrowserCenterRef.current) {
       if (bounds.length > 1) {
-        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 16 })
+        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 })
       } else if (bounds.length === 1) {
-        map.setView(bounds[0], 14)
+        map.setView(bounds[0], 15)
       }
       hasInitializedViewportRef.current = true
     }

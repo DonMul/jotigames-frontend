@@ -89,37 +89,48 @@ export default function TeamFormPage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="overview-header">
-        <div>
-          <h1>{isEdit ? t('teamForm.editTitle') : t('teamForm.newTitle')}</h1>
-        </div>
-        <div className="overview-actions">
-          <Link className="btn btn-ghost" to={backPath}>
-            {t('teamForm.back')}
-          </Link>
-        </div>
-      </section>
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold text-navy-900">{isEdit ? t('teamForm.editTitle') : t('teamForm.newTitle')}</h1>
+        <Link className="btn btn-ghost" to={backPath}>
+          {t('teamForm.back')}
+        </Link>
+      </div>
 
-      {loading ? <p>{t('gamesPage.loading')}</p> : null}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-500 rounded-full animate-spin" />
+        </div>
+      ) : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="admin-panel">
-          <div className="form-row">
-            <label htmlFor="team-name">{t('teamForm.name')}</label>
-            <input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} required />
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
+          <div className="space-y-1.5">
+            <label htmlFor="team-name" className="block text-sm font-medium text-navy-700">{t('teamForm.name')}</label>
+            <input
+              id="team-name"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              value={teamName}
+              onChange={(event) => setTeamName(event.target.value)}
+              required
+            />
           </div>
 
-          <div className="form-row">
-            <p className="muted">{t('teamForm.codeGeneratedHint')}</p>
-          </div>
+          <p className="text-xs text-gray-400">{t('teamForm.codeGeneratedHint')}</p>
 
           <TeamLogoPicker value={logoPath} onChange={setLogoPath} disabled={saving} />
 
-          <button className="btn btn-primary" type="submit" disabled={saving}>
-            {saving ? t('teamForm.saving') : t('teamForm.save')}
-          </button>
+          <div className="pt-2">
+            <button
+              className="w-full sm:w-auto rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              type="submit"
+              disabled={saving}
+            >
+              {saving ? t('teamForm.saving') : t('teamForm.save')}
+            </button>
+          </div>
         </form>
       ) : null}
     </main>

@@ -34,7 +34,6 @@ export default function RegisterPage() {
           password,
         },
       })
-
       setSuccess(response?.message || response?.message_key || t('auth.registerSuccess'))
       setEmail('')
       setUsername('')
@@ -48,43 +47,45 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="admin-panel" style={{ maxWidth: 560, margin: '3rem auto' }}>
-        <h1>{t('auth.createAccount')}</h1>
-        <p>{t('auth.registerIntro')}</p>
+    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl font-bold text-navy-900">{t('auth.createAccount')}</h1>
+          <p className="mt-2 text-navy-500">{t('auth.registerIntro')}</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="registerEmail">{t('auth.email')}</label>
-          <input id="registerEmail" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="registerEmail" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.email')}</label>
+              <input id="registerEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+            </div>
+            <div>
+              <label htmlFor="registerUsername" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.username')}</label>
+              <input id="registerUsername" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+            </div>
+            <div>
+              <label htmlFor="registerPassword" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.password')}</label>
+              <input id="registerPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+            </div>
+            <div>
+              <label htmlFor="registerPasswordConfirm" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.confirmPassword')}</label>
+              <input id="registerPasswordConfirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+            </div>
 
-          <label htmlFor="registerUsername">{t('auth.username')}</label>
-          <input id="registerUsername" value={username} onChange={(event) => setUsername(event.target.value)} required minLength={3} />
+            {error ? <div className="flash flash-error">{error}</div> : null}
+            {success ? <div className="flash flash-success">{success}</div> : null}
 
-          <label htmlFor="registerPassword">{t('auth.password')}</label>
-          <input id="registerPassword" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} />
+            <button type="submit" disabled={loading} className="w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 transition-all">
+              {loading ? t('auth.creating') : t('auth.register')}
+            </button>
+          </form>
 
-          <label htmlFor="registerPasswordConfirm">{t('auth.confirmPassword')}</label>
-          <input
-            id="registerPasswordConfirm"
-            type="password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            required
-            minLength={8}
-          />
-
-          {error ? <div className="flash flash-error">{error}</div> : null}
-          {success ? <div className="flash flash-success">{success}</div> : null}
-
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? t('auth.creating') : t('auth.register')}
-          </button>
-        </form>
-
-        <p style={{ marginTop: '1rem' }}>
-          {t('auth.hasAccount')} <Link to="/login">{t('auth.login')}</Link>
-        </p>
-      </section>
-    </main>
+          <p className="text-center text-sm text-navy-500 mt-6">
+            {t('auth.hasAccount')} <Link to="/login" className="font-medium text-brand-600 hover:text-brand-700">{t('auth.login')}</Link>
+          </p>
+        </div>
+      </div>
+    </section>
   )
 }

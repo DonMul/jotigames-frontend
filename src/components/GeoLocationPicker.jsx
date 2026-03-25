@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import {
+  attachUserLocationCentering,
   configureLeafletDefaultMarkerIcons,
   toNumberOrNull,
 } from './shared/leafletMapCommon'
@@ -19,7 +20,7 @@ export default function GeoLocationPicker({
   ariaLabel,
   className = 'game-map game-map-compact',
   markerZoom = 15,
-  browserZoom = 14,
+  browserZoom = 15,
 }) {
   const mapContainerRef = useRef(null)
   const mapRef = useRef(null)
@@ -43,12 +44,18 @@ export default function GeoLocationPicker({
 
     const map = L.map(mapContainerRef.current)
     mapRef.current = map
-    map.setView(FALLBACK_CENTER, 8)
+    map.setView(FALLBACK_CENTER, 15)
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 19,
     }).addTo(map)
+
+    const detachUserCentering = attachUserLocationCentering(map, {
+      zoom: 15,
+      follow: true,
+      maximumAge: 60000,
+    })
 
     map.on('click', (event) => {
       if (typeof onChangeRef.current === 'function') {
@@ -57,6 +64,7 @@ export default function GeoLocationPicker({
     })
 
     return () => {
+      detachUserCentering()
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
@@ -91,7 +99,7 @@ export default function GeoLocationPicker({
     }
 
     if (!navigator.geolocation) {
-      map.setView(FALLBACK_CENTER, 8)
+      map.setView(FALLBACK_CENTER, 15)
       return
     }
 
@@ -100,13 +108,13 @@ export default function GeoLocationPicker({
         if (!mapRef.current || markerRef.current) {
           return
         }
-        mapRef.current.setView([position.coords.latitude, position.coords.longitude], browserZoom)
+        mapRef.current.setView([position.coords.latitude, position.coords.longitude], getSafeZoom(browserZoom, 15))
       },
       () => {
         if (!mapRef.current || markerRef.current) {
           return
         }
-        mapRef.current.setView(FALLBACK_CENTER, 8)
+        mapRef.current.setView(FALLBACK_CENTER, 15)
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
     )

@@ -3,6 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 import {
+  attachUserLocationCentering,
   configureLeafletDefaultMarkerIcons,
   createTeamLogoIcon,
   toNumberOrNull,
@@ -27,7 +28,7 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 8,
+      zoom: 15,
       minZoom: 3,
       maxZoom: 19,
     })
@@ -38,10 +39,19 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
       maxZoom: 19,
     }).addTo(map)
 
+    const detachUserCentering = attachUserLocationCentering(map, {
+      zoom: 15,
+      follow: true,
+      onFirstCenter: () => {
+        hasInitializedViewportRef.current = true
+      },
+    })
+
     pointLayerRef.current = L.layerGroup().addTo(map)
     teamLayerRef.current = L.layerGroup().addTo(map)
 
     return () => {
+      detachUserCentering()
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
@@ -126,9 +136,9 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
 
     if (!hasInitializedViewportRef.current) {
       if (bounds.length > 1) {
-        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 16 })
+        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 })
       } else if (bounds.length === 1) {
-        map.setView(bounds[0], 14)
+        map.setView(bounds[0], 15)
       }
       hasInitializedViewportRef.current = true
     }

@@ -126,27 +126,29 @@ export default function GameMemberFormPage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="overview-header">
-        <div>
-          <h1>{isEdit ? t('memberForm.editTitle') : t('memberForm.newTitle')}</h1>
-        </div>
-        <div className="overview-actions">
-          <Link className="btn btn-ghost" to={backPath}>
-            {t('memberForm.back')}
-          </Link>
-        </div>
-      </section>
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold text-navy-900">{isEdit ? t('memberForm.editTitle') : t('memberForm.newTitle')}</h1>
+        <Link className="btn btn-ghost" to={backPath}>
+          {t('memberForm.back')}
+        </Link>
+      </div>
 
-      {loading ? <p>{t('gamesPage.loading')}</p> : null}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-500 rounded-full animate-spin" />
+        </div>
+      ) : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="admin-panel">
-          <div className="form-row">
-            <label htmlFor="member-email">{t('memberForm.email')}</label>
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
+          <div className="space-y-1.5">
+            <label htmlFor="member-email" className="block text-sm font-medium text-navy-700">{t('memberForm.email')}</label>
             <input
               id="member-email"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors read-only:bg-gray-50 read-only:text-gray-500"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -155,17 +157,29 @@ export default function GameMemberFormPage() {
             />
           </div>
 
-          <div className="form-row">
-            <label htmlFor="member-role">{t('memberForm.role')}</label>
-            <select id="member-role" value={role} onChange={(event) => setRole(event.target.value)} required>
+          <div className="space-y-1.5">
+            <label htmlFor="member-role" className="block text-sm font-medium text-navy-700">{t('memberForm.role')}</label>
+            <select
+              id="member-role"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              value={role}
+              onChange={(event) => setRole(event.target.value)}
+              required
+            >
               <option value={ROLE_ADMIN}>{t('memberForm.roleAdmin')}</option>
               <option value={ROLE_GAME_MASTER}>{t('memberForm.roleGameMaster')}</option>
             </select>
           </div>
 
-          <button className="btn btn-primary" type="submit" disabled={saving}>
-            {saving ? t('memberForm.saving') : t('memberForm.save')}
-          </button>
+          <div className="pt-2">
+            <button
+              className="w-full sm:w-auto rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              type="submit"
+              disabled={saving}
+            >
+              {saving ? t('memberForm.saving') : t('memberForm.save')}
+            </button>
+          </div>
         </form>
       ) : null}
     </main>

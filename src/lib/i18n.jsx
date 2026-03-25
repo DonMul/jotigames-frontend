@@ -2,10 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { useLocale } from './locale'
 
-const localeLoaders = {
-  en: () => import('../i18n/locales/en.json'),
-  nl: () => import('../i18n/locales/nl.json'),
-}
+const localeLoaders = import.meta.glob('../i18n/locales/*.json')
 
 const localeCache = new Map()
 
@@ -28,11 +25,26 @@ function getByPath(object, path) {
   return path.split('.').reduce((acc, key) => (acc && Object.prototype.hasOwnProperty.call(acc, key) ? acc[key] : undefined), object)
 }
 
-function resolveLanguage(locale) {
-  const normalized = String(locale || 'nl').replace('-', '_')
-  if (normalized === 'nl' || normalized.startsWith('nl_')) {
-    return 'nl'
+function resolveLocaleFile(locale) {
+  const normalized = String(locale || 'nl').trim().replace('-', '_')
+  const normalizedLower = normalized.toLowerCase()
+  const languageOnly = normalizedLower.split('_')[0]
+
+  const candidates = [
+    normalized,
+    normalizedLower,
+    languageOnly,
+    'nl',
+    'en',
+  ]
+
+  for (const candidate of candidates) {
+    const path = `../i18n/locales/${candidate}.json`
+    if (localeLoaders[path]) {
+      return candidate
+    }
   }
+
   return 'en'
 }
 
@@ -41,7 +53,12 @@ async function loadMessagesFor(language) {
     return localeCache.get(language)
   }
 
-  const loader = localeLoaders[language] || localeLoaders.en
+  const loaderPath = `../i18n/locales/${language}.json`
+  const fallbackPath = '../i18n/locales/en.json'
+  const loader = localeLoaders[loaderPath] || localeLoaders[fallbackPath]
+  if (!loader) {
+    return {}
+  }
   const module = await loader()
   const messages = module?.default || module || {}
   localeCache.set(language, messages)
@@ -50,7 +67,7 @@ async function loadMessagesFor(language) {
 
 export function I18nProvider({ children }) {
   const { locale } = useLocale()
-  const language = resolveLanguage(locale)
+  const language = resolveLocaleFile(locale)
   const [messages, setMessages] = useState({})
   const [isReady, setIsReady] = useState(false)
 

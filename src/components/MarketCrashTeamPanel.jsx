@@ -180,7 +180,7 @@ export default function MarketCrashTeamPanel({
 
     const map = L.map(mapContainerRef.current, {
       center: [52.1326, 5.2913],
-      zoom: 13,
+      zoom: 18,
       minZoom: 3,
       maxZoom: 19,
     })

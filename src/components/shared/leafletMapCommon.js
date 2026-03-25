@@ -45,3 +45,63 @@ export function createTeamLogoIcon(logoPath) {
     className: 'geo-team-icon',
   })
 }
+
+export function attachUserLocationCentering(map, options = {}) {
+  if (!map || !navigator.geolocation) {
+    return () => {}
+  }
+
+  const {
+    zoom = 19,
+    follow = true,
+    enableHighAccuracy = true,
+    maximumAge = 5000,
+    timeout = 10000,
+    onFirstCenter,
+  } = options
+
+  let hasCentered = false
+
+  const centerFromPosition = (position) => {
+    if (!map || !position?.coords) {
+      return
+    }
+
+    const latitude = Number(position.coords.latitude)
+    const longitude = Number(position.coords.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    const targetZoom = Math.min(19, Math.max(0, Number(zoom) || 19))
+    map.setView([latitude, longitude], targetZoom)
+
+    if (!hasCentered) {
+      hasCentered = true
+      if (typeof onFirstCenter === 'function') {
+        onFirstCenter([latitude, longitude])
+      }
+    }
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    centerFromPosition,
+    () => {},
+    { enableHighAccuracy, maximumAge, timeout },
+  )
+
+  let watchId = null
+  if (follow) {
+    watchId = navigator.geolocation.watchPosition(
+      centerFromPosition,
+      () => {},
+      { enableHighAccuracy, maximumAge, timeout },
+    )
+  }
+
+  return () => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId)
+    }
+  }
+}
