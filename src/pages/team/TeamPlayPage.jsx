@@ -109,7 +109,7 @@ export default function TeamPlayPage() {
           <p className="overview-subtitle">{dashboard?.game_name || '-'}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to="/team/dashboard">
+          <Link className="btn btn-ghost" to="/team">
             {t('teamModule.backToGame', {}, 'Back')}
           </Link>
         </div>

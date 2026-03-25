@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+    const dashboardUrl = root.dataset.dashboardUrl || '/team';
     const wsTeamId = root.dataset.wsTeamId || '';
     const wsTeamCode = root.dataset.wsTeamCode || '';
     const copy = (() => {

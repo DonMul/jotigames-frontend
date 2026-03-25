@@ -87,7 +87,7 @@ export default function TeamEditPage() {
         name: trimmedName,
         logo_path: logoPath.trim() || undefined,
       })
-      navigate('/team/dashboard')
+      navigate('/team')
     } catch (err) {
       setError(err.message || t('teamForm.saveFailed', {}, 'Could not save team'))
     } finally {
@@ -102,7 +102,7 @@ export default function TeamEditPage() {
           <h1>{t('teamForm.editTitle', {}, 'Edit team')}</h1>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to="/team/dashboard">
+          <Link className="btn btn-ghost" to="/team">
             {t('teamForm.back', {}, 'Back')}
           </Link>
         </div>

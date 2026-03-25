@@ -29,6 +29,7 @@ import CheckpointHeistAdminPage from './pages/admin/CheckpointHeistAdminPage'
 import CourierRushAdminPage from './pages/admin/CourierRushAdminPage'
 import PandemicResponseAdminPage from './pages/admin/PandemicResponseAdminPage'
 import MarketCrashAdminPage from './pages/admin/MarketCrashAdminPage'
+import MarketCrashPointFormPage from './pages/admin/MarketCrashPointFormPage'
 import BirdsOfPreyConfigurePage from './pages/admin/BirdsOfPreyConfigurePage'
 import CodeConspiracyConfigurePage from './pages/admin/CodeConspiracyConfigurePage'
 import Crazy88AdminPage from './pages/admin/Crazy88AdminPage'
@@ -128,10 +129,6 @@ function AppRoutes() {
         <Route path="/info/games/:slug" element={<GameInfoPage />} />
         <Route
           path="/team"
-          element={renderProtected(<TeamDashboardPage />)}
-        />
-        <Route
-          path="/team/dashboard"
           element={renderProtected(<TeamDashboardPage />)}
         />
         <Route
@@ -237,6 +234,14 @@ function AppRoutes() {
         <Route
           path="/admin/market-crash/:gameId/points"
           element={renderProtectedAdminGame(<MarketCrashAdminPage />)}
+        />
+        <Route
+          path="/admin/market-crash/:gameId/points/new"
+          element={renderProtectedAdminGame(<MarketCrashPointFormPage />)}
+        />
+        <Route
+          path="/admin/market-crash/:gameId/points/:pointId/edit"
+          element={renderProtectedAdminGame(<MarketCrashPointFormPage />)}
         />
         <Route
           path="/admin/birds-of-prey/:gameId/configure"

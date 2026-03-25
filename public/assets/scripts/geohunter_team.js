@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+    const dashboardUrl = root.dataset.dashboardUrl || '/team';
     const logoUrl = root.dataset.logoUrl || '';
     let copy = {};
 

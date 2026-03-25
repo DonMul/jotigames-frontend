@@ -171,7 +171,7 @@ export const moduleApi = {
     const payload = await apiRequest(`/api/${prefix}/${gameId}/teams/${teamId}/bootstrap`, { token })
     return payload?.state || null
   },
-  async submitAction(token, gameType, gameId, teamId, body) {
+  async submitAction(token, gameType, gameId, teamId, body, actionPathOverride) {
     if (gameType === 'exploding_kittens') {
       const action = String(body?.action || '').trim()
       return this.submitExplodingAction(token, gameId, teamId, action, body)
@@ -197,7 +197,7 @@ export const moduleApi = {
       code_conspiracy: 'code/submit',
     }
 
-    const actionPath = actionPathByType[gameType]
+    const actionPath = actionPathOverride || actionPathByType[gameType]
     if (!actionPath) {
       throw new Error(`No action endpoint configured for game type: ${gameType}`)
     }
@@ -434,6 +434,10 @@ export const moduleApi = {
     apiRequest(`/api/pandemic-response/${gameId}/config`, { method: 'PUT', token, body }),
   getPandemicResponseAdminState: (token, gameId) => apiRequest(`/api/pandemic-response/${gameId}/admin/state`, { token }),
   getMarketCrashAdminData: (token, gameId) => apiRequest(`/api/market-crash/${gameId}/admin/data`, { token }),
+  updateMarketCrashLocation: (token, gameId, teamId, body) =>
+    apiRequest(`/api/market-crash/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),
+  executeMarketCrashTrade: (token, gameId, teamId, body) =>
+    apiRequest(`/api/market-crash/${gameId}/teams/${teamId}/trade/execute`, { method: 'POST', token, body }),
   createMarketCrashResource: (token, gameId, body) => apiRequest(`/api/market-crash/${gameId}/resources`, { method: 'POST', token, body }),
   updateMarketCrashResource: (token, gameId, resourceId, body) =>
     apiRequest(`/api/market-crash/${gameId}/resources/${resourceId}`, { method: 'PUT', token, body }),

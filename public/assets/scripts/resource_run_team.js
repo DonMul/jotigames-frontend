@@ -20,7 +20,7 @@
   }
 
   const teamLogoUrl = root.dataset.logoUrl || '';
-  const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+  const dashboardUrl = root.dataset.dashboardUrl || '/team';
   const leaderboard = window.JotiTeamLeaderboard?.create(
     root.querySelector('[data-team-leaderboard]'),
     { currentTeamId: root.dataset.wsTeamId || '' }

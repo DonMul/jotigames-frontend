@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 
 import BlindHikeAdminOverviewMap from '../../components/BlindHikeAdminOverviewMap'
 import BirdsOfPreyAdminOverviewMap from '../../components/BirdsOfPreyAdminOverviewMap'
+import MarketCrashAdminOverviewMap from '../../components/MarketCrashAdminOverviewMap'
 import { gameApi, moduleApi } from '../../lib/api'
 import { toAssetUrl } from '../../lib/assetUrl'
 import { useAuth } from '../../lib/auth'
@@ -56,6 +57,7 @@ export default function ModuleOverviewPage() {
   const isBlindHike = game?.game_type === 'blindhike'
   const isExplodingKittens = game?.game_type === 'exploding_kittens'
   const isBirdsOfPrey = game?.game_type === 'birds_of_prey'
+  const isMarketCrash = game?.game_type === 'market_crash'
 
   function formatDate(value) {
     if (!value) {
@@ -83,6 +85,8 @@ export default function ModuleOverviewPage() {
 
   const blindHikeMarkers = isBlindHike && Array.isArray(overview?.markers) ? overview.markers : []
   const blindHikeTarget = isBlindHike && overview?.target ? overview.target : null
+  const marketCrashOverviewPoints = isMarketCrash && Array.isArray(overview?.points) ? overview.points : []
+  const marketCrashOverviewTeams = isMarketCrash && Array.isArray(overview?.teams) ? overview.teams : []
 
   function getTeamNameById(teamId) {
     const normalizedTeamId = String(teamId || '').trim()
@@ -698,6 +702,197 @@ export default function ModuleOverviewPage() {
         return
       }
 
+      if (eventName === 'admin.market_crash.team.location.updated') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const lat = Number(payload?.lat)
+        const lon = Number(payload?.lon)
+        const updatedAt = String(payload?.updated_at || payload?.updatedAt || '').trim()
+        if (!changedTeamId || Number.isNaN(lat) || Number.isNaN(lon)) {
+          return
+        }
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || row?.id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || row?.id || '') === changedTeamId
+                ? { ...row, lat, lon, location_updated_at: updatedAt || row?.location_updated_at }
+                : row
+            ))
+            : [...previousTeams, { team_id: changedTeamId, name: changedTeamId, score: 0, cash: 0, lat, lon, location_updated_at: updatedAt }]
+
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.market_crash.team.score') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const score = Number(payload?.score)
+        const cash = Number(payload?.cash)
+        if (!changedTeamId || Number.isNaN(score)) {
+          return
+        }
+
+        setTeams((previous) => (Array.isArray(previous) ? previous : []).map((team) => (
+          String(team?.id || '') === changedTeamId
+            ? {
+              ...team,
+              geo_score: score,
+            }
+            : team
+        )))
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || row?.id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || row?.id || '') === changedTeamId
+                ? {
+                  ...row,
+                  score,
+                  ...(Number.isNaN(cash) ? {} : { cash }),
+                }
+                : row
+            ))
+            : [...previousTeams, {
+              team_id: changedTeamId,
+              id: changedTeamId,
+              name: changedTeamId,
+              score,
+              ...(Number.isNaN(cash) ? {} : { cash }),
+            }]
+
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.market_crash.trade.executed') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const score = Number(payload?.score)
+        const cash = Number(payload?.cash)
+        if (!changedTeamId) {
+          return
+        }
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousTeams = Array.isArray(previousOverview.teams) ? previousOverview.teams : []
+          const hasTeam = previousTeams.some((row) => String(row?.team_id || row?.id || '') === changedTeamId)
+          const nextTeams = hasTeam
+            ? previousTeams.map((row) => (
+              String(row?.team_id || row?.id || '') === changedTeamId
+                ? {
+                  ...row,
+                  ...(Number.isNaN(score) ? {} : { score }),
+                  ...(Number.isNaN(cash) ? {} : { cash }),
+                }
+                : row
+            ))
+            : [...previousTeams, {
+              team_id: changedTeamId,
+              id: changedTeamId,
+              name: changedTeamId,
+              ...(Number.isNaN(score) ? {} : { score }),
+              ...(Number.isNaN(cash) ? {} : { cash }),
+            }]
+
+          const previousActions = Array.isArray(previousOverview.recent_actions) ? previousOverview.recent_actions : []
+          const tradeId = String(payload?.trade_id || '').trim()
+          const trade = payload?.trade && typeof payload.trade === 'object' ? payload.trade : null
+          const nextActions = tradeId
+            ? [
+              {
+                id: tradeId,
+                team_id: changedTeamId,
+                action: 'market_crash.trade.execute',
+                at: String(trade?.at || new Date().toISOString()),
+                metadata: trade || {},
+              },
+              ...previousActions,
+            ].slice(0, 50)
+            : previousActions
+
+          return {
+            ...previousOverview,
+            teams: nextTeams,
+            recent_actions: nextActions,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'admin.market_crash.prices.updated') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const pointsPatch = payload?.points && typeof payload.points === 'object' ? payload.points : {}
+
+        setOverview((previous) => {
+          const previousOverview = previous && typeof previous === 'object' ? previous : {}
+          const previousPoints = Array.isArray(previousOverview.points) ? previousOverview.points : []
+
+          const nextPoints = previousPoints.map((point) => {
+            const pointId = String(point?.id || '')
+            const resourcePatchById = pointsPatch[pointId]
+            if (!pointId || !resourcePatchById || typeof resourcePatchById !== 'object') {
+              return point
+            }
+
+            const resourceSettings = Array.isArray(point?.resource_settings) ? point.resource_settings : []
+            const nextResourceSettings = resourceSettings.map((setting) => {
+              const resourceId = String(setting?.resource_id || '')
+              const patch = resourcePatchById[resourceId]
+              if (!resourceId || !patch || typeof patch !== 'object') {
+                return setting
+              }
+              return {
+                ...setting,
+                ...(patch?.buy_price === undefined ? {} : { buy_price: Number(patch.buy_price) }),
+                ...(patch?.sell_price === undefined ? {} : { sell_price: Number(patch.sell_price) }),
+                ...(patch?.tick_seconds === undefined ? {} : { tick_seconds: Number(patch.tick_seconds) }),
+                ...(patch?.fluctuation_percent === undefined ? {} : { fluctuation_percent: Number(patch.fluctuation_percent) }),
+              }
+            })
+
+            return {
+              ...point,
+              resource_settings: nextResourceSettings,
+            }
+          })
+
+          return {
+            ...previousOverview,
+            points: nextPoints,
+          }
+        })
+        return
+      }
+
       if (eventName === 'admin.general.team.remove') {
         const teamId = String(payload.team_id || payload.teamId || '').trim()
         if (!teamId) {
@@ -843,7 +1038,7 @@ export default function ModuleOverviewPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens])
+  }, [auth?.token, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens, isMarketCrash])
 
   async function handleCreateTeam(event) {
     event.preventDefault()
@@ -1342,6 +1537,11 @@ export default function ModuleOverviewPage() {
         {game?.game_type === 'market_crash' && moduleDetails?.kind === 'market_crash' ? (
           <section className="overview-panel">
             <h2>{t('market_crash.admin.overview_subtitle', {}, 'Market Crash live state')}</h2>
+            <MarketCrashAdminOverviewMap
+              points={marketCrashOverviewPoints}
+              teams={marketCrashOverviewTeams}
+              t={t}
+            />
             <table className="admin-table">
               <tbody>
                 <tr>
@@ -1351,6 +1551,10 @@ export default function ModuleOverviewPage() {
                 <tr>
                   <th>{t('market_crash.admin.point_list', {}, 'Points')}</th>
                   <td>{moduleDetails.points.length}</td>
+                </tr>
+                <tr>
+                  <th>{t('market_crash.admin.team_list', {}, 'Teams')}</th>
+                  <td>{marketCrashOverviewTeams.length}</td>
                 </tr>
               </tbody>
             </table>
@@ -1373,6 +1577,33 @@ export default function ModuleOverviewPage() {
                 {moduleDetails.resources.length === 0 ? (
                   <tr>
                     <td colSpan={2} className="muted">{t('market_crash.admin.resource_empty', {}, 'No resources')}</td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+
+            <h3 style={{ marginTop: '1rem' }}>{t('market_crash.admin.teams_live', {}, 'Teams live')}</h3>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>{t('moduleOverview.teamName', {}, 'Team')}</th>
+                  <th>{t('market_crash.team.cash', {}, 'Cash')}</th>
+                  <th>{t('moduleOverview.score', {}, 'Score')}</th>
+                  <th>{t('moduleOverview.updatedAt', {}, 'Updated')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {marketCrashOverviewTeams.map((team) => (
+                  <tr key={team.team_id || team.id}>
+                    <td>{team.name || '-'}</td>
+                    <td>{Number(team.cash || 0)}</td>
+                    <td>{Number(team.score || 0)}</td>
+                    <td>{formatDate(team.location_updated_at)}</td>
+                  </tr>
+                ))}
+                {marketCrashOverviewTeams.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="muted">{t('moduleOverview.noTeams', {}, 'No teams')}</td>
                   </tr>
                 ) : null}
               </tbody>

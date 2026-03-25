@@ -22,7 +22,7 @@
   }
 
   const map = L.map(mapElement).setView([51.05, 3.72], 15);
-  const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+  const dashboardUrl = root.dataset.dashboardUrl || '/team';
   const leaderboard = window.JotiTeamLeaderboard?.create(
     root.querySelector('[data-team-leaderboard]'),
     { currentTeamId: root.dataset.wsTeamId || '' }

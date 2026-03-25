@@ -178,7 +178,7 @@ export default function TeamScanPage() {
           <p className="overview-subtitle">{dashboard?.game_name || '-'}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to="/team/dashboard">
+          <Link className="btn btn-ghost" to="/team">
             {t('teamScan.backToDashboard', {}, 'Back to dashboard')}
           </Link>
         </div>
@@ -263,7 +263,7 @@ export default function TeamScanPage() {
             ) : null}
 
             {!showPreview && !showTarget ? (
-              <Link className="btn btn-primary" to="/team/dashboard">
+              <Link className="btn btn-primary" to="/team">
                 {t('teamScan.resultBack', {}, 'Back to dashboard')}
               </Link>
             ) : null}

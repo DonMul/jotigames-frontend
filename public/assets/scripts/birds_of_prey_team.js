@@ -19,7 +19,7 @@
   })();
 
   const t = (key, fallback = '') => String(copy[key] || fallback);
-  const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+  const dashboardUrl = root.dataset.dashboardUrl || '/team';
   const logoUrl = root.dataset.logoUrl || '';
 
   const map = L.map(mapElement).setView([51.05, 3.72], 14);

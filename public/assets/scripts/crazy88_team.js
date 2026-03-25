@@ -6,7 +6,7 @@
 
   const locationUrl = root.dataset.locationUrl;
   const submitUrlTemplate = root.dataset.submitUrlTemplate || '';
-  const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+  const dashboardUrl = root.dataset.dashboardUrl || '/team';
   const csrfLocation = root.dataset.csrfLocation || '';
   const csrfSubmit = root.dataset.csrfSubmit || '';
   const logoUrl = root.dataset.logoUrl || '';

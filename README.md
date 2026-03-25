@@ -2,6 +2,12 @@
 
 This frontend is fully browser-side and talks directly to FastAPI.
 
+## Documentation Note
+
+Cross-system architecture, WS contracts, game flow/page documentation, and coding decisions are centralized in `docs/` at repository root.
+
+Start at: `docs/README.md`
+
 ## Stack
 
 - React + React Router

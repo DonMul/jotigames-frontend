@@ -8,7 +8,7 @@
     return;
   }
 
-  const dashboardUrl = root.dataset.dashboardUrl || '/team/dashboard';
+  const dashboardUrl = root.dataset.dashboardUrl || '/team';
   const logoUrl = root.dataset.logoUrl || '';
   const copy = (() => {
     try {

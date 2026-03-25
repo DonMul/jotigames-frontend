@@ -3,6 +3,16 @@ import { Link, Navigate } from 'react-router-dom'
 
 import BlindHikeTeamPanel from '../../components/BlindHikeTeamPanel'
 import BirdsOfPreyTeamPanel from '../../components/BirdsOfPreyTeamPanel'
+import CheckpointHeistTeamPanel from '../../components/CheckpointHeistTeamPanel'
+import CodeConspiracyTeamPanel from '../../components/CodeConspiracyTeamPanel'
+import CourierRushTeamPanel from '../../components/CourierRushTeamPanel'
+import Crazy88TeamPanel from '../../components/Crazy88TeamPanel'
+import EchoHuntTeamPanel from '../../components/EchoHuntTeamPanel'
+import GeoHunterTeamPanel from '../../components/GeoHunterTeamPanel'
+import MarketCrashTeamPanel from '../../components/MarketCrashTeamPanel'
+import PandemicResponseTeamPanel from '../../components/PandemicResponseTeamPanel'
+import ResourceRunTeamPanel from '../../components/ResourceRunTeamPanel'
+import TerritoryControlTeamPanel from '../../components/TerritoryControlTeamPanel'
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
 import { toAssetUrl } from '../../lib/assetUrl'
@@ -312,9 +322,32 @@ export default function TeamDashboardPage() {
   const isExplodingKittens = bootstrap?.game_type === 'exploding_kittens'
   const isBlindHike = bootstrap?.game_type === 'blindhike'
   const isBirdsOfPrey = bootstrap?.game_type === 'birds_of_prey'
+  const isMarketCrash = bootstrap?.game_type === 'market_crash'
+  const isCheckpointHeist = bootstrap?.game_type === 'checkpoint_heist'
+  const isCodeConspiracy = bootstrap?.game_type === 'code_conspiracy'
+  const isCourierRush = bootstrap?.game_type === 'courier_rush'
+  const isCrazy88 = bootstrap?.game_type === 'crazy_88'
+  const isEchoHunt = bootstrap?.game_type === 'echo_hunt'
+  const isGeoHunter = bootstrap?.game_type === 'geohunter'
+  const isPandemicResponse = bootstrap?.game_type === 'pandemic_response'
+  const isResourceRun = bootstrap?.game_type === 'resource_run'
+  const isTerritoryControl = bootstrap?.game_type === 'territory_control'
   const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
   const [droppingBirdEgg, setDroppingBirdEgg] = useState(false)
   const [destroyingBirdEggId, setDestroyingBirdEggId] = useState('')
+  const [executingMarketCrashTradeKey, setExecutingMarketCrashTradeKey] = useState('')
+
+  const [capturingCheckpoint, setCapturingCheckpoint] = useState(false)
+  const [submittingCode, setSubmittingCode] = useState(false)
+  const [confirmingPickup, setConfirmingPickup] = useState(false)
+  const [confirmingDropoff, setConfirmingDropoff] = useState(false)
+  const [submittingTask, setSubmittingTask] = useState(false)
+  const [claimingBeacon, setClaimingBeacon] = useState(false)
+  const [answeringQuestion, setAnsweringQuestion] = useState(false)
+  const [collectingPickup, setCollectingPickup] = useState(false)
+  const [resolvingHotspot, setResolvingHotspot] = useState(false)
+  const [claimingResource, setClaimingResource] = useState(false)
+  const [claimingZone, setClaimingZone] = useState(false)
 
   const otherTeams = useMemo(() => {
     const teams = Array.isArray(bootstrap?.teams) ? bootstrap.teams : []
@@ -683,6 +716,145 @@ export default function TeamDashboardPage() {
         return
       }
 
+      if (eventName === 'team.market_crash.self.updated') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const cash = Number(payload?.cash)
+        const score = Number(payload?.score)
+        const inventory = payload?.inventory && typeof payload.inventory === 'object' ? payload.inventory : null
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const leaderboardRows = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+          const hasSelf = leaderboardRows.some((row) => String(row?.team_id || '') === String(teamId))
+          const nextLeaderboard = hasSelf
+            ? leaderboardRows.map((row) => (
+              String(row?.team_id || '') === String(teamId)
+                ? {
+                  ...row,
+                  ...(Number.isNaN(score) ? {} : { score }),
+                  ...(Number.isNaN(cash) ? {} : { cash }),
+                }
+                : row
+            ))
+            : leaderboardRows
+
+          return {
+            ...previousState,
+            ...(Number.isNaN(cash) ? {} : { cash }),
+            ...(Number.isNaN(score) ? {} : { score }),
+            ...(inventory ? { inventory } : {}),
+            leaderboard: nextLeaderboard,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'team.market_crash.nearby_points.updated') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const nearbyPoints = Array.isArray(payload?.nearby_points) ? payload.nearby_points : []
+        const nearbyPointIdsRaw = Array.isArray(payload?.nearby_point_ids) ? payload.nearby_point_ids : nearbyPoints.map((point) => point?.id)
+        const nearbyPointIds = nearbyPointIdsRaw.map((value) => String(value || '')).filter(Boolean)
+        const nearbySet = new Set(nearbyPointIds)
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousPoints = Array.isArray(previousState.points) ? previousState.points : []
+          const nearbyById = new Map(nearbyPoints.map((point) => [String(point?.id || ''), point]))
+
+          const nextPoints = previousPoints.map((point) => {
+            const pointId = String(point?.id || '')
+            if (!pointId) {
+              return point
+            }
+            const nearbyPatch = nearbyById.get(pointId)
+            return {
+              ...point,
+              ...(nearbyPatch && typeof nearbyPatch === 'object' ? nearbyPatch : {}),
+              in_range: nearbySet.has(pointId),
+            }
+          })
+
+          return {
+            ...previousState,
+            points: nextPoints,
+            nearby_points: nearbyPoints,
+            nearby_point_ids: nearbyPointIds,
+          }
+        })
+        return
+      }
+
+      if (eventName === 'team.market_crash.prices.updated') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+
+        const pointsPatch = payload?.points && typeof payload.points === 'object' ? payload.points : {}
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousPoints = Array.isArray(previousState.points) ? previousState.points : []
+          const previousNearbyPoints = Array.isArray(previousState.nearby_points) ? previousState.nearby_points : []
+
+          const applyPatchToPoint = (point) => {
+            const pointId = String(point?.id || '')
+            const pointResourcePatch = pointsPatch[pointId]
+            if (!pointId || !pointResourcePatch || typeof pointResourcePatch !== 'object') {
+              return point
+            }
+
+            const resourceSettings = Array.isArray(point?.resource_settings) ? point.resource_settings : []
+            const nextResourceSettings = resourceSettings.map((setting) => {
+              const resourceId = String(setting?.resource_id || '')
+              const update = pointResourcePatch[resourceId]
+              if (!resourceId || !update || typeof update !== 'object') {
+                return setting
+              }
+              return {
+                ...setting,
+                ...(update?.buy_price === undefined ? {} : { buy_price: Number(update.buy_price) }),
+                ...(update?.sell_price === undefined ? {} : { sell_price: Number(update.sell_price) }),
+                ...(update?.tick_seconds === undefined ? {} : { tick_seconds: Number(update.tick_seconds) }),
+                ...(update?.fluctuation_percent === undefined ? {} : { fluctuation_percent: Number(update.fluctuation_percent) }),
+              }
+            })
+
+            return {
+              ...point,
+              resource_settings: nextResourceSettings,
+            }
+          }
+
+          return {
+            ...previousState,
+            points: previousPoints.map((point) => applyPatchToPoint(point)),
+            nearby_points: previousNearbyPoints.map((point) => applyPatchToPoint(point)),
+          }
+        })
+        return
+      }
+
       if (eventName === 'game.blind_hike.marker.added') {
         if (!isBlindHike) {
           return
@@ -749,6 +921,29 @@ export default function TeamDashboardPage() {
             teams: nextTeams,
           }
         })
+
+        if (isMarketCrash) {
+          setState((previous) => {
+            const previousState = previous && typeof previous === 'object' ? previous : {}
+            const previousLeaderboard = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+            if (previousLeaderboard.length === 0) {
+              return previousState
+            }
+            return {
+              ...previousState,
+              leaderboard: previousLeaderboard.map((row) => (
+                String(row?.team_id || '') === String(teamUpdate.id)
+                  ? {
+                    ...row,
+                    ...(teamUpdate.name ? { name: teamUpdate.name } : {}),
+                    logo_path: teamUpdate.logo_path,
+                    logoPath: teamUpdate.logo_path,
+                  }
+                  : row
+              )),
+            }
+          })
+        }
         return
       }
 
@@ -768,6 +963,64 @@ export default function TeamDashboardPage() {
             teams: Array.isArray(previous.teams)
               ? previous.teams.filter((team) => String(team?.id || '') !== removedTeamId)
               : previous.teams,
+          }
+        })
+
+        if (isMarketCrash) {
+          setState((previous) => {
+            const previousState = previous && typeof previous === 'object' ? previous : {}
+            const previousLeaderboard = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+            if (previousLeaderboard.length === 0) {
+              return previousState
+            }
+            return {
+              ...previousState,
+              leaderboard: previousLeaderboard.filter((row) => String(row?.team_id || '') !== removedTeamId),
+            }
+          })
+        }
+        return
+      }
+
+      if (eventName === 'game.market_crash.team.score') {
+        if (!isMarketCrash) {
+          return
+        }
+
+        const changedTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        const score = Number(payload?.score)
+        const cash = Number(payload?.cash)
+        if (!changedTeamId || Number.isNaN(score)) {
+          return
+        }
+
+        if (changedTeamId === String(teamId)) {
+          setState((previous) => ({
+            ...(previous && typeof previous === 'object' ? previous : {}),
+            score,
+            ...(Number.isNaN(cash) ? {} : { cash }),
+          }))
+        }
+
+        setState((previous) => {
+          const previousState = previous && typeof previous === 'object' ? previous : {}
+          const previousLeaderboard = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+          const hasTeam = previousLeaderboard.some((row) => String(row?.team_id || '') === changedTeamId)
+          const nextLeaderboard = hasTeam
+            ? previousLeaderboard.map((row) => (
+              String(row?.team_id || '') === changedTeamId
+                ? {
+                  ...row,
+                  score,
+                  ...(Number.isNaN(cash) ? {} : { cash }),
+                }
+                : row
+            ))
+            : previousLeaderboard
+
+          return {
+            ...previousState,
+            leaderboard: nextLeaderboard,
           }
         })
         return
@@ -954,6 +1207,34 @@ export default function TeamDashboardPage() {
         return
       }
 
+      // Generic reload handlers for new game types
+      const newGameReloadPrefixes = [
+        { prefix: 'team.checkpoint_heist.', flag: isCheckpointHeist },
+        { prefix: 'game.checkpoint_heist.', flag: isCheckpointHeist },
+        { prefix: 'team.code_conspiracy.', flag: isCodeConspiracy },
+        { prefix: 'game.code_conspiracy.', flag: isCodeConspiracy },
+        { prefix: 'team.courier_rush.', flag: isCourierRush },
+        { prefix: 'game.courier_rush.', flag: isCourierRush },
+        { prefix: 'team.crazy_88.', flag: isCrazy88 },
+        { prefix: 'game.crazy_88.', flag: isCrazy88 },
+        { prefix: 'team.echo_hunt.', flag: isEchoHunt },
+        { prefix: 'game.echo_hunt.', flag: isEchoHunt },
+        { prefix: 'team.geohunter.', flag: isGeoHunter },
+        { prefix: 'game.geohunter.', flag: isGeoHunter },
+        { prefix: 'team.pandemic_response.', flag: isPandemicResponse },
+        { prefix: 'game.pandemic_response.', flag: isPandemicResponse },
+        { prefix: 'team.resource_run.', flag: isResourceRun },
+        { prefix: 'game.resource_run.', flag: isResourceRun },
+        { prefix: 'team.territory_control.', flag: isTerritoryControl },
+        { prefix: 'game.territory_control.', flag: isTerritoryControl },
+      ]
+      for (const { prefix, flag } of newGameReloadPrefixes) {
+        if (flag && eventName.startsWith(prefix)) {
+          reloadTeamState()
+          return
+        }
+      }
+
       if (eventName !== 'team.exploding_kittens.state.activate' && eventName !== 'team.exploding_kittens.state.deactivate') {
         return
       }
@@ -978,7 +1259,7 @@ export default function TeamDashboardPage() {
     return () => {
       ws.close()
     }
-  }, [auth?.token, bootstrap?.game_type, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens, teamId])
+  }, [auth?.token, bootstrap?.game_type, gameId, isBirdsOfPrey, isBlindHike, isCheckpointHeist, isCodeConspiracy, isCourierRush, isCrazy88, isEchoHunt, isExplodingKittens, isGeoHunter, isMarketCrash, isPandemicResponse, isResourceRun, isTerritoryControl, teamId])
 
   useEffect(() => {
     blindHikeFinishedRef.current = Boolean(state?.finished)
@@ -1122,6 +1403,309 @@ export default function TeamDashboardPage() {
         }
       })
     } catch {
+    }
+  }
+
+  async function handleMarketCrashLocationUpdate(position) {
+    if (!isMarketCrash || !gameId || !teamId || !position) {
+      return
+    }
+
+    const latitude = Number(position?.latitude)
+    const longitude = Number(position?.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    try {
+      const response = await moduleApi.updateMarketCrashLocation(auth.token, gameId, teamId, { latitude, longitude })
+      const location = response?.location && typeof response.location === 'object' ? response.location : null
+      const nearbyPoints = Array.isArray(response?.nearby_points) ? response.nearby_points : []
+      const nearbyPointIdsRaw = Array.isArray(response?.nearby_point_ids) ? response.nearby_point_ids : nearbyPoints.map((point) => point?.id)
+      const nearbyPointIds = nearbyPointIdsRaw.map((value) => String(value || '')).filter(Boolean)
+      const nearbySet = new Set(nearbyPointIds)
+
+      setState((previous) => {
+        const previousState = previous && typeof previous === 'object' ? previous : {}
+        const previousPoints = Array.isArray(previousState.points) ? previousState.points : []
+        const nearbyById = new Map(nearbyPoints.map((point) => [String(point?.id || ''), point]))
+
+        return {
+          ...previousState,
+          ...(location ? { team_location: location } : {}),
+          points: previousPoints.map((point) => {
+            const pointId = String(point?.id || '')
+            const nearbyPatch = nearbyById.get(pointId)
+            return {
+              ...point,
+              ...(nearbyPatch && typeof nearbyPatch === 'object' ? nearbyPatch : {}),
+              in_range: nearbySet.has(pointId),
+            }
+          }),
+          nearby_points: nearbyPoints,
+          nearby_point_ids: nearbyPointIds,
+        }
+      })
+    } catch {
+    }
+  }
+
+  async function handleMarketCrashExecuteTrade({ pointId, resourceId, side, quantity }) {
+    const normalizedPointId = String(pointId || '').trim()
+    const normalizedResourceId = String(resourceId || '').trim()
+    const normalizedSide = String(side || '').trim().toLowerCase()
+    const normalizedQty = Number(quantity)
+    if (!isMarketCrash || !gameId || !teamId || !normalizedPointId || !normalizedResourceId || !['buy', 'sell'].includes(normalizedSide)) {
+      return
+    }
+
+    setActionError('')
+    setActionSuccess('')
+
+    const actionKey = `${normalizedSide}:${normalizedPointId}:${normalizedResourceId}`
+    setExecutingMarketCrashTradeKey(actionKey)
+
+    try {
+      const result = await moduleApi.executeMarketCrashTrade(auth.token, gameId, teamId, {
+        point_id: normalizedPointId,
+        resource_id: normalizedResourceId,
+        side: normalizedSide,
+        quantity: Number.isFinite(normalizedQty) && normalizedQty >= 1 ? Math.floor(normalizedQty) : 1,
+      })
+
+      const successKey = String(result?.message_key || '').trim()
+      setActionSuccess(
+        successKey
+          ? t(successKey, {}, t('market_crash.team.trade_success', {}, 'Trade executed'))
+          : t('market_crash.team.trade_success', {}, 'Trade executed'),
+      )
+
+      const nearbyPoints = Array.isArray(result?.nearby_points) ? result.nearby_points : []
+      const nearbyPointIdsRaw = Array.isArray(result?.nearby_point_ids) ? result.nearby_point_ids : nearbyPoints.map((point) => point?.id)
+      const nearbyPointIds = nearbyPointIdsRaw.map((value) => String(value || '')).filter(Boolean)
+      const nearbySet = new Set(nearbyPointIds)
+
+      setState((previous) => {
+        const previousState = previous && typeof previous === 'object' ? previous : {}
+        const previousPoints = Array.isArray(previousState.points) ? previousState.points : []
+        const nearbyById = new Map(nearbyPoints.map((point) => [String(point?.id || ''), point]))
+        const score = Number(result?.score)
+        const cash = Number(result?.cash)
+
+        const previousLeaderboard = Array.isArray(previousState.leaderboard) ? previousState.leaderboard : []
+        const nextLeaderboard = previousLeaderboard.map((row) => (
+          String(row?.team_id || '') === String(teamId)
+            ? {
+              ...row,
+              ...(Number.isNaN(score) ? {} : { score }),
+              ...(Number.isNaN(cash) ? {} : { cash }),
+            }
+            : row
+        ))
+
+        return {
+          ...previousState,
+          ...(Number.isNaN(score) ? {} : { score }),
+          ...(Number.isNaN(cash) ? {} : { cash }),
+          ...(result?.inventory && typeof result.inventory === 'object' ? { inventory: result.inventory } : {}),
+          points: previousPoints.map((point) => {
+            const pointIdKey = String(point?.id || '')
+            const nearbyPatch = nearbyById.get(pointIdKey)
+            return {
+              ...point,
+              ...(nearbyPatch && typeof nearbyPatch === 'object' ? nearbyPatch : {}),
+              in_range: nearbySet.has(pointIdKey),
+            }
+          }),
+          nearby_points: nearbyPoints,
+          nearby_point_ids: nearbyPointIds,
+          leaderboard: nextLeaderboard,
+        }
+      })
+    } catch (err) {
+      setActionError(err.message || t('market_crash.team.trade_failed', {}, 'Could not execute trade'))
+    } finally {
+      setExecutingMarketCrashTradeKey('')
+    }
+  }
+
+  async function handleCaptureCheckpoint(checkpointId, points) {
+    if (!isCheckpointHeist || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setCapturingCheckpoint(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'checkpoint_heist', gameId, teamId, { checkpoint_id: checkpointId, points })
+      setActionSuccess(String(result?.message_key || t('checkpoint_heist.capture.recorded', {}, 'Checkpoint captured')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('checkpoint_heist.capture.failed', {}, 'Could not capture checkpoint'))
+    } finally {
+      setCapturingCheckpoint(false)
+    }
+  }
+
+  async function handleSubmitConspiracyCode(targetTeamId, codeValue) {
+    if (!isCodeConspiracy || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setSubmittingCode(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'code_conspiracy', gameId, teamId, { target_team_id: targetTeamId, code_value: codeValue })
+      setActionSuccess(String(result?.message_key || t('code_conspiracy.code.submitted', {}, 'Code submitted')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('code_conspiracy.code.failed', {}, 'Could not submit code'))
+    } finally {
+      setSubmittingCode(false)
+    }
+  }
+
+  async function handleConfirmPickup(pickupId) {
+    if (!isCourierRush || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setConfirmingPickup(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { pickup_id: pickupId })
+      setActionSuccess(String(result?.message_key || t('courier_rush.pickup.confirmed', {}, 'Pickup confirmed')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('courier_rush.pickup.failed', {}, 'Could not confirm pickup'))
+    } finally {
+      setConfirmingPickup(false)
+    }
+  }
+
+  async function handleConfirmDropoff(dropoffId, points) {
+    if (!isCourierRush || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setConfirmingDropoff(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { dropoff_id: dropoffId, points }, 'dropoff/confirm')
+      setActionSuccess(String(result?.message_key || t('courier_rush.dropoff.confirmed', {}, 'Drop-off confirmed')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('courier_rush.dropoff.failed', {}, 'Could not confirm drop-off'))
+    } finally {
+      setConfirmingDropoff(false)
+    }
+  }
+
+  async function handleSubmitCrazy88Task(taskId, message) {
+    if (!isCrazy88 || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setSubmittingTask(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'crazy_88', gameId, teamId, { task_id: taskId, message })
+      setActionSuccess(String(result?.message_key || t('crazy88.task.submitted', {}, 'Task submitted')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('crazy88.task.failed', {}, 'Could not submit task'))
+    } finally {
+      setSubmittingTask(false)
+    }
+  }
+
+  async function handleClaimBeacon(beaconId, points) {
+    if (!isEchoHunt || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setClaimingBeacon(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'echo_hunt', gameId, teamId, { beacon_id: beaconId, points })
+      setActionSuccess(String(result?.message_key || t('echo_hunt.beacon.claimed', {}, 'Beacon claimed')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('echo_hunt.beacon.failed', {}, 'Could not claim beacon'))
+    } finally {
+      setClaimingBeacon(false)
+    }
+  }
+
+  async function handleAnswerGeoQuestion(poiId, correct, answerValue) {
+    if (!isGeoHunter || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setAnsweringQuestion(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'geohunter', gameId, teamId, { poi_id: poiId, answer: answerValue })
+      if (correct) {
+        setActionSuccess(t('geohunter.answer.correct', {}, 'Correct answer!'))
+      } else {
+        setActionError(t('geohunter.answer.incorrect', {}, 'Incorrect answer'))
+      }
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('geohunter.answer.failed', {}, 'Could not submit answer'))
+    } finally {
+      setAnsweringQuestion(false)
+    }
+  }
+
+  async function handleCollectPandemicPickup(pickupId) {
+    if (!isPandemicResponse || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setCollectingPickup(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { pickup_id: pickupId })
+      setActionSuccess(String(result?.message_key || t('pandemic_response.pickup.collected', {}, 'Supply collected')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('pandemic_response.pickup.failed', {}, 'Could not collect supply'))
+    } finally {
+      setCollectingPickup(false)
+    }
+  }
+
+  async function handleResolveHotspot(hotspotId, points) {
+    if (!isPandemicResponse || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setResolvingHotspot(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { hotspot_id: hotspotId, points }, 'hotspot/resolve')
+      setActionSuccess(String(result?.message_key || t('pandemic_response.hotspot.resolved', {}, 'Hotspot resolved')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('pandemic_response.hotspot.failed', {}, 'Could not resolve hotspot'))
+    } finally {
+      setResolvingHotspot(false)
+    }
+  }
+
+  async function handleClaimResource(nodeId, points) {
+    if (!isResourceRun || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setClaimingResource(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'resource_run', gameId, teamId, { node_id: nodeId, points })
+      setActionSuccess(String(result?.message_key || t('resource_run.claim.recorded', {}, 'Resource claimed')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('resource_run.claim.failed', {}, 'Could not claim resource'))
+    } finally {
+      setClaimingResource(false)
+    }
+  }
+
+  async function handleClaimZone(zoneId, points) {
+    if (!isTerritoryControl || !gameId || !teamId) return
+    setActionError('')
+    setActionSuccess('')
+    setClaimingZone(true)
+    try {
+      const result = await moduleApi.submitAction(auth.token, 'territory_control', gameId, teamId, { zone_id: zoneId, points })
+      setActionSuccess(String(result?.message_key || t('territory_control.claim.recorded', {}, 'Zone claimed')))
+      await refreshState()
+    } catch (err) {
+      setActionError(err.message || t('territory_control.claim.failed', {}, 'Could not claim zone'))
+    } finally {
+      setClaimingZone(false)
     }
   }
 
@@ -1609,6 +2193,112 @@ export default function TeamDashboardPage() {
               onDropEgg={handleBirdsDropEgg}
               onDestroyEgg={handleBirdsDestroyEgg}
               onLocationUpdate={handleBirdsLocationUpdate}
+            />
+          ) : null}
+
+          {isMarketCrash ? (
+            <MarketCrashTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              currentTeamLogoPath={currentTeamLogoPath}
+              t={t}
+              executingTradeKey={executingMarketCrashTradeKey}
+              onExecuteTrade={handleMarketCrashExecuteTrade}
+              onLocationUpdate={handleMarketCrashLocationUpdate}
+            />
+          ) : null}
+
+          {isCheckpointHeist ? (
+            <CheckpointHeistTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onCaptureCheckpoint={handleCaptureCheckpoint}
+              capturing={capturingCheckpoint}
+            />
+          ) : null}
+
+          {isCodeConspiracy ? (
+            <CodeConspiracyTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onSubmitCode={handleSubmitConspiracyCode}
+              submitting={submittingCode}
+            />
+          ) : null}
+
+          {isCourierRush ? (
+            <CourierRushTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onConfirmPickup={handleConfirmPickup}
+              onConfirmDropoff={handleConfirmDropoff}
+              confirmingPickup={confirmingPickup}
+              confirmingDropoff={confirmingDropoff}
+            />
+          ) : null}
+
+          {isCrazy88 ? (
+            <Crazy88TeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onSubmitTask={handleSubmitCrazy88Task}
+              submitting={submittingTask}
+            />
+          ) : null}
+
+          {isEchoHunt ? (
+            <EchoHuntTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onClaimBeacon={handleClaimBeacon}
+              claiming={claimingBeacon}
+            />
+          ) : null}
+
+          {isGeoHunter ? (
+            <GeoHunterTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onAnswerQuestion={handleAnswerGeoQuestion}
+              answering={answeringQuestion}
+            />
+          ) : null}
+
+          {isPandemicResponse ? (
+            <PandemicResponseTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onCollectPickup={handleCollectPandemicPickup}
+              onResolveHotspot={handleResolveHotspot}
+              collectingPickup={collectingPickup}
+              resolvingHotspot={resolvingHotspot}
+            />
+          ) : null}
+
+          {isResourceRun ? (
+            <ResourceRunTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onClaimResource={handleClaimResource}
+              claiming={claimingResource}
+            />
+          ) : null}
+
+          {isTerritoryControl ? (
+            <TerritoryControlTeamPanel
+              state={state}
+              currentTeamId={teamId}
+              t={t}
+              onClaimZone={handleClaimZone}
+              claiming={claimingZone}
             />
           ) : null}
         </>
