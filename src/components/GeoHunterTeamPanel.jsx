@@ -136,18 +136,14 @@ export default function GeoHunterTeamPanel({
     if (!activePoi) return
 
     let answerValue = ''
-    let correct = false
 
     if (activePoi.question_type === 'multiple_choice') {
       answerValue = selectedChoice
-      const correctChoice = activePoi.choices.find((c) => Boolean(c.is_correct))
-      correct = correctChoice ? String(correctChoice.id) === selectedChoice : false
     } else {
       answerValue = openAnswer.trim()
-      correct = answerValue.toLowerCase() === activePoi.correct_answer.toLowerCase()
     }
 
-    onAnswerQuestion(activePoi.id, correct, answerValue)
+    onAnswerQuestion(activePoi.id, answerValue)
     setActivePoi(null)
   }
 

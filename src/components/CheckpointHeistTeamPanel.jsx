@@ -200,7 +200,7 @@ export default function CheckpointHeistTeamPanel({
                   className="btn btn-primary btn-small"
                   type="button"
                   disabled={capturing}
-                  onClick={() => onCaptureCheckpoint(cp.id, cp.points)}
+                  onClick={() => onCaptureCheckpoint(cp.id)}
                 >
                   {capturing
                     ? t('checkpoint_heist.team.capturing', {}, 'Capturing…')

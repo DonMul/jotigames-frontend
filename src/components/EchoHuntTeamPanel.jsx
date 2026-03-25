@@ -146,7 +146,7 @@ export default function EchoHuntTeamPanel({
               <li key={b.id} style={{ marginBottom: '0.75rem' }}>
                 <strong>{b.title}</strong> — {b.points} pts
                 <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimBeacon(b.id, b.points)}>
+                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimBeacon(b.id)}>
                   {claiming ? t('echo_hunt.team.claiming', {}, 'Claiming…') : t('echo_hunt.team.claim_beacon', {}, 'Claim beacon')}
                 </button>
               </li>

@@ -15,12 +15,10 @@ export default function TeamPlayPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionResult, setActionResult] = useState(null)
-  const [pointsValue, setPointsValue] = useState('1')
   const [taskMessage, setTaskMessage] = useState('')
   const [taskProofText, setTaskProofText] = useState('')
   const [targetTeamId, setTargetTeamId] = useState('')
   const [codeValue, setCodeValue] = useState('')
-  const [pointsDelta, setPointsDelta] = useState('0')
 
   const isTeam = auth.principalType === 'team'
 
@@ -148,10 +146,6 @@ export default function TeamPlayPage() {
                 </table>
 
                 <h2 style={{ marginTop: '1rem' }}>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</h2>
-                <div className="form-row" style={{ maxWidth: '14rem' }}>
-                  <label htmlFor="courier-dropoff-points">{t('courier_rush.admin.table_points', {}, 'Points')}</label>
-                  <input id="courier-dropoff-points" type="number" value={pointsValue} onChange={(event) => setPointsValue(event.target.value)} />
-                </div>
                 <table className="admin-table">
                   <thead>
                     <tr>
@@ -167,7 +161,7 @@ export default function TeamPlayPage() {
                           <button
                             className="btn btn-primary btn-small"
                             type="button"
-                            onClick={() => submitPayload({ dropoff_id: dropoff.id, points: Number(pointsValue || 1) })}
+                            onClick={() => submitPayload({ dropoff_id: dropoff.id })}
                           >
                             {t('courier_rush.team.confirm_dropoff', {}, 'Confirm dropoff')}
                           </button>
@@ -204,10 +198,6 @@ export default function TeamPlayPage() {
                 </table>
 
                 <h2 style={{ marginTop: '1rem' }}>{t('pandemic_response.admin.current_hotspots', {}, 'Hotspots')}</h2>
-                <div className="form-row" style={{ maxWidth: '14rem' }}>
-                  <label htmlFor="pandemic-hotspot-points">{t('pandemic_response.admin.table_points', {}, 'Points')}</label>
-                  <input id="pandemic-hotspot-points" type="number" value={pointsValue} onChange={(event) => setPointsValue(event.target.value)} />
-                </div>
                 <table className="admin-table">
                   <thead>
                     <tr>
@@ -223,7 +213,7 @@ export default function TeamPlayPage() {
                           <button
                             className="btn btn-primary btn-small"
                             type="button"
-                            onClick={() => submitPayload({ hotspot_id: hotspot.id, points: Number(pointsValue || 1) })}
+                            onClick={() => submitPayload({ hotspot_id: hotspot.id })}
                           >
                             {t('pandemic_response.team.resolve_hotspot', {}, 'Resolve')}
                           </button>
@@ -296,10 +286,6 @@ export default function TeamPlayPage() {
                     <label htmlFor="code-input">{t('code_conspiracy.team.code', {}, 'Code')}</label>
                     <input id="code-input" value={codeValue} onChange={(event) => setCodeValue(event.target.value)} />
                   </div>
-                  <div>
-                    <label htmlFor="points-delta-input">{t('code_conspiracy.team.points_delta', {}, 'Points delta')}</label>
-                    <input id="points-delta-input" type="number" value={pointsDelta} onChange={(event) => setPointsDelta(event.target.value)} />
-                  </div>
                 </div>
                 <button
                   className="btn btn-primary"
@@ -307,7 +293,6 @@ export default function TeamPlayPage() {
                   onClick={() => submitPayload({
                     target_team_id: targetTeamId.trim(),
                     code: codeValue.trim(),
-                    points_delta: Number(pointsDelta || 0),
                   })}
                 >
                   {t('code_conspiracy.team.submit_code', {}, 'Submit code')}

@@ -184,7 +184,7 @@ export default function PandemicResponseTeamPanel({
               <li key={h.id} style={{ marginBottom: '0.75rem' }}>
                 <strong>🔴 {h.title}</strong> — {h.points} pts ({h.severity})
                 <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={resolvingHotspot} onClick={() => onResolveHotspot(h.id, h.points)}>
+                <button className="btn btn-primary btn-small" type="button" disabled={resolvingHotspot} onClick={() => onResolveHotspot(h.id)}>
                   {resolvingHotspot ? t('pandemic_response.team.resolving', {}, 'Resolving…') : t('pandemic_response.team.resolve_hotspot', {}, 'Resolve')}
                 </button>
               </li>

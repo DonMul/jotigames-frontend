@@ -173,7 +173,7 @@ export default function CourierRushTeamPanel({
               <li key={d.id} style={{ marginBottom: '0.75rem' }}>
                 <strong>🏁 {d.title}</strong> — {d.points} pts
                 <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={confirmingDropoff} onClick={() => onConfirmDropoff(d.id, d.points)}>
+                <button className="btn btn-primary btn-small" type="button" disabled={confirmingDropoff} onClick={() => onConfirmDropoff(d.id)}>
                   {confirmingDropoff ? t('courier_rush.team.dropping', {}, 'Dropping off…') : t('courier_rush.team.confirm_dropoff', {}, 'Drop off')}
                 </button>
               </li>

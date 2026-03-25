@@ -1529,13 +1529,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleCaptureCheckpoint(checkpointId, points) {
+  async function handleCaptureCheckpoint(checkpointId) {
     if (!isCheckpointHeist || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setCapturingCheckpoint(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'checkpoint_heist', gameId, teamId, { checkpoint_id: checkpointId, points })
+      const result = await moduleApi.submitAction(auth.token, 'checkpoint_heist', gameId, teamId, { checkpoint_id: checkpointId })
       setActionSuccess(String(result?.message_key || t('checkpoint_heist.capture.recorded', {}, 'Checkpoint captured')))
       await refreshState()
     } catch (err) {
@@ -1577,13 +1577,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleConfirmDropoff(dropoffId, points) {
+  async function handleConfirmDropoff(dropoffId) {
     if (!isCourierRush || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setConfirmingDropoff(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { dropoff_id: dropoffId, points }, 'dropoff/confirm')
+      const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { dropoff_id: dropoffId }, 'dropoff/confirm')
       setActionSuccess(String(result?.message_key || t('courier_rush.dropoff.confirmed', {}, 'Drop-off confirmed')))
       await refreshState()
     } catch (err) {
@@ -1609,13 +1609,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleClaimBeacon(beaconId, points) {
+  async function handleClaimBeacon(beaconId) {
     if (!isEchoHunt || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setClaimingBeacon(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'echo_hunt', gameId, teamId, { beacon_id: beaconId, points })
+      const result = await moduleApi.submitAction(auth.token, 'echo_hunt', gameId, teamId, { beacon_id: beaconId })
       setActionSuccess(String(result?.message_key || t('echo_hunt.beacon.claimed', {}, 'Beacon claimed')))
       await refreshState()
     } catch (err) {
@@ -1625,14 +1625,14 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleAnswerGeoQuestion(poiId, correct, answerValue) {
+  async function handleAnswerGeoQuestion(poiId, answerValue) {
     if (!isGeoHunter || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setAnsweringQuestion(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'geohunter', gameId, teamId, { poi_id: poiId, answer: answerValue })
-      if (correct) {
+      if (result?.points_awarded > 0) {
         setActionSuccess(t('geohunter.answer.correct', {}, 'Correct answer!'))
       } else {
         setActionError(t('geohunter.answer.incorrect', {}, 'Incorrect answer'))
@@ -1661,13 +1661,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleResolveHotspot(hotspotId, points) {
+  async function handleResolveHotspot(hotspotId) {
     if (!isPandemicResponse || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setResolvingHotspot(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { hotspot_id: hotspotId, points }, 'hotspot/resolve')
+      const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { hotspot_id: hotspotId }, 'hotspot/resolve')
       setActionSuccess(String(result?.message_key || t('pandemic_response.hotspot.resolved', {}, 'Hotspot resolved')))
       await refreshState()
     } catch (err) {
@@ -1677,13 +1677,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleClaimResource(nodeId, points) {
+  async function handleClaimResource(nodeId) {
     if (!isResourceRun || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setClaimingResource(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'resource_run', gameId, teamId, { node_id: nodeId, points })
+      const result = await moduleApi.submitAction(auth.token, 'resource_run', gameId, teamId, { node_id: nodeId })
       setActionSuccess(String(result?.message_key || t('resource_run.claim.recorded', {}, 'Resource claimed')))
       await refreshState()
     } catch (err) {
@@ -1693,13 +1693,13 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleClaimZone(zoneId, points) {
+  async function handleClaimZone(zoneId) {
     if (!isTerritoryControl || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setClaimingZone(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'territory_control', gameId, teamId, { zone_id: zoneId, points })
+      const result = await moduleApi.submitAction(auth.token, 'territory_control', gameId, teamId, { zone_id: zoneId })
       setActionSuccess(String(result?.message_key || t('territory_control.claim.recorded', {}, 'Zone claimed')))
       await refreshState()
     } catch (err) {

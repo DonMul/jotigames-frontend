@@ -135,7 +135,7 @@ export default function TerritoryControlTeamPanel({
               <li key={z.id} style={{ marginBottom: '0.75rem' }}>
                 <strong>{z.title}</strong> — {z.points} pts
                 <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimZone(z.id, z.points)}>
+                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimZone(z.id)}>
                   {claiming ? t('territory_control.team.claiming', {}, 'Claiming…') : t('territory_control.team.claim_zone', {}, 'Claim zone')}
                 </button>
               </li>

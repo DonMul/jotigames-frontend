@@ -135,7 +135,7 @@ export default function ResourceRunTeamPanel({
               <li key={n.id} style={{ marginBottom: '0.75rem' }}>
                 <strong>{n.title}</strong> — {n.points} pts
                 <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimResource(n.id, n.points)}>
+                <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimResource(n.id)}>
                   {claiming ? t('resource_run.team.claiming', {}, 'Claiming…') : t('resource_run.team.claim_resource', {}, 'Claim resource')}
                 </button>
               </li>
