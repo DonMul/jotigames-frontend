@@ -1,9 +1,69 @@
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 
+import DetailedGameInfoPage from '../components/DetailedGameInfoPage'
 import { GAME_BY_SLUG } from '../lib/gameCatalog'
 import { useAuth } from '../lib/auth'
+import { getDetailedGameInfoConfig } from '../lib/detailedGameInfoContent'
 import { useI18n } from '../lib/i18n'
+
+function buildDetailedGameInfoContent(config, t) {
+  if (!config?.prefix) {
+    return null
+  }
+
+  const info = (key) => t(`${config.prefix}.${key}`)
+
+  return {
+    theme: config.theme,
+    kicker: info('kicker'),
+    eyebrow: info('eyebrow'),
+    heroText: info('heroText'),
+    secondaryCta: info('secondaryCta'),
+    panelTitle: t('gameInfoDetailed.panelTitle'),
+    panelPoints: [info('panelPointOne'), info('panelPointTwo'), info('panelPointThree')],
+    highlights: [
+      { value: info('highlightOneValue'), label: info('highlightOneLabel') },
+      { value: info('highlightTwoValue'), label: info('highlightTwoLabel') },
+      { value: info('highlightThreeValue'), label: info('highlightThreeLabel') },
+      { value: info('highlightFourValue'), label: info('highlightFourLabel') },
+    ],
+    battleKicker: t('gameInfoDetailed.battleKicker'),
+    battleTitle: info('battleTitle'),
+    battleText: info('battleText'),
+    features: [
+      { icon: info('featureOneIcon'), title: info('featureOneTitle'), text: info('featureOneText') },
+      { icon: info('featureTwoIcon'), title: info('featureTwoTitle'), text: info('featureTwoText') },
+      { icon: info('featureThreeIcon'), title: info('featureThreeTitle'), text: info('featureThreeText') },
+    ],
+    howKicker: t('gameInfoDetailed.howKicker'),
+    howTitle: info('howTitle'),
+    howText: info('howText'),
+    playStylesTitle: t('gameInfoDetailed.playStylesTitle'),
+    flow: [
+      { number: 1, title: info('flowOneTitle'), text: info('flowOneText') },
+      { number: 2, title: info('flowTwoTitle'), text: info('flowTwoText') },
+      { number: 3, title: info('flowThreeTitle'), text: info('flowThreeText') },
+      { number: 4, title: info('flowFourTitle'), text: info('flowFourText') },
+    ],
+    playStyles: [info('playStyleOne'), info('playStyleTwo'), info('playStyleThree'), info('playStyleFour')],
+    organizerKicker: t('gameInfoDetailed.organizerKicker'),
+    organizerTitle: info('organizerTitle'),
+    organizerText: info('organizerText'),
+    organizerCards: [
+      { title: t('gameInfoDetailed.organizerCardOneTitle'), text: t('gameInfoDetailed.organizerCardOneText') },
+      { title: t('gameInfoDetailed.organizerCardTwoTitle'), text: t('gameInfoDetailed.organizerCardTwoText') },
+      { title: t('gameInfoDetailed.organizerCardThreeTitle'), text: t('gameInfoDetailed.organizerCardThreeText') },
+    ],
+    perfectForKicker: t('gameInfoDetailed.perfectForKicker'),
+    perfectForTitle: info('perfectForTitle'),
+    perfectForText: info('perfectForText'),
+    perfectFor: [info('perfectForOne'), info('perfectForTwo'), info('perfectForThree'), info('perfectForFour')],
+    ctaTitle: info('ctaTitle'),
+    ctaText: info('ctaText'),
+    ctaSecondary: t('gameInfoDetailed.ctaSecondary'),
+  }
+}
 
 function buildDefaultFlow(name, t) {
   return [
@@ -35,21 +95,366 @@ function buildExampleSections(name, t) {
   ]
 }
 
+function buildBirdsOfPreyHighlights(t) {
+  return [
+    {
+      value: t('birds_of_prey.info.highlightVisibilityValue'),
+      label: t('birds_of_prey.info.highlightVisibilityLabel'),
+    },
+    {
+      value: t('birds_of_prey.info.highlightProtectionValue'),
+      label: t('birds_of_prey.info.highlightProtectionLabel'),
+    },
+    {
+      value: t('birds_of_prey.info.highlightAutoDropValue'),
+      label: t('birds_of_prey.info.highlightAutoDropLabel'),
+    },
+    {
+      value: t('birds_of_prey.info.highlightScoreValue'),
+      label: t('birds_of_prey.info.highlightScoreLabel'),
+    },
+  ]
+}
+
+function buildBirdsOfPreyFlow(t) {
+  return [
+    {
+      number: 1,
+      title: t('birds_of_prey.info.flowScoutTitle'),
+      text: t('birds_of_prey.info.flowScoutText'),
+    },
+    {
+      number: 2,
+      title: t('birds_of_prey.info.flowDropTitle'),
+      text: t('birds_of_prey.info.flowDropText'),
+    },
+    {
+      number: 3,
+      title: t('birds_of_prey.info.flowRaidTitle'),
+      text: t('birds_of_prey.info.flowRaidText'),
+    },
+    {
+      number: 4,
+      title: t('birds_of_prey.info.flowLeadTitle'),
+      text: t('birds_of_prey.info.flowLeadText'),
+    },
+  ]
+}
+
+function buildBirdsOfPreyFeatureCards(t) {
+  return [
+    {
+      icon: '🥚',
+      title: t('birds_of_prey.info.featureNestsTitle'),
+      text: t('birds_of_prey.info.featureNestsText'),
+    },
+    {
+      icon: '🧭',
+      title: t('birds_of_prey.info.featureVisibilityTitle'),
+      text: t('birds_of_prey.info.featureVisibilityText'),
+    },
+    {
+      icon: '🛡️',
+      title: t('birds_of_prey.info.featureProtectionTitle'),
+      text: t('birds_of_prey.info.featureProtectionText'),
+    },
+  ]
+}
+
+function buildBirdsOfPreyPlayStyles(t) {
+  return [
+    t('birds_of_prey.info.playStylePatrol'),
+    t('birds_of_prey.info.playStyleRaid'),
+    t('birds_of_prey.info.playStyleDecoy'),
+    t('birds_of_prey.info.playStyleRecover'),
+  ]
+}
+
+function buildBirdsOfPreyOrganizerCards(t) {
+  return [
+    {
+      title: t('birds_of_prey.info.organizerConfigTitle'),
+      text: t('birds_of_prey.info.organizerConfigText'),
+    },
+    {
+      title: t('birds_of_prey.info.organizerLiveTitle'),
+      text: t('birds_of_prey.info.organizerLiveText'),
+    },
+    {
+      title: t('birds_of_prey.info.organizerAccessibleTitle'),
+      text: t('birds_of_prey.info.organizerAccessibleText'),
+    },
+  ]
+}
+
+function buildBirdsOfPreyPerfectFor(t) {
+  return [
+    t('birds_of_prey.info.perfectForWideFields'),
+    t('birds_of_prey.info.perfectForMixedAges'),
+    t('birds_of_prey.info.perfectForEvening'),
+    t('birds_of_prey.info.perfectForCompetitive'),
+  ]
+}
+
+function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t }) {
+  const highlights = useMemo(() => buildBirdsOfPreyHighlights(t), [t])
+  const flow = useMemo(() => buildBirdsOfPreyFlow(t), [t])
+  const featureCards = useMemo(() => buildBirdsOfPreyFeatureCards(t), [t])
+  const playStyles = useMemo(() => buildBirdsOfPreyPlayStyles(t), [t])
+  const organizerCards = useMemo(() => buildBirdsOfPreyOrganizerCards(t), [t])
+  const perfectFor = useMemo(() => buildBirdsOfPreyPerfectFor(t), [t])
+
+  return (
+    <>
+      <section className="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,.08),transparent_28%)]" />
+        <div className="absolute -left-8 top-24 h-28 w-28 rounded-full bg-brand-400/20 blur-3xl animate-float" />
+        <div className="absolute right-6 top-16 h-24 w-24 rounded-full bg-emerald-300/10 blur-3xl animate-pulse-glow" />
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.15fr_.85fr] lg:items-center lg:px-8 lg:py-28">
+          <div className="animate-fade-up">
+            <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand-200 backdrop-blur-sm">
+              {t('birds_of_prey.info.kicker')}
+            </span>
+            <div className="mt-6 flex items-center gap-4">
+              <img src={game.logo} alt={gameName} className="h-20 w-20 object-contain drop-shadow-2xl sm:h-24 sm:w-24" />
+              <div>
+                <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{gameName}</h1>
+                <p className="mt-2 text-sm font-medium uppercase tracking-[0.18em] text-brand-200/90">{t('birds_of_prey.info.eyebrow')}</p>
+              </div>
+            </div>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-navy-100 sm:text-xl">{gameSubtitle}</p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-navy-200/90">
+              {t('birds_of_prey.info.heroText')}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {isAuthenticated ? (
+                <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
+                  {t('birds_of_prey.info.primaryCtaAuthenticated')}
+                </Link>
+              ) : (
+                <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
+                  {t('birds_of_prey.info.primaryCtaGuest')}
+                </Link>
+              )}
+              <a href="#birds-how-to-play" className="inline-flex items-center rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm font-semibold text-white transition-all hover:border-brand-300 hover:bg-white/10">
+                {t('birds_of_prey.info.secondaryCta')}
+              </a>
+            </div>
+          </div>
+
+          <aside className="animate-slide-in-right">
+            <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-2xl shadow-navy-950/30 backdrop-blur-sm">
+              <div className="rounded-[1.5rem] border border-white/10 bg-navy-950/45 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-200">{t('birds_of_prey.info.panelTitle')}</p>
+                <div className="mt-5 space-y-4">
+                  {[
+                    t('birds_of_prey.info.panelPointOne'),
+                    t('birds_of_prey.info.panelPointTwo'),
+                    t('birds_of_prey.info.panelPointThree'),
+                  ].map((item) => (
+                    <div key={item} className="flex gap-3 rounded-2xl border border-white/8 bg-white/5 p-4">
+                      <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-300" />
+                      <p className="text-sm leading-relaxed text-navy-100">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                {highlights.map((item, index) => (
+                  <div key={item.label} className={`rounded-2xl border border-white/10 bg-white/6 p-4 ${index % 2 === 0 ? 'animate-fade-in' : 'animate-fade-up'}`}>
+                    <p className="font-display text-2xl font-bold text-white">{item.value}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-navy-200/80">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+              {t('birds_of_prey.info.sectionBattleKicker')}
+            </span>
+            <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+              {t('birds_of_prey.info.sectionBattleTitle')}
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-navy-500">
+              {t('birds_of_prey.info.sectionBattleText')}
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {featureCards.map((card) => (
+              <article key={card.title} className="group rounded-3xl border border-warm-200 bg-warm-50/70 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10">
+                <span className="text-3xl">{card.icon}</span>
+                <h3 className="mt-4 font-display text-xl font-bold text-navy-900">{card.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-navy-600">{card.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="birds-how-to-play" className="bg-gradient-to-b from-warm-50 to-white py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
+            <div>
+              <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 shadow-sm ring-1 ring-warm-200">
+                {t('birds_of_prey.info.sectionHowKicker')}
+              </span>
+              <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+                {t('birds_of_prey.info.sectionHowTitle')}
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-navy-500">
+                {t('birds_of_prey.info.sectionHowText')}
+              </p>
+
+              <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm">
+                <h3 className="font-display text-lg font-bold text-navy-900">{t('birds_of_prey.info.playStylesTitle')}</h3>
+                <ul className="mt-4 space-y-3">
+                  {playStyles.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="grid gap-5">
+              {flow.map((step) => (
+                <div key={step.number} className="rounded-3xl border border-warm-200 bg-white p-6 shadow-sm transition-all hover:border-brand-200 hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-500 font-display text-lg font-bold text-white shadow-lg shadow-brand-500/20">
+                      {step.number}
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-bold text-navy-900">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-navy-600">{step.text}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-navy-950 py-16 text-white sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1fr_.9fr] lg:items-start">
+            <div>
+              <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-200">
+                {t('birds_of_prey.info.organizerKicker')}
+              </span>
+              <h2 className="mt-4 font-display text-3xl font-bold sm:text-4xl">
+                {t('birds_of_prey.info.organizerTitle')}
+              </h2>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-navy-200">
+                {t('birds_of_prey.info.organizerText')}
+              </p>
+            </div>
+
+            <div className="grid gap-4">
+              {organizerCards.map((card) => (
+                <article key={card.title} className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+                  <h3 className="font-display text-xl font-bold text-white">{card.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-navy-200">{card.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-warm-200 bg-gradient-to-br from-warm-50 via-white to-brand-50 p-8 shadow-sm sm:p-10">
+            <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+              <div>
+                <span className="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  {t('birds_of_prey.info.perfectForKicker')}
+                </span>
+                <h2 className="mt-4 font-display text-3xl font-bold text-navy-900">
+                  {t('birds_of_prey.info.perfectForTitle')}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-navy-500">
+                  {t('birds_of_prey.info.perfectForText')}
+                </p>
+              </div>
+
+              <ul className="space-y-4">
+                {perfectFor.map((item) => (
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm leading-relaxed text-navy-700 shadow-sm">
+                    <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-gradient-to-b from-white to-warm-50 py-16 sm:py-20">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <h2 className="font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+            {t('birds_of_prey.info.ctaTitle')}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-navy-500">
+            {t('birds_of_prey.info.ctaText')}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            {isAuthenticated ? (
+              <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
+                {t('birds_of_prey.info.ctaPrimaryAuthenticated')}
+              </Link>
+            ) : (
+              <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
+                {t('birds_of_prey.info.ctaPrimaryGuest')}
+              </Link>
+            )}
+            <Link to="/pricing" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3.5 text-sm font-semibold text-navy-700 transition-all hover:border-brand-300 hover:text-brand-600">
+              {t('birds_of_prey.info.ctaSecondary')}
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
 export default function GameInfoPage() {
   const { slug } = useParams()
   const { isAuthenticated } = useAuth()
   const { t } = useI18n()
   const game = GAME_BY_SLUG[slug]
   const [activeTab, setActiveTab] = useState('flow')
-  const gameName = game ? t(`gameCatalog.${game.type}.name`, {}, game.name) : ''
-  const gameShortDescription = game ? t(`gameCatalog.${game.type}.shortDescription`, {}, game.shortDescription) : ''
-  const gameSubtitle = game ? t(`gameCatalog.${game.type}.subtitle`, {}, game.subtitle) : ''
+  const gameName = game ? t(`gameCatalog.${game.type}.name`) : ''
+  const gameShortDescription = game ? t(`gameCatalog.${game.type}.shortDescription`) : ''
+  const gameSubtitle = game ? t(`gameCatalog.${game.type}.subtitle`) : ''
+  const detailedConfig = useMemo(() => (game ? getDetailedGameInfoConfig(game.type) : null), [game])
+  const detailedContent = useMemo(() => buildDetailedGameInfoContent(detailedConfig, t), [detailedConfig, t])
 
   const flowSteps = useMemo(() => (game ? buildDefaultFlow(gameName, t) : []), [game, gameName, t])
   const optionCards = useMemo(() => (game ? buildOptionCards(gameName, t) : []), [game, gameName, t])
   const exampleSections = useMemo(() => (game ? buildExampleSections(gameName, t) : []), [game, gameName, t])
 
   if (!game) return <Navigate to="/" replace />
+
+  if (game.type === 'birds_of_prey') {
+    return <BirdsOfPreyInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} t={t} />
+  }
+
+  if (detailedContent) {
+    return <DetailedGameInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} t={t} content={detailedContent} />
+  }
 
   const tabs = [
     { id: 'flow', label: t('gameInfo.tabFlow') },
@@ -67,9 +472,7 @@ export default function GameInfoPage() {
             <span className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-300 mb-6">
               {t('gameInfo.guide')}
             </span>
-            <div className="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mb-6 shadow-2xl">
-              <img src={game.logo} alt={gameName} className="w-16 h-16 rounded-xl object-cover" />
-            </div>
+            <img src={game.logo} alt={gameName} className="mb-6 h-28 w-28 sm:h-36 sm:w-36 object-contain" />
             <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">{gameName}</h1>
             <p className="mt-4 text-lg text-navy-200 max-w-2xl">{gameSubtitle}</p>
           </div>

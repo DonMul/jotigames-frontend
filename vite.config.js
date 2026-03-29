@@ -25,6 +25,17 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          leaflet: ['leaflet'],
+          stripe: ['@stripe/stripe-js', '@stripe/react-stripe-js'],
+        },
+      },
+    },
+  },
   preview: {
     allowedHosts: ['jotigames.nl', 'www.jotigames.nl'],
   },

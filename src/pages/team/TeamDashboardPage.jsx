@@ -1,18 +1,18 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
-import BlindHikeTeamPanel from '../../components/BlindHikeTeamPanel'
-import BirdsOfPreyTeamPanel from '../../components/BirdsOfPreyTeamPanel'
-import CheckpointHeistTeamPanel from '../../components/CheckpointHeistTeamPanel'
-import CodeConspiracyTeamPanel from '../../components/CodeConspiracyTeamPanel'
-import CourierRushTeamPanel from '../../components/CourierRushTeamPanel'
-import Crazy88TeamPanel from '../../components/Crazy88TeamPanel'
-import EchoHuntTeamPanel from '../../components/EchoHuntTeamPanel'
-import GeoHunterTeamPanel from '../../components/GeoHunterTeamPanel'
-import MarketCrashTeamPanel from '../../components/MarketCrashTeamPanel'
-import PandemicResponseTeamPanel from '../../components/PandemicResponseTeamPanel'
-import ResourceRunTeamPanel from '../../components/ResourceRunTeamPanel'
-import TerritoryControlTeamPanel from '../../components/TerritoryControlTeamPanel'
+const BlindHikeTeamPanel = lazy(() => import('../../components/BlindHikeTeamPanel'))
+const BirdsOfPreyTeamPanel = lazy(() => import('../../components/BirdsOfPreyTeamPanel'))
+const CheckpointHeistTeamPanel = lazy(() => import('../../components/CheckpointHeistTeamPanel'))
+const CodeConspiracyTeamPanel = lazy(() => import('../../components/CodeConspiracyTeamPanel'))
+const CourierRushTeamPanel = lazy(() => import('../../components/CourierRushTeamPanel'))
+const Crazy88TeamPanel = lazy(() => import('../../components/Crazy88TeamPanel'))
+const EchoHuntTeamPanel = lazy(() => import('../../components/EchoHuntTeamPanel'))
+const GeoHunterTeamPanel = lazy(() => import('../../components/GeoHunterTeamPanel'))
+const MarketCrashTeamPanel = lazy(() => import('../../components/MarketCrashTeamPanel'))
+const PandemicResponseTeamPanel = lazy(() => import('../../components/PandemicResponseTeamPanel'))
+const ResourceRunTeamPanel = lazy(() => import('../../components/ResourceRunTeamPanel'))
+const TerritoryControlTeamPanel = lazy(() => import('../../components/TerritoryControlTeamPanel'))
 import GameCardDisplay from '../../components/shared/GameCardDisplay'
 import { gameApi, moduleApi } from '../../lib/api'
 import { toAssetUrl } from '../../lib/assetUrl'
@@ -2173,133 +2173,157 @@ export default function TeamDashboardPage() {
           )}
 
           {isBlindHike ? (
-            <BlindHikeTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              placingMarker={placingBlindHikeMarker}
-              onPlaceMarker={handlePlaceBlindHikeMarker}
-            />
+            <Suspense fallback={null}>
+              <BlindHikeTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                placingMarker={placingBlindHikeMarker}
+                onPlaceMarker={handlePlaceBlindHikeMarker}
+              />
+            </Suspense>
           ) : null}
 
           {isBirdsOfPrey ? (
-            <BirdsOfPreyTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              currentTeamLogoPath={currentTeamLogoPath}
-              t={t}
-              droppingEgg={droppingBirdEgg}
-              destroyingEggId={destroyingBirdEggId}
-              onDropEgg={handleBirdsDropEgg}
-              onDestroyEgg={handleBirdsDestroyEgg}
-              onLocationUpdate={handleBirdsLocationUpdate}
-            />
+            <Suspense fallback={null}>
+              <BirdsOfPreyTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                currentTeamLogoPath={currentTeamLogoPath}
+                t={t}
+                droppingEgg={droppingBirdEgg}
+                destroyingEggId={destroyingBirdEggId}
+                onDropEgg={handleBirdsDropEgg}
+                onDestroyEgg={handleBirdsDestroyEgg}
+                onLocationUpdate={handleBirdsLocationUpdate}
+              />
+            </Suspense>
           ) : null}
 
           {isMarketCrash ? (
-            <MarketCrashTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              currentTeamLogoPath={currentTeamLogoPath}
-              t={t}
-              executingTradeKey={executingMarketCrashTradeKey}
-              onExecuteTrade={handleMarketCrashExecuteTrade}
-              onLocationUpdate={handleMarketCrashLocationUpdate}
-            />
+            <Suspense fallback={null}>
+              <MarketCrashTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                currentTeamLogoPath={currentTeamLogoPath}
+                t={t}
+                executingTradeKey={executingMarketCrashTradeKey}
+                onExecuteTrade={handleMarketCrashExecuteTrade}
+                onLocationUpdate={handleMarketCrashLocationUpdate}
+              />
+            </Suspense>
           ) : null}
 
           {isCheckpointHeist ? (
-            <CheckpointHeistTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onCaptureCheckpoint={handleCaptureCheckpoint}
-              capturing={capturingCheckpoint}
-            />
+            <Suspense fallback={null}>
+              <CheckpointHeistTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onCaptureCheckpoint={handleCaptureCheckpoint}
+                capturing={capturingCheckpoint}
+              />
+            </Suspense>
           ) : null}
 
           {isCodeConspiracy ? (
-            <CodeConspiracyTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onSubmitCode={handleSubmitConspiracyCode}
-              submitting={submittingCode}
-            />
+            <Suspense fallback={null}>
+              <CodeConspiracyTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onSubmitCode={handleSubmitConspiracyCode}
+                submitting={submittingCode}
+              />
+            </Suspense>
           ) : null}
 
           {isCourierRush ? (
-            <CourierRushTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onConfirmPickup={handleConfirmPickup}
-              onConfirmDropoff={handleConfirmDropoff}
-              confirmingPickup={confirmingPickup}
-              confirmingDropoff={confirmingDropoff}
-            />
+            <Suspense fallback={null}>
+              <CourierRushTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onConfirmPickup={handleConfirmPickup}
+                onConfirmDropoff={handleConfirmDropoff}
+                confirmingPickup={confirmingPickup}
+                confirmingDropoff={confirmingDropoff}
+              />
+            </Suspense>
           ) : null}
 
           {isCrazy88 ? (
-            <Crazy88TeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onSubmitTask={handleSubmitCrazy88Task}
-              submitting={submittingTask}
-            />
+            <Suspense fallback={null}>
+              <Crazy88TeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onSubmitTask={handleSubmitCrazy88Task}
+                submitting={submittingTask}
+              />
+            </Suspense>
           ) : null}
 
           {isEchoHunt ? (
-            <EchoHuntTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onClaimBeacon={handleClaimBeacon}
-              claiming={claimingBeacon}
-            />
+            <Suspense fallback={null}>
+              <EchoHuntTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onClaimBeacon={handleClaimBeacon}
+                claiming={claimingBeacon}
+              />
+            </Suspense>
           ) : null}
 
           {isGeoHunter ? (
-            <GeoHunterTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onAnswerQuestion={handleAnswerGeoQuestion}
-              answering={answeringQuestion}
-            />
+            <Suspense fallback={null}>
+              <GeoHunterTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onAnswerQuestion={handleAnswerGeoQuestion}
+                answering={answeringQuestion}
+              />
+            </Suspense>
           ) : null}
 
           {isPandemicResponse ? (
-            <PandemicResponseTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onCollectPickup={handleCollectPandemicPickup}
-              onResolveHotspot={handleResolveHotspot}
-              collectingPickup={collectingPickup}
-              resolvingHotspot={resolvingHotspot}
-            />
+            <Suspense fallback={null}>
+              <PandemicResponseTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onCollectPickup={handleCollectPandemicPickup}
+                onResolveHotspot={handleResolveHotspot}
+                collectingPickup={collectingPickup}
+                resolvingHotspot={resolvingHotspot}
+              />
+            </Suspense>
           ) : null}
 
           {isResourceRun ? (
-            <ResourceRunTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onClaimResource={handleClaimResource}
-              claiming={claimingResource}
-            />
+            <Suspense fallback={null}>
+              <ResourceRunTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onClaimResource={handleClaimResource}
+                claiming={claimingResource}
+              />
+            </Suspense>
           ) : null}
 
           {isTerritoryControl ? (
-            <TerritoryControlTeamPanel
-              state={state}
-              currentTeamId={teamId}
-              t={t}
-              onClaimZone={handleClaimZone}
-              claiming={claimingZone}
-            />
+            <Suspense fallback={null}>
+              <TerritoryControlTeamPanel
+                state={state}
+                currentTeamId={teamId}
+                t={t}
+                onClaimZone={handleClaimZone}
+                claiming={claimingZone}
+              />
+            </Suspense>
           ) : null}
         </>
       ) : null}

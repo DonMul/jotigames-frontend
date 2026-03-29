@@ -24,6 +24,14 @@ export default function PublicLayout({ children }) {
     const allowedTypes = new Set(enabledTypes)
     return GAME_CATALOG.filter((game) => allowedTypes.has(game.type))
   }, [enabledTypes])
+  const allGames = useMemo(() => {
+    const source = gameLinks.length > 0 ? gameLinks : GAME_CATALOG
+    return [...source].sort((left, right) => {
+      const leftName = t(`gameCatalog.${left.type}.name`, {}, left.name)
+      const rightName = t(`gameCatalog.${right.type}.name`, {}, right.name)
+      return leftName.localeCompare(rightName, locale, { sensitivity: 'base' })
+    })
+  }, [gameLinks, t, locale])
   const headerRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [gamesOpen, setGamesOpen] = useState(false)
@@ -103,8 +111,6 @@ export default function PublicLayout({ children }) {
     setAccountOpen(false)
     setLangOpen(false)
   }
-
-  const allGames = gameLinks.length > 0 ? gameLinks : GAME_CATALOG
 
   return (
     <>

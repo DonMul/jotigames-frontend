@@ -77,11 +77,11 @@ export default function LoginPage({ defaultMode = 'user' }) {
               <>
                 <div>
                   <label htmlFor="email" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.email')}</label>
-                  <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <input id="email" aria-label={`${t('auth.email')} Email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
                 </div>
                 <div>
                   <label htmlFor="password" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.password')}</label>
-                  <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <input id="password" aria-label={`${t('auth.password')} Password`} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
                 </div>
               </>
             ) : (

@@ -18,6 +18,72 @@ function formatCents(cents, currency = 'EUR') {
   }
 }
 
+function formatPlanSlug(slug) {
+  if (!slug) return ''
+  return String(slug)
+    .replace(/[_-]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+function formatPaymentDescription(description, t) {
+  if (!description) return ''
+
+  const text = String(description).trim()
+
+  if (text.startsWith('subscription.pending:')) {
+    const payload = text.slice('subscription.pending:'.length)
+    const parts = payload.split(';').map((part) => part.trim()).filter(Boolean)
+    const parsed = {}
+
+    for (const part of parts) {
+      const [key, ...valueParts] = part.split('=')
+      if (!key || valueParts.length === 0) continue
+      parsed[key.trim()] = valueParts.join('=').trim()
+    }
+
+    const action = parsed.action
+    const previousPlan = formatPlanSlug(parsed.previous_plan_slug)
+    const newPlan = formatPlanSlug(parsed.new_plan_slug)
+    const unknownPlan = t('subscription.paymentDescUnknownPlan')
+
+    if (action === 'change_plan') {
+      if (previousPlan && newPlan) {
+        return t('subscription.paymentDescChangePlan', {
+          from: previousPlan,
+          to: newPlan,
+        })
+      }
+      if (newPlan) {
+        return t('subscription.paymentDescChangePlanTo', { to: newPlan })
+      }
+      return t('subscription.paymentDescActionChangePlan')
+    }
+
+    if (action === 'subscribe') {
+      return t('subscription.paymentDescSubscribe', {
+        plan: newPlan || previousPlan || unknownPlan,
+      })
+    }
+
+    return t('subscription.paymentDescActionGeneric', {
+      action: action || t('subscription.paymentDescUnknownAction'),
+    })
+  }
+
+  if (text.includes(';')) {
+    return text
+      .split(';')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' • ')
+  }
+
+  return text
+}
+
 function PaymentStatusBadge({ status, t }) {
   const map = {
     succeeded: {
@@ -143,8 +209,8 @@ export default function PaymentsPage() {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-navy-700 dark:text-slate-300 truncate">
-                      {p.description ||
+                    <p className="text-sm font-medium text-navy-700 dark:text-slate-300 break-words leading-relaxed">
+                      {formatPaymentDescription(p.description, t) ||
                         (p.type === 'subscription'
                           ? t('subscription.paymentSubscription')
                           : t('subscription.paymentTopup'))}
@@ -163,9 +229,9 @@ export default function PaymentsPage() {
                 <div className="text-right shrink-0 ml-3">
                   <p
                     className={`text-sm font-semibold ${
-                      p.status === 'succeeded'
-                        ? 'text-navy-900 dark:text-white'
-                        : 'text-red-600 dark:text-red-400'
+                      p.status === 'failed'
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-navy-900 dark:text-white'
                     }`}
                   >
                     {formatCents(p.amount_cents, p.currency)}

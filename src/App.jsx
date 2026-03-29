@@ -1,64 +1,76 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 
 import { AuthProvider, useAuth } from './lib/auth'
 import { gameApi } from './lib/api'
 import { I18nProvider } from './lib/i18n'
 import { LocaleProvider } from './lib/locale'
-import AdminGameChatOverlay from './components/AdminGameChatOverlay'
+
+/* ── Eagerly loaded shell components (always needed) ─────────────── */
 import PublicLayout from './components/PublicLayout'
-import AboutPage from './pages/AboutPage'
-import BulkToolsPage from './pages/admin/BulkToolsPage'
-import BlindHikeConfigurePage from './pages/admin/BlindHikeConfigurePage'
-import GameFormPage from './pages/admin/GameFormPage'
-import GameCardsPage from './pages/admin/GameCardsPage'
-import GameCardsPdfPage from './pages/admin/GameCardsPdfPage'
-import GameMemberFormPage from './pages/admin/GameMemberFormPage'
-import GamePage from './pages/admin/GamePage'
-import GameInfoPage from './pages/GameInfoPage'
-import GamesPage from './pages/admin/GamesPage'
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import ModuleOverviewPage from './pages/admin/ModuleOverviewPage'
-import FaqPage from './pages/FaqPage'
-import MonetisationPage from './pages/MonetisationPage'
-import RegisterPage from './pages/RegisterPage'
-import GeoHunterAdminPage from './pages/admin/GeoHunterAdminPage'
-import GeoHunterSettingsPage from './pages/admin/GeoHunterSettingsPage'
-import GeoHunterPoiFormPage from './pages/admin/GeoHunterPoiFormPage'
-import ResourceRunAdminPage from './pages/admin/ResourceRunAdminPage'
-import ResourceRunNodeFormPage from './pages/admin/ResourceRunNodeFormPage'
-import TerritoryControlAdminPage from './pages/admin/TerritoryControlAdminPage'
-import TerritoryControlZoneFormPage from './pages/admin/TerritoryControlZoneFormPage'
-import EchoHuntAdminPage from './pages/admin/EchoHuntAdminPage'
-import CheckpointHeistAdminPage from './pages/admin/CheckpointHeistAdminPage'
-import CheckpointHeistCheckpointFormPage from './pages/admin/CheckpointHeistCheckpointFormPage'
-import CourierRushAdminPage from './pages/admin/CourierRushAdminPage'
-import CourierRushSettingsPage from './pages/admin/CourierRushSettingsPage'
-import CourierRushPickupFormPage from './pages/admin/CourierRushPickupFormPage'
-import CourierRushDropoffFormPage from './pages/admin/CourierRushDropoffFormPage'
-import PandemicResponseAdminPage from './pages/admin/PandemicResponseAdminPage'
-import PandemicResponseSettingsPage from './pages/admin/PandemicResponseSettingsPage'
-import MarketCrashAdminPage from './pages/admin/MarketCrashAdminPage'
-import MarketCrashPointFormPage from './pages/admin/MarketCrashPointFormPage'
-import BirdsOfPreyConfigurePage from './pages/admin/BirdsOfPreyConfigurePage'
-import CodeConspiracyConfigurePage from './pages/admin/CodeConspiracyConfigurePage'
-import Crazy88AdminPage from './pages/admin/Crazy88AdminPage'
-import Crazy88SettingsPage from './pages/admin/Crazy88SettingsPage'
-import Crazy88TaskFormPage from './pages/admin/Crazy88TaskFormPage'
-import SuperAdminGameTypesPage from './pages/super-admin/SuperAdminGameTypesPage'
+import AdminGameChatOverlay from './components/AdminGameChatOverlay'
 import AccountLayout from './components/AccountLayout'
-import ProfilePage from './pages/account/ProfilePage'
-import AccountSubscriptionPage from './pages/account/AccountSubscriptionPage'
-import PaymentsPage from './pages/account/PaymentsPage'
-import TeamEntryPage from './pages/team/TeamEntryPage'
-import TeamDashboardPage from './pages/team/TeamDashboardPage'
-import TeamEditPage from './pages/team/TeamEditPage'
-import TeamFormPage from './pages/admin/TeamFormPage'
-import TeamLoginPage from './pages/team/TeamLoginPage'
-import TeamModulePage from './pages/admin/TeamModulePage'
-import TeamPlayPage from './pages/team/TeamPlayPage'
-import TeamScanPage from './pages/team/TeamScanPage'
+
+/* ── Lazy-loaded pages (route-based code splitting) ──────────────── */
+// Public
+const HomePage = lazy(() => import('./pages/HomePage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const FaqPage = lazy(() => import('./pages/FaqPage'))
+const MonetisationPage = lazy(() => import('./pages/MonetisationPage'))
+const GameInfoPage = lazy(() => import('./pages/GameInfoPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const TeamLoginPage = lazy(() => import('./pages/team/TeamLoginPage'))
+
+// Account
+const ProfilePage = lazy(() => import('./pages/account/ProfilePage'))
+const AccountSubscriptionPage = lazy(() => import('./pages/account/AccountSubscriptionPage'))
+const PaymentsPage = lazy(() => import('./pages/account/PaymentsPage'))
+
+// Team
+const TeamDashboardPage = lazy(() => import('./pages/team/TeamDashboardPage'))
+const TeamEditPage = lazy(() => import('./pages/team/TeamEditPage'))
+const TeamScanPage = lazy(() => import('./pages/team/TeamScanPage'))
+
+// Admin – game management
+const GamesPage = lazy(() => import('./pages/admin/GamesPage'))
+const GamePage = lazy(() => import('./pages/admin/GamePage'))
+const GameFormPage = lazy(() => import('./pages/admin/GameFormPage'))
+const GameCardsPage = lazy(() => import('./pages/admin/GameCardsPage'))
+const GameCardsPdfPage = lazy(() => import('./pages/admin/GameCardsPdfPage'))
+const GameMemberFormPage = lazy(() => import('./pages/admin/GameMemberFormPage'))
+const TeamFormPage = lazy(() => import('./pages/admin/TeamFormPage'))
+const BulkToolsPage = lazy(() => import('./pages/admin/BulkToolsPage'))
+const ModuleOverviewPage = lazy(() => import('./pages/admin/ModuleOverviewPage'))
+const TeamModulePage = lazy(() => import('./pages/admin/TeamModulePage'))
+
+// Admin – game-type pages
+const BlindHikeConfigurePage = lazy(() => import('./pages/admin/BlindHikeConfigurePage'))
+const GeoHunterAdminPage = lazy(() => import('./pages/admin/GeoHunterAdminPage'))
+const GeoHunterSettingsPage = lazy(() => import('./pages/admin/GeoHunterSettingsPage'))
+const GeoHunterPoiFormPage = lazy(() => import('./pages/admin/GeoHunterPoiFormPage'))
+const ResourceRunAdminPage = lazy(() => import('./pages/admin/ResourceRunAdminPage'))
+const ResourceRunNodeFormPage = lazy(() => import('./pages/admin/ResourceRunNodeFormPage'))
+const TerritoryControlAdminPage = lazy(() => import('./pages/admin/TerritoryControlAdminPage'))
+const TerritoryControlZoneFormPage = lazy(() => import('./pages/admin/TerritoryControlZoneFormPage'))
+const EchoHuntAdminPage = lazy(() => import('./pages/admin/EchoHuntAdminPage'))
+const CheckpointHeistAdminPage = lazy(() => import('./pages/admin/CheckpointHeistAdminPage'))
+const CheckpointHeistCheckpointFormPage = lazy(() => import('./pages/admin/CheckpointHeistCheckpointFormPage'))
+const CourierRushAdminPage = lazy(() => import('./pages/admin/CourierRushAdminPage'))
+const CourierRushSettingsPage = lazy(() => import('./pages/admin/CourierRushSettingsPage'))
+const CourierRushPickupFormPage = lazy(() => import('./pages/admin/CourierRushPickupFormPage'))
+const CourierRushDropoffFormPage = lazy(() => import('./pages/admin/CourierRushDropoffFormPage'))
+const PandemicResponseAdminPage = lazy(() => import('./pages/admin/PandemicResponseAdminPage'))
+const PandemicResponseSettingsPage = lazy(() => import('./pages/admin/PandemicResponseSettingsPage'))
+const MarketCrashAdminPage = lazy(() => import('./pages/admin/MarketCrashAdminPage'))
+const MarketCrashPointFormPage = lazy(() => import('./pages/admin/MarketCrashPointFormPage'))
+const BirdsOfPreyConfigurePage = lazy(() => import('./pages/admin/BirdsOfPreyConfigurePage'))
+const CodeConspiracyConfigurePage = lazy(() => import('./pages/admin/CodeConspiracyConfigurePage'))
+const Crazy88AdminPage = lazy(() => import('./pages/admin/Crazy88AdminPage'))
+const Crazy88SettingsPage = lazy(() => import('./pages/admin/Crazy88SettingsPage'))
+const Crazy88TaskFormPage = lazy(() => import('./pages/admin/Crazy88TaskFormPage'))
+
+
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth()
@@ -176,6 +188,11 @@ function AppRoutes() {
   return (
     <PublicLayout>
       <ScrollToTop />
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        </div>
+      }>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -201,22 +218,9 @@ function AppRoutes() {
           element={<TeamScanPage />}
         />
         <Route
-          path="/team/enter"
-          element={renderProtected(<TeamEntryPage />)}
-        />
-        <Route
           path="/admin/games"
           element={renderProtected(<GamesPage />)}
         />
-        <Route
-          path="/admin/game-types"
-          element={renderProtected(<SuperAdminGameTypesPage />)}
-        />
-        <Route
-          path="/admin/subscription"
-          element={<Navigate to="/account/subscription" replace />}
-        />
-
         {/* ── Account settings ─────────────────────────────────────── */}
         <Route
           path="/account"
@@ -421,12 +425,9 @@ function AppRoutes() {
           path="/admin/games/:gameId/teams/:teamId/play"
           element={renderProtectedAdminGame(<TeamModulePage />)}
         />
-        <Route
-          path="/team/games/:gameId/play"
-          element={renderProtected(<TeamPlayPage />)}
-        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
     </PublicLayout>
   )
 }

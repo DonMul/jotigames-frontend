@@ -16,10 +16,7 @@ const expectedRoutes = [
   '/team',
   '/team/edit',
   '/team/scan/:qrToken',
-  '/team/enter',
   '/admin/games',
-  '/admin/game-types',
-  '/admin/subscription',
   '/account',
   '/admin/games/new',
   '/admin/games/:gameId',
@@ -48,7 +45,6 @@ const expectedRoutes = [
   '/admin/code-conspiracy/:gameId/configure',
   '/admin/crazy88/:gameId/tasks',
   '/admin/games/:gameId/teams/:teamId/play',
-  '/team/games/:gameId/play',
 ]
 
 describe('frontend route inventory', () => {

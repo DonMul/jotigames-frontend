@@ -20,6 +20,72 @@ function formatCents(cents, currency = 'EUR') {
   }
 }
 
+function formatPlanSlug(slug) {
+  if (!slug) return ''
+  return String(slug)
+    .replace(/[_-]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+function formatPaymentDescription(description, t) {
+  if (!description) return ''
+
+  const text = String(description).trim()
+
+  if (text.startsWith('subscription.pending:')) {
+    const payload = text.slice('subscription.pending:'.length)
+    const parts = payload.split(';').map((part) => part.trim()).filter(Boolean)
+    const parsed = {}
+
+    for (const part of parts) {
+      const [key, ...valueParts] = part.split('=')
+      if (!key || valueParts.length === 0) continue
+      parsed[key.trim()] = valueParts.join('=').trim()
+    }
+
+    const action = parsed.action
+    const previousPlan = formatPlanSlug(parsed.previous_plan_slug)
+    const newPlan = formatPlanSlug(parsed.new_plan_slug)
+    const unknownPlan = t('subscription.paymentDescUnknownPlan')
+
+    if (action === 'change_plan') {
+      if (previousPlan && newPlan) {
+        return t('subscription.paymentDescChangePlan', {
+          from: previousPlan,
+          to: newPlan,
+        })
+      }
+      if (newPlan) {
+        return t('subscription.paymentDescChangePlanTo', { to: newPlan })
+      }
+      return t('subscription.paymentDescActionChangePlan')
+    }
+
+    if (action === 'subscribe') {
+      return t('subscription.paymentDescSubscribe', {
+        plan: newPlan || previousPlan || unknownPlan,
+      })
+    }
+
+    return t('subscription.paymentDescActionGeneric', {
+      action: action || t('subscription.paymentDescUnknownAction'),
+    })
+  }
+
+  if (text.includes(';')) {
+    return text
+      .split(';')
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' • ')
+  }
+
+  return text
+}
+
 /* ── small presentational components ────────────────────────────────── */
 
 function MinuteBar({ used, total, t }) {
@@ -314,7 +380,7 @@ function PaymentHistorySection({ token, t }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                  ) : (
+                  ) : p.status === 'failed' ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 text-red-600 dark:text-red-400"
@@ -327,11 +393,24 @@ function PaymentHistorySection({ token, t }) {
                         clipRule="evenodd"
                       />
                     </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-amber-600 dark:text-amber-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-700 dark:text-slate-300 truncate">
-                    {p.description ||
+                  <p className="text-sm font-medium text-gray-700 dark:text-slate-300 break-words leading-relaxed">
+                    {formatPaymentDescription(p.description, t) ||
                       (p.type === 'subscription'
                         ? t('subscription.paymentSubscription')
                         : t('subscription.paymentTopup'))}
@@ -350,9 +429,9 @@ function PaymentHistorySection({ token, t }) {
               <div className="text-right shrink-0 ml-3">
                 <p
                   className={`text-sm font-semibold ${
-                    p.status === 'succeeded'
-                      ? 'text-gray-900 dark:text-white'
-                      : 'text-red-600 dark:text-red-400'
+                    p.status === 'failed'
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-gray-900 dark:text-white'
                   }`}
                 >
                   {formatCents(p.amount_cents, p.currency)}
