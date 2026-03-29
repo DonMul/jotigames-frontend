@@ -3,9 +3,24 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import CourierRushAdminPage from './CourierRushAdminPage'
+import CourierRushSettingsPage from './CourierRushSettingsPage'
+import CourierRushPickupFormPage from './CourierRushPickupFormPage'
+import CourierRushDropoffFormPage from './CourierRushDropoffFormPage'
 
-const source = readFileSync(
+const listSource = readFileSync(
   resolve(process.cwd(), 'src/pages/admin/CourierRushAdminPage.jsx'),
+  'utf8',
+)
+const settingsSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/CourierRushSettingsPage.jsx'),
+  'utf8',
+)
+const pickupFormSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/CourierRushPickupFormPage.jsx'),
+  'utf8',
+)
+const dropoffFormSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/CourierRushDropoffFormPage.jsx'),
   'utf8',
 )
 
@@ -15,35 +30,63 @@ describe('CourierRushAdminPage', () => {
   })
 
   it('uses route params for gameId', () => {
-    expect(source).toContain('useParams')
-    expect(source).toContain('gameId')
+    expect(listSource).toContain('useParams')
+    expect(listSource).toContain('gameId')
   })
 
-  it('integrates with GeoLocationPicker', () => {
-    expect(source).toContain('GeoLocationPicker')
+  it('lists and deletes pickups', () => {
+    expect(listSource).toContain('moduleApi.getCourierRushPickups')
+    expect(listSource).toContain('moduleApi.deleteCourierRushPickup')
   })
 
-  it('calls moduleApi methods for config', () => {
-    expect(source).toContain('moduleApi.getCourierRushConfig')
-    expect(source).toContain('moduleApi.updateCourierRushConfig')
-  })
-
-  it('calls moduleApi CRUD methods for pickups', () => {
-    expect(source).toContain('moduleApi.getCourierRushPickups')
-    expect(source).toContain('moduleApi.createCourierRushPickup')
-    expect(source).toContain('moduleApi.updateCourierRushPickup')
-    expect(source).toContain('moduleApi.deleteCourierRushPickup')
-  })
-
-  it('calls moduleApi CRUD methods for dropoffs', () => {
-    expect(source).toContain('moduleApi.getCourierRushDropoffs')
-    expect(source).toContain('moduleApi.createCourierRushDropoff')
-    expect(source).toContain('moduleApi.updateCourierRushDropoff')
-    expect(source).toContain('moduleApi.deleteCourierRushDropoff')
+  it('lists and deletes dropoffs', () => {
+    expect(listSource).toContain('moduleApi.getCourierRushDropoffs')
+    expect(listSource).toContain('moduleApi.deleteCourierRushDropoff')
   })
 
   it('uses auth context for API calls', () => {
-    expect(source).toContain('useAuth')
-    expect(source).toContain('auth.token')
+    expect(listSource).toContain('useAuth')
+    expect(listSource).toContain('auth.token')
+  })
+})
+
+describe('CourierRushSettingsPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof CourierRushSettingsPage).toBe('function')
+  })
+
+  it('calls moduleApi methods for config', () => {
+    expect(settingsSource).toContain('moduleApi.getCourierRushConfig')
+    expect(settingsSource).toContain('moduleApi.updateCourierRushConfig')
+  })
+})
+
+describe('CourierRushPickupFormPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof CourierRushPickupFormPage).toBe('function')
+  })
+
+  it('integrates with GeoLocationPicker', () => {
+    expect(pickupFormSource).toContain('GeoLocationPicker')
+  })
+
+  it('calls moduleApi CRUD methods for pickups', () => {
+    expect(pickupFormSource).toContain('moduleApi.createCourierRushPickup')
+    expect(pickupFormSource).toContain('moduleApi.updateCourierRushPickup')
+  })
+})
+
+describe('CourierRushDropoffFormPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof CourierRushDropoffFormPage).toBe('function')
+  })
+
+  it('integrates with GeoLocationPicker', () => {
+    expect(dropoffFormSource).toContain('GeoLocationPicker')
+  })
+
+  it('calls moduleApi CRUD methods for dropoffs', () => {
+    expect(dropoffFormSource).toContain('moduleApi.createCourierRushDropoff')
+    expect(dropoffFormSource).toContain('moduleApi.updateCourierRushDropoff')
   })
 })

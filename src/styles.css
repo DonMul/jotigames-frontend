@@ -559,12 +559,73 @@
   .modal-card {
     @apply relative bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 z-10;
   }
+  .modal-card-wide {
+    @apply max-w-xl;
+  }
   .modal-card h2,
   .modal-card h3 {
     @apply text-lg font-semibold text-navy-900 mb-2;
   }
   .modal-actions {
     @apply flex items-center justify-end gap-2 mt-4;
+  }
+
+  /* ── Team logo picker ──────────────────────────────────────────── */
+  .team-logo-field {
+    @apply space-y-2;
+  }
+  .team-logo-current {
+    @apply grid items-center gap-3 p-3 border border-gray-200 rounded-xl bg-white;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+  }
+  .team-logo-current-image {
+    @apply w-[72px] h-12 object-contain rounded-lg border border-gray-200 bg-gray-50;
+  }
+  .team-logo-current-image.is-hidden {
+    @apply hidden;
+  }
+  .team-logo-current-text {
+    @apply text-sm text-gray-500 truncate;
+  }
+  .team-logo-modal-card {
+    @apply grid gap-4;
+  }
+  .team-logo-modal-header h2 {
+    @apply m-0;
+  }
+  .team-logo-toolbar {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+  .team-logo-category-select {
+    @apply min-h-[38px] border border-gray-300 rounded-lg px-3 py-2 bg-white text-navy-900 text-sm;
+  }
+  .team-logo-clear {
+    @apply min-h-[36px] px-3 py-2 rounded-full border border-gray-300 bg-white text-navy-900 text-sm font-semibold shadow-none hover:bg-gray-50;
+  }
+  .team-logo-grid {
+    @apply grid gap-3 p-1;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    max-height: 52vh;
+    overflow: auto;
+  }
+  .team-logo-option {
+    @apply border border-gray-200 rounded-xl bg-white p-2 grid gap-2 cursor-pointer transition-all duration-150;
+  }
+  .team-logo-option:hover {
+    @apply -translate-y-px border-brand-300 shadow-lg;
+  }
+  .team-logo-option.is-selected {
+    @apply border-brand-500 ring-2 ring-brand-200;
+  }
+  .team-logo-option-image {
+    @apply w-full h-[124px] object-contain rounded-lg border border-gray-200 bg-gray-50;
+  }
+  .team-logo-option-label {
+    @apply text-xs text-gray-500 leading-tight truncate;
+  }
+
+  .is-hidden {
+    display: none !important;
   }
 
   /* ── Blindhike admin overview (map + legend) ────────────────────────── */

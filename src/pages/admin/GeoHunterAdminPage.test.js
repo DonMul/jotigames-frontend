@@ -3,9 +3,19 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import GeoHunterAdminPage from './GeoHunterAdminPage'
+import GeoHunterPoiFormPage from './GeoHunterPoiFormPage'
+import GeoHunterSettingsPage from './GeoHunterSettingsPage'
 
-const source = readFileSync(
+const listSource = readFileSync(
   resolve(process.cwd(), 'src/pages/admin/GeoHunterAdminPage.jsx'),
+  'utf8',
+)
+const formSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/GeoHunterPoiFormPage.jsx'),
+  'utf8',
+)
+const settingsSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/GeoHunterSettingsPage.jsx'),
   'utf8',
 )
 
@@ -15,27 +25,42 @@ describe('GeoHunterAdminPage', () => {
   })
 
   it('uses route params for gameId', () => {
-    expect(source).toContain('useParams')
-    expect(source).toContain('gameId')
+    expect(listSource).toContain('useParams')
+    expect(listSource).toContain('gameId')
   })
 
-  it('integrates with GeoLocationPicker', () => {
-    expect(source).toContain('GeoLocationPicker')
-  })
-
-  it('calls moduleApi CRUD methods for POIs', () => {
-    expect(source).toContain('moduleApi.getGeoHunterPois')
-    expect(source).toContain('moduleApi.createGeoHunterPoi')
-    expect(source).toContain('moduleApi.updateGeoHunterPoi')
-    expect(source).toContain('moduleApi.deleteGeoHunterPoi')
-  })
-
-  it('supports retry settings', () => {
-    expect(source).toContain('moduleApi.updateGeoHunterRetrySettings')
+  it('lists and deletes POIs', () => {
+    expect(listSource).toContain('moduleApi.getGeoHunterPois')
+    expect(listSource).toContain('moduleApi.deleteGeoHunterPoi')
   })
 
   it('uses auth context for API calls', () => {
-    expect(source).toContain('useAuth')
-    expect(source).toContain('auth.token')
+    expect(listSource).toContain('useAuth')
+    expect(listSource).toContain('auth.token')
+  })
+})
+
+describe('GeoHunterPoiFormPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof GeoHunterPoiFormPage).toBe('function')
+  })
+
+  it('integrates with GeoLocationPicker', () => {
+    expect(formSource).toContain('GeoLocationPicker')
+  })
+
+  it('calls moduleApi CRUD methods for POIs', () => {
+    expect(formSource).toContain('moduleApi.createGeoHunterPoi')
+    expect(formSource).toContain('moduleApi.updateGeoHunterPoi')
+  })
+})
+
+describe('GeoHunterSettingsPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof GeoHunterSettingsPage).toBe('function')
+  })
+
+  it('supports retry settings', () => {
+    expect(settingsSource).toContain('moduleApi.updateGeoHunterRetrySettings')
   })
 })

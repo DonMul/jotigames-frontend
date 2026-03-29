@@ -114,6 +114,17 @@ export default function GamePage() {
     return pathMap[game.game_type] || `/admin/games/${gameId}/live-overview`
   }, [game?.game_type, gameId])
 
+  const gameTypeSettingsPath = useMemo(() => {
+    if (!game?.game_type) return null
+    const map = {
+      geohunter: `/admin/geohunter/${gameId}/settings`,
+      crazy_88: `/admin/crazy88/${gameId}/settings`,
+      courier_rush: `/admin/courier-rush/${gameId}/settings`,
+      pandemic_response: `/admin/pandemic-response/${gameId}/settings`,
+    }
+    return map[game.game_type] || null
+  }, [game?.game_type, gameId])
+
   async function handleDeleteGame() {
     if (!window.confirm(t('gamePage.confirmDeleteGame', {}, 'Delete this game?'))) {
       return
@@ -231,6 +242,11 @@ export default function GamePage() {
           {gameTypeActionLabel && gameTypeActionPath ? (
             <Link className="btn btn-primary btn-small" to={gameTypeActionPath}>
               {gameTypeActionLabel}
+            </Link>
+          ) : null}
+          {gameTypeSettingsPath ? (
+            <Link className="btn btn-ghost btn-small" to={gameTypeSettingsPath}>
+              {t('gamePage.settings', {}, 'Settings')}
             </Link>
           ) : null}
           <Link className="inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-navy-800 transition-colors" to={`/admin/games/${gameId}/live-overview`}>

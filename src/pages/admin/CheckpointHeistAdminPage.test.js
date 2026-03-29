@@ -3,9 +3,14 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import CheckpointHeistAdminPage from './CheckpointHeistAdminPage'
+import CheckpointHeistCheckpointFormPage from './CheckpointHeistCheckpointFormPage'
 
-const source = readFileSync(
+const listSource = readFileSync(
   resolve(process.cwd(), 'src/pages/admin/CheckpointHeistAdminPage.jsx'),
+  'utf8',
+)
+const formSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/admin/CheckpointHeistCheckpointFormPage.jsx'),
   'utf8',
 )
 
@@ -15,27 +20,36 @@ describe('CheckpointHeistAdminPage', () => {
   })
 
   it('uses route params for gameId', () => {
-    expect(source).toContain('useParams')
-    expect(source).toContain('gameId')
+    expect(listSource).toContain('useParams')
+    expect(listSource).toContain('gameId')
   })
 
-  it('integrates with GeoLocationPicker', () => {
-    expect(source).toContain('GeoLocationPicker')
-  })
-
-  it('calls moduleApi CRUD methods for checkpoints', () => {
-    expect(source).toContain('moduleApi.getCheckpointHeistCheckpoints')
-    expect(source).toContain('moduleApi.createCheckpointHeistCheckpoint')
-    expect(source).toContain('moduleApi.updateCheckpointHeistCheckpoint')
-    expect(source).toContain('moduleApi.deleteCheckpointHeistCheckpoint')
+  it('lists and deletes checkpoints', () => {
+    expect(listSource).toContain('moduleApi.getCheckpointHeistCheckpoints')
+    expect(listSource).toContain('moduleApi.deleteCheckpointHeistCheckpoint')
   })
 
   it('supports checkpoint reordering', () => {
-    expect(source).toContain('moduleApi.reorderCheckpointHeistCheckpoints')
+    expect(listSource).toContain('moduleApi.reorderCheckpointHeistCheckpoints')
   })
 
   it('uses auth context for API calls', () => {
-    expect(source).toContain('useAuth')
-    expect(source).toContain('auth.token')
+    expect(listSource).toContain('useAuth')
+    expect(listSource).toContain('auth.token')
+  })
+})
+
+describe('CheckpointHeistCheckpointFormPage', () => {
+  it('exports a default function component', () => {
+    expect(typeof CheckpointHeistCheckpointFormPage).toBe('function')
+  })
+
+  it('integrates with GeoLocationPicker', () => {
+    expect(formSource).toContain('GeoLocationPicker')
+  })
+
+  it('calls moduleApi CRUD methods for checkpoints', () => {
+    expect(formSource).toContain('moduleApi.createCheckpointHeistCheckpoint')
+    expect(formSource).toContain('moduleApi.updateCheckpointHeistCheckpoint')
   })
 })

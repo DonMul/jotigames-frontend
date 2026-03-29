@@ -37,6 +37,7 @@ export default function LoginPage({ defaultMode = 'user' }) {
         principalId: response.principal_id,
         accessLevel: response.access_level,
         roles: response.roles || [],
+        username: response.username || null,
         teamGameCode: mode === 'team' ? gameCode.trim() : null,
       })
 

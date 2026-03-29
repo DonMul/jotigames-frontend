@@ -72,13 +72,15 @@ export default function GamesPage() {
           <h1 className="text-2xl font-bold text-navy-900">{t('gamesPage.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('gamesPage.signedInAs', { role: auth.principalType })}</p>
         </div>
-        <Link
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 transition-colors"
-          to="/admin/games/new"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
-          {t('gamesPage.create', {}, 'Create game')}
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 transition-colors"
+            to="/admin/games/new"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
+            {t('gamesPage.create', {}, 'Create game')}
+          </Link>
+        </div>
       </div>
 
       {/* Feedback */}

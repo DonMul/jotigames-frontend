@@ -131,6 +131,29 @@ export const gameApi = {
   removeAdmin: (token, gameId, userId) => apiRequest(`/api/game/${gameId}/admins/${userId}`, { method: 'DELETE', token }),
   addGameMaster: (token, gameId, email) => apiRequest(`/api/game/${gameId}/game-masters`, { method: 'POST', token, body: { email } }),
   removeGameMaster: (token, gameId, userId) => apiRequest(`/api/game/${gameId}/game-masters/${userId}`, { method: 'DELETE', token }),
+
+  // ── User profile (self-service) ───────────────────────────────────
+  getMyProfile: (token) => apiRequest('/api/auth/me', { token }),
+  updateMyProfile: (token, body) => apiRequest('/api/auth/me', { method: 'PUT', token, body }),
+  changeMyPassword: (token, body) => apiRequest('/api/auth/me/password', { method: 'PUT', token, body }),
+
+  // ── Subscription (user-facing) ──────────────────────────────────────
+  getMonetisationStatus: () => apiRequest('/api/subscription/status'),
+  getSubscriptionPlans: (token) => apiRequest('/api/subscription/plans', { token }),
+  getMySubscription: (token) => apiRequest('/api/subscription/me', { token }),
+  subscribeToPlan: (token, body) => apiRequest('/api/subscription/subscribe', { method: 'POST', token, body }),
+  changePlan: (token, body) => apiRequest('/api/subscription/change-plan', { method: 'POST', token, body }),
+  cancelSubscription: (token, body) => apiRequest('/api/subscription/cancel', { method: 'POST', token, body }),
+  reactivateSubscription: (token) => apiRequest('/api/subscription/reactivate', { method: 'POST', token }),
+  getTopupPackages: (token) => apiRequest('/api/subscription/topup-packages', { token }),
+  purchaseTopup: (token, body) => apiRequest('/api/subscription/topup', { method: 'POST', token, body }),
+  getMyPayments: (token, { limit = 20, offset = 0 } = {}) => {
+    const params = new URLSearchParams()
+    if (limit) params.set('limit', String(limit))
+    if (offset) params.set('offset', String(offset))
+    const qs = params.toString()
+    return apiRequest(`/api/subscription/my-payments${qs ? `?${qs}` : ''}`, { token })
+  },
 }
 
 const MODULE_PREFIX = {

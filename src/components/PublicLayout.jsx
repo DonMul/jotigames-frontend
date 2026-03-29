@@ -18,6 +18,7 @@ export default function PublicLayout({ children }) {
   const { auth, isAuthenticated, logout } = useAuth()
   const { locale, supportedLocales, setLocale } = useLocale()
   const { t } = useI18n()
+  const [monetisationEnabled, setMonetisationEnabled] = useState(false)
   const [enabledTypes, setEnabledTypes] = useState([])
   const gameLinks = useMemo(() => {
     const allowedTypes = new Set(enabledTypes)
@@ -40,6 +41,24 @@ export default function PublicLayout({ children }) {
       }
     }
     loadEnabledTypes()
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadMonetisationStatus() {
+      try {
+        const status = await gameApi.getMonetisationStatus()
+        if (!cancelled) {
+          setMonetisationEnabled(Boolean(status?.enabled))
+        }
+      } catch {
+        if (!cancelled) {
+          setMonetisationEnabled(false)
+        }
+      }
+    }
+    loadMonetisationStatus()
     return () => { cancelled = true }
   }, [])
 
@@ -95,7 +114,7 @@ export default function PublicLayout({ children }) {
           {/* Brand */}
           <Link to="/" className="flex items-center gap-2.5 group" onClick={closeAll}>
             <img src="/image/logo-small.avif" alt="JotiGames" width="36" height="36" className="rounded-lg transition-transform group-hover:scale-105" />
-            <span className="font-display text-xl font-bold tracking-tight text-navy-900">Joti<span className="text-brand-500">Games</span></span>
+            <span className="font-display text-xl font-bold tracking-tight"><span className="text-brand-500">Joti</span><span className="text-sky-500">Games</span></span>
           </Link>
 
           {/* Desktop nav */}
@@ -121,6 +140,9 @@ export default function PublicLayout({ children }) {
             </div>
 
             <NavLink to="/about" className={navLinkClass} onClick={closeAll}><span className="px-3 py-2">{t('nav.about')}</span></NavLink>
+            {monetisationEnabled ? (
+              <NavLink to="/pricing" className={navLinkClass} onClick={closeAll}><span className="px-3 py-2">{t('nav.pricing')}</span></NavLink>
+            ) : null}
             <NavLink to="/faq" className={navLinkClass} onClick={closeAll}><span className="px-3 py-2">{t('nav.faq')}</span></NavLink>
 
             {/* Language selector */}
@@ -146,11 +168,29 @@ export default function PublicLayout({ children }) {
             {isAuthenticated ? (
               <>
                 {auth.principalType === 'user' ? (
-                  <Link to="/admin/games" className="text-sm font-medium text-navy-700 hover:text-brand-600 transition-colors" onClick={closeAll}>{t('nav.games')}</Link>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-navy-700 hover:text-brand-600 transition-colors"
+                      onClick={() => { setAccountOpen((v) => !v); setGamesOpen(false); setLangOpen(false) }}
+                    >
+                      {auth?.username || t('nav.account')}
+                      <svg className={`w-3.5 h-3.5 transition-transform ${accountOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                    {accountOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-1.5 animate-fade-in z-50">
+                        <Link to="/admin/games" className="block rounded-lg px-3 py-2 text-sm font-medium text-navy-700 hover:bg-brand-50 hover:text-brand-700 transition-colors" onClick={closeAll}>{t('nav.games')}</Link>
+                        <Link to="/account/profile" className="block rounded-lg px-3 py-2 text-sm font-medium text-navy-700 hover:bg-brand-50 hover:text-brand-700 transition-colors" onClick={closeAll}>{t('nav.account')}</Link>
+                        <button type="button" className="mt-1 block w-full text-left rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" onClick={() => { logout(); closeAll() }}>{t('nav.logout')}</button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
-                  <Link to="/team" className="text-sm font-medium text-navy-700 hover:text-brand-600 transition-colors" onClick={closeAll}>{t('nav.teamDashboard')}</Link>
+                  <>
+                    <Link to="/team" className="text-sm font-medium text-navy-700 hover:text-brand-600 transition-colors" onClick={closeAll}>{t('nav.teamDashboard')}</Link>
+                    <button type="button" className="text-sm font-medium text-navy-500 hover:text-red-600 transition-colors" onClick={() => { logout(); closeAll() }}>{t('nav.logout')}</button>
+                  </>
                 )}
-                <button type="button" className="text-sm font-medium text-navy-500 hover:text-red-600 transition-colors" onClick={() => { logout(); closeAll() }}>{t('nav.logout')}</button>
               </>
             ) : (
               <>
@@ -177,6 +217,9 @@ export default function PublicLayout({ children }) {
             <div className="px-4 py-4 space-y-1">
               <NavLink to="/" end className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.home')}</NavLink>
               <NavLink to="/about" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.about')}</NavLink>
+              {monetisationEnabled ? (
+                <NavLink to="/pricing" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.pricing')}</NavLink>
+              ) : null}
               <NavLink to="/faq" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.faq')}</NavLink>
 
               <div className="pt-2 pb-1 px-3 text-xs font-semibold text-navy-400 uppercase tracking-wider">{t('nav.gameTypes')}</div>
@@ -192,7 +235,10 @@ export default function PublicLayout({ children }) {
               {isAuthenticated ? (
                 <>
                   {auth.principalType === 'user' ? (
-                    <NavLink to="/admin/games" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.games')}</NavLink>
+                    <>
+                      <NavLink to="/admin/games" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.games')}</NavLink>
+                      <NavLink to="/account/profile" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.account')}</NavLink>
+                    </>
                   ) : (
                     <NavLink to="/team" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-brand-50" onClick={closeAll}>{t('nav.teamDashboard')}</NavLink>
                   )}
@@ -228,6 +274,9 @@ export default function PublicLayout({ children }) {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-navy-400 mb-4">{t('footer.platform')}</h4>
               <ul className="space-y-2.5">
                 <li><Link to="/about" className="text-sm text-navy-300 hover:text-white transition-colors">{t('nav.about')}</Link></li>
+                {monetisationEnabled ? (
+                  <li><Link to="/pricing" className="text-sm text-navy-300 hover:text-white transition-colors">{t('nav.pricing')}</Link></li>
+                ) : null}
                 <li><Link to="/faq" className="text-sm text-navy-300 hover:text-white transition-colors">{t('nav.faq')}</Link></li>
                 <li><Link to="/register" className="text-sm text-navy-300 hover:text-white transition-colors">{t('nav.register')}</Link></li>
                 <li><Link to="/login" className="text-sm text-navy-300 hover:text-white transition-colors">{t('nav.login')}</Link></li>

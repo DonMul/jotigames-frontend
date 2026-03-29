@@ -7,6 +7,7 @@ const appSource = readFileSync(resolve(process.cwd(), 'src/App.jsx'), 'utf8')
 const expectedRoutes = [
   '/',
   '/about',
+  '/pricing',
   '/faq',
   '/register',
   '/login',
@@ -18,6 +19,8 @@ const expectedRoutes = [
   '/team/enter',
   '/admin/games',
   '/admin/game-types',
+  '/admin/subscription',
+  '/account',
   '/admin/games/new',
   '/admin/games/:gameId',
   '/admin/games/:gameId/edit',
