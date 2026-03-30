@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
@@ -451,6 +451,8 @@ function PaymentHistorySection({ token, t }) {
 export default function SubscriptionPage() {
   const { auth } = useAuth()
   const { t } = useI18n()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [summary, setSummary] = useState(null)
   const [plans, setPlans] = useState([])
   const [topupPackages, setTopupPackages] = useState([])
@@ -493,6 +495,38 @@ export default function SubscriptionPage() {
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const topupState = params.get('topup')
+    const sessionId = params.get('session_id')
+
+    if (topupState !== 'success' || !sessionId || !auth?.token) {
+      return
+    }
+
+    let cancelled = false
+
+    async function confirmCheckout() {
+      try {
+        await gameApi.confirmTopupCheckout(auth.token, { session_id: sessionId })
+        if (!cancelled) {
+          fetchData()
+          navigate(location.pathname, { replace: true })
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setErrorMsg(err.message || t('subscription.loadFailed'))
+        }
+      }
+    }
+
+    confirmCheckout()
+
+    return () => {
+      cancelled = true
+    }
+  }, [auth?.token, fetchData, location.pathname, location.search, navigate, t])
 
   function flash(msg) {
     setSuccessMsg(msg)
@@ -549,7 +583,12 @@ export default function SubscriptionPage() {
     try {
       const body = { package_id: packageId }
       if (paymentMethodId) body.stripe_payment_method_id = paymentMethodId
-      await gameApi.purchaseTopup(auth.token, body)
+      const response = await gameApi.purchaseTopup(auth.token, body)
+      const paymentUrl = response?.result?.payment_url
+      if (paymentUrl) {
+        window.location.assign(paymentUrl)
+        return
+      }
       setPaymentModal(null)
       flash(t('subscription.topupPurchasedFlash'))
       fetchData()
@@ -569,23 +608,7 @@ export default function SubscriptionPage() {
   }
 
   function handlePurchaseTopup(pkg) {
-    if (stripePromise) {
-      setPaymentModal({
-        type: 'topup',
-        packageId: pkg.id,
-        title: t('subscription.paymentModalTitle'),
-        description: t('subscription.paymentModalTopupDesc', {
-          name: pkg.name,
-          minutes: pkg.minutes.toLocaleString(),
-          price: formatCents(pkg.price_cents, pkg.currency),
-        }),
-        label: t('subscription.payAndPurchase', {
-          price: formatCents(pkg.price_cents, pkg.currency),
-        }),
-      })
-    } else {
-      doTopup(pkg.id, null)
-    }
+    doTopup(pkg.id, null)
   }
 
   function handlePaymentSubmit(paymentMethodId) {

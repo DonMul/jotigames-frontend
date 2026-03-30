@@ -147,6 +147,7 @@ export const gameApi = {
   reactivateSubscription: (token) => apiRequest('/api/subscription/reactivate', { method: 'POST', token }),
   getTopupPackages: (token) => apiRequest('/api/subscription/topup-packages', { token }),
   purchaseTopup: (token, body) => apiRequest('/api/subscription/topup', { method: 'POST', token, body }),
+  confirmTopupCheckout: (token, body) => apiRequest('/api/subscription/topup/confirm', { method: 'POST', token, body }),
   getMyPayments: (token, { limit = 20, offset = 0 } = {}) => {
     const params = new URLSearchParams()
     if (limit) params.set('limit', String(limit))
