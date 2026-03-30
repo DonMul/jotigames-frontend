@@ -402,7 +402,7 @@
     "judge": "Beoordelen",
     "crazyReview": "Gekke 88-beoordeling",
     "notAvailable": "—",
-    "score": "Scoren",
+    "score": "Score",
     "updatedAt": "Bijgewerkt",
     "gameNotFound": "Spel niet gevonden",
     "loadFailed": "Module-overzicht laden mislukt"
@@ -506,7 +506,7 @@
     "comboSelect": "Selecteer voor combo",
     "useCard": "Gebruik kaart",
     "cardPassive": "Passief",
-    "highscore": "Hoge score",
+    "highscore": "Scoreboord",
     "noTeams": "Geen teams",
     "cardPlayFailed": "Kaart spelen mislukt",
     "attackAlreadyPending": "Aanval is al actief",
@@ -704,7 +704,7 @@
       "sell": "Verkopen",
       "wallet": "Wallet & Voorraad",
       "cash": "Contant geld",
-      "score": "Scoren",
+      "score": "Score",
       "empty_inventory": "Nog geen voorraad",
       "trade_success": "Trade uitgevoerd",
       "trade_failed": "Trade uitvoeren mislukt"
@@ -1005,6 +1005,9 @@
       "retry_enabled": "Teams mogen vragen opnieuw proberen",
       "retry_timeout": "Time-out opnieuw proberen (seconden)",
       "retry_settings": "Instellingen voor opnieuw beantwoorden",
+      "visibility_mode": "Zichtbaarheid van vragen",
+      "visibility_all_visible": "Alle vragen zichtbaar",
+      "visibility_in_range_only": "Alleen zichtbaar binnen bereik",
       "save_failed": "Opslaan mislukt",
       "pois_heading": "POI's · {game}",
       "pois_subtitle": "Beheer interessante punten",
@@ -1035,8 +1038,48 @@
       "poi_table_type": "Type",
       "poi_table_radius": "Radius",
       "poi_table_actions": "Acties",
-      "poi_field_title": "POI-locatie",
-      "map_label": "GeoHunter POI's kaart"
+      "poi_field_title": "Titel",
+      "poi_field_location": "Locatie",
+      "poi_field_points": "Punten",
+      "poi_choice_label": "Antwoord",
+      "poi_choice_label_placeholder": "Typ antwoord",
+      "poi_choice_correct": "Correct",
+      "poi_choice_add": "Antwoord toevoegen",
+      "map_label": "GeoHunter POI's kaart",
+      "points_required": "Punten moeten 0 of hoger zijn"
+    },
+    "poi": {
+      "type": {
+        "text": "Tekst",
+        "multiple_choice": "Meerkeuze",
+        "open_answer": "Open antwoord"
+      },
+      "createFailed": "POI aanmaken mislukt",
+      "updateFailed": "POI bijwerken mislukt",
+      "deleteFailed": "POI verwijderen mislukt",
+      "notFound": "POI niet gevonden"
+    },
+    "answer": {
+      "correct": "Correct antwoord!",
+      "incorrect": "Antwoord is onjuist",
+      "failed": "Antwoord versturen mislukt",
+      "out_of_range": "Je moet binnen de radius van deze POI zijn om te kunnen antwoorden.",
+      "retry_in_seconds": "Je kunt deze vraag opnieuw beantwoorden over {seconds} seconden."
+    },
+    "team": {
+      "title": "GeoHunter",
+      "score": "Score",
+      "gps_active": "GPS actief",
+      "location_required": "Wachten op locatie…",
+      "objective": "Interessante punten",
+      "points_label": "{points} punten",
+      "points_short": "punten",
+      "map_answered_suffix": "✅",
+      "answer_question": "Vraag beantwoorden",
+      "move_into_range": "Beweeg dichter naar een POI.",
+      "answer_placeholder": "Jouw antwoord…",
+      "submitting": "Versturen…",
+      "submit_answer": "Versturen"
     },
     "info": {
       "kicker": "GPS-quiztocht in het veld",

@@ -408,11 +408,11 @@ export const moduleApi = {
   updateGeoHunterPoi: (token, gameId, poiId, body) =>
     apiRequest(`/api/geohunter/${gameId}/pois/${poiId}`, { method: 'PUT', token, body }),
   deleteGeoHunterPoi: (token, gameId, poiId) => apiRequest(`/api/geohunter/${gameId}/pois/${poiId}`, { method: 'DELETE', token }),
-  updateGeoHunterRetrySettings: (token, gameId, retry_enabled, retry_timeout_seconds) =>
+  updateGeoHunterRetrySettings: (token, gameId, retry_enabled, retry_timeout_seconds, visibility_mode = 'all_visible') =>
     apiRequest(`/api/geohunter/${gameId}/retry-settings`, {
       method: 'PUT',
       token,
-      body: { retry_enabled, retry_timeout_seconds },
+      body: { retry_enabled, retry_timeout_seconds, visibility_mode },
     }),
   updateGeoHunterLocation: (token, gameId, teamId, body) =>
     apiRequest(`/api/geohunter/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),

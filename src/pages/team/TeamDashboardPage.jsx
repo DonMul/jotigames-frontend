@@ -46,6 +46,7 @@ function getCardTypeLabel(type, t) {
 const EK_PLAYABLE_CARD_TYPES = new Set(['attack', 'favor', 'see_the_future', 'shuffle', 'skip'])
 const EK_TARGETED_CARD_TYPES = new Set(['favor'])
 const EK_ACTION_RESPONSE_WINDOW_SECONDS = 30
+const GEOHUNTER_LOCATION_UPDATE_INTERVAL_MS = 10000
 const EK_HOLDABLE_CARD_TYPES = [
   'attack',
   'defuse',
@@ -316,6 +317,8 @@ export default function TeamDashboardPage() {
   const leaderboardPreviousTopById = useRef(new Map())
   const blindHikeFinishedRef = useRef(false)
   const confettiTimeoutRef = useRef(0)
+  const geoHunterLastLocationUpdateAtRef = useRef(0)
+  const geoHunterLocationUpdateInFlightRef = useRef(false)
 
   const gameId = bootstrap?.game_id || ''
   const teamId = bootstrap?.team_id || auth.principalId
@@ -809,9 +812,22 @@ export default function TeamDashboardPage() {
           return
         }
         const nearbyPoiIds = Array.isArray(payload?.nearby_poi_ids) ? payload.nearby_poi_ids.map((value) => String(value || '')).filter(Boolean) : []
+        const rawLockouts = payload?.nearby_poi_lockouts_seconds && typeof payload.nearby_poi_lockouts_seconds === 'object'
+          ? payload.nearby_poi_lockouts_seconds
+          : {}
+        const nearbyPoiLockoutsSeconds = {}
+        for (const [poiId, seconds] of Object.entries(rawLockouts)) {
+          const normalizedPoiId = String(poiId || '').trim()
+          const remaining = Math.max(0, Number(seconds || 0))
+          if (normalizedPoiId && remaining > 0) {
+            nearbyPoiLockoutsSeconds[normalizedPoiId] = remaining
+          }
+        }
         setState((previous) => ({
           ...(previous && typeof previous === 'object' ? previous : {}),
           nearby_poi_ids: nearbyPoiIds,
+          nearby_poi_lockouts_seconds: nearbyPoiLockoutsSeconds,
+          retry_locked_poi_seconds: nearbyPoiLockoutsSeconds,
         }))
         return
       }
@@ -1508,16 +1524,40 @@ export default function TeamDashboardPage() {
       return
     }
 
+    const now = Date.now()
+    const elapsedSinceLastUpdate = now - Number(geoHunterLastLocationUpdateAtRef.current || 0)
+    if (elapsedSinceLastUpdate < GEOHUNTER_LOCATION_UPDATE_INTERVAL_MS || geoHunterLocationUpdateInFlightRef.current) {
+      return
+    }
+
+    geoHunterLastLocationUpdateAtRef.current = now
+    geoHunterLocationUpdateInFlightRef.current = true
+
     try {
       const response = await moduleApi.updateGeoHunterLocation(auth.token, gameId, teamId, { latitude, longitude })
       const location = response?.location && typeof response.location === 'object' ? response.location : null
       const nearbyPoiIds = Array.isArray(response?.nearby_poi_ids) ? response.nearby_poi_ids.map((value) => String(value || '')).filter(Boolean) : []
+      const rawLockedPoiSeconds = response?.retry_locked_poi_seconds && typeof response.retry_locked_poi_seconds === 'object'
+        ? response.retry_locked_poi_seconds
+        : {}
+      const retryLockedPoiSeconds = {}
+      for (const [poiId, seconds] of Object.entries(rawLockedPoiSeconds)) {
+        const normalizedPoiId = String(poiId || '').trim()
+        const remaining = Math.max(0, Number(seconds || 0))
+        if (normalizedPoiId && remaining > 0) {
+          retryLockedPoiSeconds[normalizedPoiId] = remaining
+        }
+      }
       setState((previous) => ({
         ...(previous && typeof previous === 'object' ? previous : {}),
         ...(location ? { team_location: location } : {}),
         nearby_poi_ids: nearbyPoiIds,
+        retry_locked_poi_seconds: retryLockedPoiSeconds,
+        nearby_poi_lockouts_seconds: retryLockedPoiSeconds,
       }))
     } catch {
+    } finally {
+      geoHunterLocationUpdateInFlightRef.current = false
     }
   }
 
@@ -1743,20 +1783,77 @@ export default function TeamDashboardPage() {
   }
 
   async function handleAnswerGeoQuestion(poiId, answerValue) {
-    if (!isGeoHunter || !gameId || !teamId) return
+    if (!isGeoHunter || !gameId || !teamId) {
+      return {
+        correct: false,
+        message: t('geohunter.answer.failed', {}, 'Could not submit answer'),
+        retryAvailableInSeconds: 0,
+        score: Number(state?.score || 0),
+      }
+    }
     setActionError('')
     setActionSuccess('')
     setAnsweringQuestion(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'geohunter', gameId, teamId, { poi_id: poiId, answer: answerValue })
-      if (result?.points_awarded > 0) {
-        setActionSuccess(t('geohunter.answer.correct', {}, 'Correct answer!'))
+      const pointsAwarded = Number(result?.points_awarded || 0)
+      const isCorrect = result?.correct === true || pointsAwarded > 0
+      const retryAvailableInSeconds = Math.max(0, Number(result?.retry_available_in_seconds || 0))
+      const lockActive = Boolean(result?.lock_active)
+      const score = Number(result?.score)
+
+      let message = ''
+      if (isCorrect) {
+        message = t('geohunter.answer.correct', {}, 'Correct answer!')
+        setActionSuccess(message)
+      } else if (retryAvailableInSeconds > 0) {
+        if (lockActive) {
+          message = String(
+            result?.message_key
+            || t(
+              'geohunter.answer.retry_in_seconds',
+              { seconds: retryAvailableInSeconds },
+              `You can answer this question again in ${retryAvailableInSeconds} seconds.`,
+            ),
+          )
+        } else {
+          const retryMessage = t(
+            'geohunter.answer.retry_in_seconds',
+            { seconds: retryAvailableInSeconds },
+            `You can answer this question again in ${retryAvailableInSeconds} seconds.`,
+          )
+          message = `${t('geohunter.answer.incorrect', {}, 'Incorrect answer')} ${retryMessage}`.trim()
+        }
+        setActionError(message)
       } else {
-        setActionError(t('geohunter.answer.incorrect', {}, 'Incorrect answer'))
+        message = String(result?.message_key || t('geohunter.answer.incorrect', {}, 'Incorrect answer'))
+        setActionError(message)
       }
+
+      if (Number.isFinite(score)) {
+        setState((previous) => ({
+          ...(previous && typeof previous === 'object' ? previous : {}),
+          score,
+        }))
+      }
+
       await refreshState()
+
+      return {
+        correct: isCorrect,
+        message,
+        retryAvailableInSeconds,
+        score: Number.isFinite(score) ? score : Number(state?.score || 0),
+      }
     } catch (err) {
-      setActionError(err.message || t('geohunter.answer.failed', {}, 'Could not submit answer'))
+      const message = err.message || t('geohunter.answer.failed', {}, 'Could not submit answer')
+      setActionError(message)
+      return {
+        correct: false,
+        message,
+        retryAvailableInSeconds: 0,
+        score: Number(state?.score || 0),
+      }
     } finally {
       setAnsweringQuestion(false)
     }

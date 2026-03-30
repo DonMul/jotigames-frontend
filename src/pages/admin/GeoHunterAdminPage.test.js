@@ -62,5 +62,7 @@ describe('GeoHunterSettingsPage', () => {
 
   it('supports retry settings', () => {
     expect(settingsSource).toContain('moduleApi.updateGeoHunterRetrySettings')
+    expect(settingsSource).toContain('visibilityMode')
+    expect(settingsSource).toContain('geohunter.admin.visibility_mode')
   })
 })

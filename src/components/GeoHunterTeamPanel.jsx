@@ -21,6 +21,16 @@ export default function GeoHunterTeamPanel({
   const [activePoi, setActivePoi] = useState(null)
   const [selectedChoice, setSelectedChoice] = useState('')
   const [openAnswer, setOpenAnswer] = useState('')
+  const [answerFeedback, setAnswerFeedback] = useState(null)
+  const [retryLockedPoiSeconds, setRetryLockedPoiSeconds] = useState({})
+  const latestPositionRef = useRef(null)
+
+  function normalizeQuestionType(value) {
+    const raw = String(value || '').trim().toLowerCase()
+    if (raw === 'multiple_choice') return 'multiple_choice'
+    if (raw === 'open' || raw === 'open_answer') return 'open_answer'
+    return 'text'
+  }
 
   const pois = useMemo(() => {
     const items = Array.isArray(state?.pois) ? state.pois : []
@@ -33,8 +43,9 @@ export default function GeoHunterTeamPanel({
       points: Number(p.points || 0),
       marker_color: String(p.marker_color || '#10b981'),
       is_active: Boolean(p.is_active),
-      question_type: String(p.question_type || 'open'),
-      question_text: String(p.question_text || ''),
+      question_type: normalizeQuestionType(p.question_type || p.type),
+      question_text: String(p.question_text || p.question || ''),
+      content: String(p.content || ''),
       correct_answer: String(p.correct_answer || ''),
       choices: Array.isArray(p.choices) ? p.choices : [],
     }))
@@ -51,19 +62,72 @@ export default function GeoHunterTeamPanel({
     return ids
   }, [state?.last_actions, currentTeamId])
 
+  const correctlyAnsweredIds = useMemo(() => {
+    const actions = Array.isArray(state?.last_actions) ? state.last_actions : []
+    const ids = new Set()
+    for (const action of actions) {
+      if (String(action?.action || '') !== 'geohunter.question.answer') {
+        continue
+      }
+      if (String(action?.team_id || '') !== String(currentTeamId || '')) {
+        continue
+      }
+
+      const rawMetadata = action?.metadata
+      const metadata = typeof rawMetadata === 'string'
+        ? (() => {
+          try {
+            const parsed = JSON.parse(rawMetadata)
+            return parsed && typeof parsed === 'object' ? parsed : {}
+          } catch {
+            return {}
+          }
+        })()
+        : (rawMetadata && typeof rawMetadata === 'object' ? rawMetadata : {})
+
+      const pointsAwarded = Number(action?.points_awarded || action?.pointsAwarded || 0)
+      const isCorrect = metadata?.correct === true || pointsAwarded > 0
+      if (isCorrect) {
+        ids.add(String(action?.object_id || ''))
+      }
+    }
+    return ids
+  }, [state?.last_actions, currentTeamId])
+
   const nearbyPois = useMemo(() => {
     const serverNearbyIds = Array.isArray(state?.nearby_poi_ids)
       ? new Set(state.nearby_poi_ids.map((value) => String(value || '')))
       : null
     if (serverNearbyIds) {
-      return pois.filter((poi) => poi.is_active && !answeredIds.has(poi.id) && serverNearbyIds.has(poi.id))
+      return pois.filter((poi) => poi.is_active && serverNearbyIds.has(poi.id))
     }
     if (!currentPosition) return []
     return pois.filter((p) => {
-      if (!p.is_active || answeredIds.has(p.id)) return false
+      if (!p.is_active) return false
       return haversineDistance(currentPosition.latitude, currentPosition.longitude, p.latitude, p.longitude) <= p.radius_meters
     })
-  }, [currentPosition, pois, answeredIds, state?.nearby_poi_ids])
+  }, [currentPosition, pois, state?.nearby_poi_ids])
+
+  const visibleMapPois = useMemo(() => {
+    const visibilityMode = String(state?.poi_visibility_mode || 'all_visible').trim().toLowerCase()
+    if (visibilityMode !== 'in_range_only') {
+      return pois.filter((poi) => poi.is_active)
+    }
+
+    const serverNearbyIds = Array.isArray(state?.nearby_poi_ids)
+      ? new Set(state.nearby_poi_ids.map((value) => String(value || '')))
+      : null
+    if (serverNearbyIds) {
+      return pois.filter((poi) => poi.is_active && serverNearbyIds.has(poi.id))
+    }
+    if (!currentPosition) {
+      return []
+    }
+    return pois.filter((poi) => (
+      poi.is_active
+      && haversineDistance(currentPosition.latitude, currentPosition.longitude, poi.latitude, poi.longitude) <= poi.radius_meters
+    ))
+  }, [currentPosition, pois, state?.nearby_poi_ids, state?.poi_visibility_mode])
 
   const score = Number(state?.score || state?.score_delta || 0)
 
@@ -86,22 +150,33 @@ export default function GeoHunterTeamPanel({
   }, [])
 
   useEffect(() => {
-    if (typeof onLocationUpdate !== 'function' || !currentPosition) {
+    latestPositionRef.current = currentPosition
+  }, [currentPosition])
+
+  useEffect(() => {
+    if (typeof onLocationUpdate !== 'function') {
       return
     }
-    onLocationUpdate(currentPosition)
+
     const intervalId = window.setInterval(() => {
-      onLocationUpdate(currentPosition)
+      if (latestPositionRef.current) {
+        onLocationUpdate(latestPositionRef.current)
+      }
     }, 10000)
+
+    if (latestPositionRef.current) {
+      onLocationUpdate(latestPositionRef.current)
+    }
+
     return () => {
       window.clearInterval(intervalId)
     }
-  }, [currentPosition, onLocationUpdate])
+  }, [onLocationUpdate])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return
     configureLeafletDefaultMarkerIcons()
-    const map = L.map(mapContainerRef.current, { center: [52.1326, 5.2913], zoom: 18, minZoom: 8, maxZoom: 19 })
+    const map = L.map(mapContainerRef.current, { center: [52.1326, 5.2913], zoom: 16, minZoom: 8, maxZoom: 18 })
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map)
     markersLayerRef.current = L.layerGroup().addTo(map)
     rangeCirclesLayerRef.current = L.layerGroup().addTo(map)
@@ -114,18 +189,19 @@ export default function GeoHunterTeamPanel({
     markersLayerRef.current.clearLayers()
     rangeCirclesLayerRef.current.clearLayers()
     const bounds = []
-    for (const p of pois) {
-      if (!p.is_active) continue
+    for (const p of visibleMapPois) {
       const latLng = [p.latitude, p.longitude]
       bounds.push(latLng)
       const isAnswered = answeredIds.has(p.id)
+      const pointsLabel = t('geohunter.team.points_short', {}, 'pts')
+      const answeredLabel = isAnswered ? t('geohunter.team.map_answered_suffix', {}, '✅') : ''
       L.circle(latLng, { radius: p.radius_meters, color: isAnswered ? '#16a34a' : p.marker_color, fillColor: isAnswered ? '#16a34a' : p.marker_color, fillOpacity: 0.15, weight: 2 }).addTo(rangeCirclesLayerRef.current)
       L.circleMarker(latLng, { radius: 8, color: isAnswered ? '#16a34a' : p.marker_color, fillColor: isAnswered ? '#16a34a' : p.marker_color, fillOpacity: 0.9, weight: 2 })
-        .bindPopup(`<strong>${p.title}</strong><br/>${p.points} pts${isAnswered ? ' ✅' : ''}`)
+        .bindPopup(`<strong>${p.title}</strong><br/>${p.points} ${pointsLabel}${answeredLabel ? ` ${answeredLabel}` : ''}`)
         .addTo(markersLayerRef.current)
     }
     if (bounds.length > 0 && !currentPosition) mapRef.current.fitBounds(bounds, { padding: [40, 40] })
-  }, [pois, answeredIds, currentPosition])
+  }, [visibleMapPois, answeredIds, currentPosition, t])
 
   useEffect(() => {
     if (!mapRef.current || !currentPosition) return
@@ -146,12 +222,17 @@ export default function GeoHunterTeamPanel({
   }, [])
 
   function handleOpenQuestion(poi) {
+    const poiId = String(poi?.id || '')
+    if (Number(retryLockedPoiSeconds[poiId] || 0) > 0 || correctlyAnsweredIds.has(poiId)) {
+      return
+    }
     setActivePoi(poi)
     setSelectedChoice('')
     setOpenAnswer('')
+    setAnswerFeedback(null)
   }
 
-  function handleSubmitAnswer(event) {
+  async function handleSubmitAnswer(event) {
     event.preventDefault()
     if (!activePoi) return
 
@@ -159,13 +240,94 @@ export default function GeoHunterTeamPanel({
 
     if (activePoi.question_type === 'multiple_choice') {
       answerValue = selectedChoice
-    } else {
+    } else if (activePoi.question_type === 'open_answer') {
       answerValue = openAnswer.trim()
+    } else {
+      setActivePoi(null)
+      return
     }
 
-    onAnswerQuestion(activePoi.id, answerValue)
-    setActivePoi(null)
+    const feedback = await onAnswerQuestion(activePoi.id, answerValue)
+    const defaultMessage = feedback?.correct
+      ? t('geohunter.answer.correct', {}, 'Correct answer!')
+      : t('geohunter.answer.incorrect', {}, 'Incorrect answer')
+    const message = String(feedback?.message || defaultMessage)
+    const isCorrect = Boolean(feedback?.correct)
+
+    setAnswerFeedback({
+      type: isCorrect ? 'success' : 'error',
+      message,
+    })
+
+    const retryAvailableInSeconds = Math.max(0, Number(feedback?.retryAvailableInSeconds || 0))
+    const activePoiId = String(activePoi?.id || '')
+    if (!isCorrect && retryAvailableInSeconds > 0 && activePoiId) {
+      setRetryLockedPoiSeconds((previous) => ({
+        ...previous,
+        [activePoiId]: retryAvailableInSeconds,
+      }))
+    }
+
+    if (isCorrect) {
+      setActivePoi(null)
+    }
   }
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setRetryLockedPoiSeconds((previous) => {
+        const entries = Object.entries(previous)
+        if (entries.length === 0) {
+          return previous
+        }
+
+        const next = {}
+        for (const [poiId, seconds] of entries) {
+          const remaining = Math.max(0, Number(seconds || 0) - 1)
+          if (remaining > 0) {
+            next[poiId] = remaining
+          }
+        }
+
+        const sameSize = Object.keys(next).length === entries.length
+        if (sameSize) {
+          let unchanged = true
+          for (const [poiId, seconds] of entries) {
+            if (Number(next[poiId] || 0) !== Number(seconds || 0)) {
+              unchanged = false
+              break
+            }
+          }
+          if (unchanged) {
+            return previous
+          }
+        }
+
+        return next
+      })
+    }, 1000)
+
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
+  useEffect(() => {
+    const rawLocked = state?.retry_locked_poi_seconds
+    if (!rawLocked || typeof rawLocked !== 'object') {
+      setRetryLockedPoiSeconds({})
+      return
+    }
+
+    const normalized = {}
+    for (const [poiId, seconds] of Object.entries(rawLocked)) {
+      const remaining = Math.max(0, Number(seconds || 0))
+      if (remaining > 0) {
+        normalized[String(poiId || '')] = remaining
+      }
+    }
+    setRetryLockedPoiSeconds(normalized)
+  }, [state?.retry_locked_poi_seconds])
 
   return (
     <section className="team-dashboard-geo-layout">
@@ -178,13 +340,37 @@ export default function GeoHunterTeamPanel({
 
       <div className="team-panel">
         <h2>{t('geohunter.team.objective', {}, 'Points of interest')}</h2>
+        {answerFeedback ? (
+          <p className={answerFeedback.type === 'success' ? 'text-emerald-700' : 'text-red-700'} style={{ marginBottom: '0.75rem' }}>
+            {answerFeedback.message}
+          </p>
+        ) : null}
         {nearbyPois.length > 0 ? (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="grid gap-3" style={{ listStyle: 'none', padding: 0 }}>
             {nearbyPois.map((p) => (
-              <li key={p.id} style={{ marginBottom: '0.75rem' }}>
-                <strong>{p.title}</strong> — {p.points} pts
-                <br />
-                <button className="btn btn-primary btn-small" type="button" disabled={answering} onClick={() => handleOpenQuestion(p)}>
+              <li key={p.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex items-start justify-between gap-3">
+                  <strong>{p.title}</strong>
+                  <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    {t('geohunter.team.points_label', { points: p.points }, `${p.points} punten`)}
+                  </span>
+                </div>
+                {correctlyAnsweredIds.has(p.id) ? (
+                  <p className="text-emerald-700" style={{ margin: '0.25rem 0' }}>
+                    {t('geohunter.answer.correct', {}, 'Correct answer!')}
+                  </p>
+                ) : null}
+                {Number(retryLockedPoiSeconds[p.id] || 0) > 0 ? (
+                  <p className="text-red-700" style={{ margin: '0.25rem 0' }}>
+                    {t('geohunter.answer.retry_in_seconds', { seconds: retryLockedPoiSeconds[p.id] }, `You can answer this question again in ${retryLockedPoiSeconds[p.id]} seconds.`)}
+                  </p>
+                ) : null}
+                <button
+                  className="btn btn-primary btn-small"
+                  type="button"
+                  disabled={answering || Number(retryLockedPoiSeconds[p.id] || 0) > 0 || correctlyAnsweredIds.has(p.id)}
+                  onClick={() => handleOpenQuestion(p)}
+                >
                   {t('geohunter.team.answer_question', {}, 'Answer question')}
                 </button>
               </li>
@@ -192,18 +378,6 @@ export default function GeoHunterTeamPanel({
           </ul>
         ) : (
           <p className="muted">{currentPosition ? t('geohunter.team.move_into_range', {}, 'Move closer to a POI.') : t('geohunter.team.location_required', {}, 'Waiting for location…')}</p>
-        )}
-
-        <h3 style={{ marginTop: '1.5rem' }}>{t('geohunter.team.all_pois', {}, 'All locations')}</h3>
-        {pois.length === 0 ? <p className="muted">-</p> : (
-          <table className="admin-table">
-            <thead><tr><th>{t('geohunter.admin.table_title', {}, 'Title')}</th><th>{t('geohunter.admin.table_points', {}, 'Points')}</th><th>{t('geohunter.admin.table_status', {}, 'Status')}</th></tr></thead>
-            <tbody>
-              {pois.filter((p) => p.is_active).map((p) => (
-                <tr key={p.id}><td>{p.title}</td><td>{p.points}</td><td>{answeredIds.has(p.id) ? '✅' : '—'}</td></tr>
-              ))}
-            </tbody>
-          </table>
         )}
       </div>
 
@@ -213,17 +387,39 @@ export default function GeoHunterTeamPanel({
           <div className="modal-card">
             <h2>{activePoi.title}</h2>
             <p>{activePoi.question_text}</p>
+            {answerFeedback ? (
+              <p className={answerFeedback.type === 'success' ? 'text-emerald-700' : 'text-red-700'} style={{ marginBottom: '0.75rem' }}>
+                {answerFeedback.message}
+              </p>
+            ) : null}
             <form onSubmit={handleSubmitAnswer}>
               {activePoi.question_type === 'multiple_choice' ? (
-                <fieldset style={{ border: 'none', padding: 0 }}>
-                  {activePoi.choices.map((c) => (
-                    <label key={c.id} style={{ display: 'block', marginBottom: '0.5rem', cursor: 'pointer' }}>
-                      <input type="radio" name="geo-choice" value={c.id} checked={selectedChoice === String(c.id)} onChange={() => setSelectedChoice(String(c.id))} />
-                      {' '}{c.label}
-                    </label>
-                  ))}
+                <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' }}>
+                    {activePoi.choices.map((c) => {
+                      const choiceId = String(c.id)
+                      const isSelected = selectedChoice === choiceId
+                      return (
+                        <li key={choiceId}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedChoice(choiceId)}
+                            aria-pressed={isSelected}
+                            className="w-full rounded-md border px-3 py-2 text-left transition-colors"
+                            style={{
+                              borderColor: isSelected ? '#2563eb' : '#d1d5db',
+                              backgroundColor: isSelected ? '#dbeafe' : '#ffffff',
+                              color: '#0f172a',
+                            }}
+                          >
+                            {c.label}
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </fieldset>
-              ) : (
+              ) : activePoi.question_type === 'open_answer' ? (
                 <input
                   type="text"
                   className="input"
@@ -233,12 +429,16 @@ export default function GeoHunterTeamPanel({
                   required
                   autoFocus
                 />
+              ) : (
+                <p>{activePoi.content || activePoi.question_text}</p>
               )}
               <div className="modal-actions" style={{ marginTop: '1rem' }}>
                 <button className="btn btn-ghost" type="button" onClick={() => setActivePoi(null)}>{t('teamDashboard.popupClose', {}, 'Cancel')}</button>
-                <button className="btn btn-primary" type="submit" disabled={answering || (activePoi.question_type === 'multiple_choice' ? !selectedChoice : !openAnswer.trim())}>
-                  {answering ? t('geohunter.team.submitting', {}, 'Submitting…') : t('geohunter.team.submit_answer', {}, 'Submit')}
-                </button>
+                {activePoi.question_type !== 'text' ? (
+                  <button className="btn btn-primary" type="submit" disabled={answering || Number(retryLockedPoiSeconds[String(activePoi.id || '')] || 0) > 0 || (activePoi.question_type === 'multiple_choice' ? !selectedChoice : !openAnswer.trim())}>
+                    {answering ? t('geohunter.team.submitting', {}, 'Submitting…') : t('geohunter.team.submit_answer', {}, 'Submit')}
+                  </button>
+                ) : null}
               </div>
             </form>
           </div>

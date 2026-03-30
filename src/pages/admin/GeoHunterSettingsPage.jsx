@@ -13,6 +13,7 @@ export default function GeoHunterSettingsPage() {
   const [game, setGame] = useState(null)
   const [retryEnabled, setRetryEnabled] = useState(false)
   const [retryTimeoutSeconds, setRetryTimeoutSeconds] = useState('0')
+  const [visibilityMode, setVisibilityMode] = useState('all_visible')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -28,6 +29,7 @@ export default function GeoHunterSettingsPage() {
       setGame(gameRecord)
       setRetryEnabled(Boolean(poisPayload?.retry_enabled))
       setRetryTimeoutSeconds(String(Number(poisPayload?.retry_timeout_seconds || 0)))
+      setVisibilityMode(String(poisPayload?.visibility_mode || 'all_visible'))
     } catch (err) {
       setError(err.message || t('geohunter.admin.load_failed', {}, 'Failed to load settings'))
     } finally {
@@ -49,6 +51,7 @@ export default function GeoHunterSettingsPage() {
         gameId,
         retryEnabled,
         Number(retryTimeoutSeconds || 0),
+        visibilityMode,
       )
       setSuccess(t('button.save', {}, 'Saved'))
     } catch (err) {
@@ -103,6 +106,17 @@ export default function GeoHunterSettingsPage() {
               value={retryTimeoutSeconds}
               onChange={(event) => setRetryTimeoutSeconds(event.target.value)}
             />
+          </div>
+          <div className="form-row">
+            <label htmlFor="geohunter-visibility-mode">{t('geohunter.admin.visibility_mode', {}, 'Question visibility')}</label>
+            <select
+              id="geohunter-visibility-mode"
+              value={visibilityMode}
+              onChange={(event) => setVisibilityMode(String(event.target.value || 'all_visible'))}
+            >
+              <option value="all_visible">{t('geohunter.admin.visibility_all_visible', {}, 'All questions visible')}</option>
+              <option value="in_range_only">{t('geohunter.admin.visibility_in_range_only', {}, 'Only visible when in range')}</option>
+            </select>
           </div>
           <div className="overview-actions">
             <button className="btn btn-primary" type="submit">

@@ -61,4 +61,10 @@ describe('GeoHunterTeamPanel', () => {
     expect(source).toContain('openAnswer')
     expect(source).toContain('setOpenAnswer')
   })
+
+  it('disables answer action for correctly answered poi and shows success state', () => {
+    expect(source).toContain('correctlyAnsweredIds')
+    expect(source).toContain('correctlyAnsweredIds.has(p.id)')
+    expect(source).toContain("t('geohunter.answer.correct'")
+  })
 })
