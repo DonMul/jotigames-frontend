@@ -14,7 +14,7 @@ export default function Crazy88TeamPanel({
   const tasks = useMemo(() => {
     const items = Array.isArray(state?.tasks) ? state.tasks : []
     return items
-      .filter((task) => Boolean(task.is_active))
+      .filter((task) => task && task.is_active !== false)
       .map((task) => ({
         id: String(task.id || ''),
         title: String(task.title || ''),
@@ -55,6 +55,9 @@ export default function Crazy88TeamPanel({
   const score = Number(state?.score || state?.score_delta || 0)
 
   const highscore = useMemo(() => {
+    if (!Boolean(state?.show_highscore ?? true)) {
+      return []
+    }
     const teams = Array.isArray(state?.highscore) ? state.highscore : []
     return teams
       .map((row) => ({ teamId: String(row?.team_id || ''), name: String(row?.name || '-'), logoPath: String(row?.logo_path || ''), score: Number(row?.score || 0) }))

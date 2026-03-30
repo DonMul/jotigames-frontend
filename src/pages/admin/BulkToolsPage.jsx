@@ -55,12 +55,12 @@ export default function BulkToolsPage() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-navy-900">{t('bulkTools.title', {}, 'Bulk tools')}</h1>
-          <p className="text-sm text-gray-500 mt-1">{t('bulkTools.subtitle', {}, 'Bulk create teams for this game')}</p>
+          <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{t('bulkTools.title', {}, 'Bulk tools')}</h1>
+          <p className="text-sm text-gray-500 mt-1 dark:text-slate-400">{t('bulkTools.subtitle', {}, 'Bulk create teams for this game')}</p>
         </div>
         <Link className="btn btn-ghost" to={backPath}>
           {t('bulkTools.back', {}, 'Back')}
@@ -70,14 +70,14 @@ export default function BulkToolsPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
       {createdCount > 0 ? <div className="flash flash-success">{t('bulkTools.created', { count: createdCount }, `Created ${createdCount} teams`)}</div> : null}
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-navy-900 mb-4">{t('bulkTools.teamsTitle', {}, 'Teams')}</h2>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 dark:border-slate-700 dark:bg-slate-900">
+        <h2 className="text-lg font-semibold text-navy-900 mb-4 dark:text-white">{t('bulkTools.teamsTitle', {}, 'Teams')}</h2>
         <form className="grid grid-cols-1 sm:grid-cols-3 gap-4" onSubmit={handleBulkCreate}>
           <div className="space-y-1.5">
-            <label htmlFor="bulk-team-amount" className="block text-sm font-medium text-navy-700">{t('bulkTools.amount', {}, 'Amount')}</label>
+            <label htmlFor="bulk-team-amount" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('bulkTools.amount', {}, 'Amount')}</label>
             <input
               id="bulk-team-amount"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               type="number"
               min="1"
               max="200"
@@ -86,20 +86,20 @@ export default function BulkToolsPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="bulk-team-prefix" className="block text-sm font-medium text-navy-700">{t('bulkTools.prefix', {}, 'Prefix')}</label>
+            <label htmlFor="bulk-team-prefix" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('bulkTools.prefix', {}, 'Prefix')}</label>
             <input
               id="bulk-team-prefix"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               type="text"
               value={prefix}
               onChange={(event) => setPrefix(event.target.value)}
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="bulk-team-start" className="block text-sm font-medium text-navy-700">{t('bulkTools.start', {}, 'Start')}</label>
+            <label htmlFor="bulk-team-start" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('bulkTools.start', {}, 'Start')}</label>
             <input
               id="bulk-team-start"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               type="number"
               min="1"
               value={startIndex}

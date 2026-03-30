@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import GeoLocationPicker from '../../components/GeoLocationPicker'
+import GeoPolygonDrawMap from '../../components/GeoPolygonDrawMap'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -11,6 +11,34 @@ function defaultConfigForm() {
     center_lat: '51.0500000', center_lon: '3.7200000',
     spawn_area_geojson: '', severity_upgrade_seconds: '180',
     penalty_percent: '10', target_active_hotspots: '15', pickup_point_count: '4',
+  }
+}
+
+function extractCenterFromPolygon(value) {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    const ring = parsed?.type === 'Polygon' && Array.isArray(parsed?.coordinates?.[0]) ? parsed.coordinates[0] : null
+    if (!ring || ring.length < 3) return null
+
+    const points = ring
+      .map((point) => [Number(point?.[1]), Number(point?.[0])])
+      .filter(([lat, lon]) => Number.isFinite(lat) && Number.isFinite(lon))
+
+    if (points.length === 0) return null
+
+    let latSum = 0
+    let lonSum = 0
+    for (const [lat, lon] of points) {
+      latSum += lat
+      lonSum += lon
+    }
+    return {
+      center_lat: latSum / points.length,
+      center_lon: lonSum / points.length,
+    }
+  } catch {
+    return null
   }
 }
 
@@ -56,23 +84,29 @@ export default function PandemicResponseSettingsPage() {
     setError('')
     setSuccess('')
     const payload = {
-      center_lat: Number(form.center_lat), center_lon: Number(form.center_lon),
       spawn_area_geojson: String(form.spawn_area_geojson || '').trim(),
       severity_upgrade_seconds: Number(form.severity_upgrade_seconds),
       penalty_percent: Number(form.penalty_percent),
       target_active_hotspots: Number(form.target_active_hotspots),
       pickup_point_count: Number(form.pickup_point_count),
     }
-    if (!Number.isFinite(payload.center_lat) || !Number.isFinite(payload.center_lon)) {
-      setError(t('pandemic_response.admin.center_required', {}, 'Center latitude and longitude are required'))
-      return
-    }
     if (!payload.spawn_area_geojson) {
       setError(t('pandemic_response.admin.spawn_area_required', {}, 'Spawn area polygon is required'))
       return
     }
+
+    const center = extractCenterFromPolygon(payload.spawn_area_geojson)
+    if (!center) {
+      setError(t('pandemic_response.admin.spawn_area_required', {}, 'Spawn area polygon is required'))
+      return
+    }
+
     try {
-      await moduleApi.updatePandemicResponseConfig(auth.token, gameId, payload)
+      await moduleApi.updatePandemicResponseConfig(auth.token, gameId, {
+        ...payload,
+        center_lat: center.center_lat,
+        center_lon: center.center_lon,
+      })
       await loadAll()
       setSuccess(t('button.save', {}, 'Saved'))
     } catch (err) {
@@ -100,12 +134,15 @@ export default function PandemicResponseSettingsPage() {
       <section className="admin-block">
         <h2>{t('pandemic_response.admin.config', {}, 'Auto outbreak configuration')}</h2>
         <form onSubmit={submitConfig} className="form-grid">
-          <GeoLocationPicker latitude={form.center_lat} longitude={form.center_lon} onChange={(lat, lon) => setForm((c) => ({ ...c, center_lat: lat, center_lon: lon }))} ariaLabel={t('pandemic_response.admin.center_map_label', {}, 'Outbreak center')} />
-          <div className="form-row form-row-inline">
-            <div><label htmlFor="pandemic-center-lat">{t('common.lat', {}, 'Lat')}</label><input id="pandemic-center-lat" type="number" step="0.000001" value={form.center_lat} onChange={(e) => setForm((c) => ({ ...c, center_lat: e.target.value }))} required /></div>
-            <div><label htmlFor="pandemic-center-lon">{t('common.lon', {}, 'Lon')}</label><input id="pandemic-center-lon" type="number" step="0.000001" value={form.center_lon} onChange={(e) => setForm((c) => ({ ...c, center_lon: e.target.value }))} required /></div>
+          <div className="form-row">
+            <label>{t('pandemic_response.admin.spawn_area', {}, 'Spawn area (GeoJSON Polygon)')}</label>
+            <p className="muted">{t('pandemic_response.admin.spawn_area_help', {}, 'Klik op de kaart om hoekpunten te plaatsen voor het spawngebied.')}</p>
+            <GeoPolygonDrawMap
+              value={form.spawn_area_geojson}
+              onChange={(value) => setForm((c) => ({ ...c, spawn_area_geojson: value }))}
+              ariaLabel={t('pandemic_response.admin.spawn_area', {}, 'Spawn area (GeoJSON Polygon)')}
+            />
           </div>
-          <div className="form-row"><label htmlFor="pandemic-area-geojson">{t('pandemic_response.admin.spawn_area', {}, 'Spawn area (GeoJSON Polygon)')}</label><textarea id="pandemic-area-geojson" rows={6} value={form.spawn_area_geojson} onChange={(e) => setForm((c) => ({ ...c, spawn_area_geojson: e.target.value }))} required /></div>
           <div className="form-row"><label htmlFor="pandemic-upgrade-seconds">{t('pandemic_response.admin.severity_upgrade', {}, 'Severity upgrade interval (seconds)')}</label><input id="pandemic-upgrade-seconds" type="number" min="30" value={form.severity_upgrade_seconds} onChange={(e) => setForm((c) => ({ ...c, severity_upgrade_seconds: e.target.value }))} required /></div>
           <div className="form-row"><label htmlFor="pandemic-penalty">{t('pandemic_response.admin.penalty_percent', {}, 'Penalty percent')}</label><input id="pandemic-penalty" type="number" min="1" max="90" value={form.penalty_percent} onChange={(e) => setForm((c) => ({ ...c, penalty_percent: e.target.value }))} required /></div>
           <div className="form-row"><label htmlFor="pandemic-target">{t('pandemic_response.admin.target_active_hotspots', {}, 'Target active hotspots')}</label><input id="pandemic-target" type="number" min="1" max="200" value={form.target_active_hotspots} onChange={(e) => setForm((c) => ({ ...c, target_active_hotspots: e.target.value }))} required /></div>

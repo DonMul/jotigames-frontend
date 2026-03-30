@@ -14,7 +14,6 @@ function defaultTaskForm() {
     latitude: '',
     longitude: '',
     radius_meters: '25',
-    sort_order: '0',
   }
 }
 
@@ -60,7 +59,6 @@ export default function Crazy88TaskFormPage() {
             latitude: task.latitude === null || task.latitude === undefined ? '' : String(task.latitude),
             longitude: task.longitude === null || task.longitude === undefined ? '' : String(task.longitude),
             radius_meters: String(Number(task.radius_meters || 25)),
-            sort_order: String(Number(task.sort_order || 0)),
           })
         }
       } catch (err) {
@@ -81,10 +79,9 @@ export default function Crazy88TaskFormPage() {
       title: taskForm.title.trim(),
       description: taskForm.description.trim() || null,
       points: Number(taskForm.points || 1),
-      latitude: taskForm.latitude === '' ? null : Number(taskForm.latitude),
-      longitude: taskForm.longitude === '' ? null : Number(taskForm.longitude),
+      latitude: isGeoLocked ? (taskForm.latitude === '' ? null : Number(taskForm.latitude)) : null,
+      longitude: isGeoLocked ? (taskForm.longitude === '' ? null : Number(taskForm.longitude)) : null,
       radius_meters: Number(taskForm.radius_meters || 25),
-      sort_order: Number(taskForm.sort_order || 0),
     }
 
     if (isGeoLocked) {
@@ -148,28 +145,21 @@ export default function Crazy88TaskFormPage() {
                 <label htmlFor="crazy88-points">{t('crazy88.admin.table_points', {}, 'Points')}</label>
                 <input id="crazy88-points" type="number" min="1" value={taskForm.points} onChange={(e) => setTaskForm((c) => ({ ...c, points: e.target.value }))} required />
               </div>
-              <div>
-                <label htmlFor="crazy88-sort-order">{t('crazy88.admin.sort_order', {}, 'Sort order')}</label>
-                <input id="crazy88-sort-order" type="number" min="0" value={taskForm.sort_order} onChange={(e) => setTaskForm((c) => ({ ...c, sort_order: e.target.value }))} />
-              </div>
             </div>
 
-            <GeoLocationPicker latitude={taskForm.latitude} longitude={taskForm.longitude} onChange={(lat, lon) => setTaskForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('crazy88.admin.task_map_label', {}, 'Task location map')} />
-
-            <div className="form-row form-row-inline">
-              <div>
-                <label htmlFor="crazy88-latitude">{t('crazy88.admin.form_latitude', {}, 'Latitude')}</label>
-                <input id="crazy88-latitude" type="number" step="0.000001" value={taskForm.latitude} onChange={(e) => setTaskForm((c) => ({ ...c, latitude: e.target.value }))} />
-              </div>
-              <div>
-                <label htmlFor="crazy88-longitude">{t('crazy88.admin.form_longitude', {}, 'Longitude')}</label>
-                <input id="crazy88-longitude" type="number" step="0.000001" value={taskForm.longitude} onChange={(e) => setTaskForm((c) => ({ ...c, longitude: e.target.value }))} />
-              </div>
-            </div>
-            <div className="form-row">
-              <label htmlFor="crazy88-radius">{t('crazy88.admin.form_radius', {}, 'Radius')}</label>
-              <input id="crazy88-radius" type="number" min="5" value={taskForm.radius_meters} onChange={(e) => setTaskForm((c) => ({ ...c, radius_meters: e.target.value }))} />
-            </div>
+            {isGeoLocked ? (
+              <>
+                <div className="form-row">
+                  <label>{t('crazy88.admin.form_location', {}, 'Location')}</label>
+                  <p className="muted">{t('crazy88.admin.form_location_help', {}, 'Click on the map to place the task location.')}</p>
+                  <GeoLocationPicker latitude={taskForm.latitude} longitude={taskForm.longitude} onChange={(lat, lon) => setTaskForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('crazy88.admin.task_map_label', {}, 'Task location map')} />
+                </div>
+                <div className="form-row">
+                  <label htmlFor="crazy88-radius">{t('crazy88.admin.form_radius', {}, 'Radius')}</label>
+                  <input id="crazy88-radius" type="number" min="5" value={taskForm.radius_meters} onChange={(e) => setTaskForm((c) => ({ ...c, radius_meters: e.target.value }))} />
+                </div>
+              </>
+            ) : null}
 
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>

@@ -39,8 +39,8 @@ describe('PandemicResponseSettingsPage', () => {
     expect(typeof PandemicResponseSettingsPage).toBe('function')
   })
 
-  it('integrates with GeoLocationPicker', () => {
-    expect(settingsSource).toContain('GeoLocationPicker')
+  it('integrates with GeoPolygonDrawMap', () => {
+    expect(settingsSource).toContain('GeoPolygonDrawMap')
   })
 
   it('calls moduleApi methods for config', () => {

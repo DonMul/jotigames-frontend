@@ -80,13 +80,17 @@ export default function GeoHunterSettingsPage() {
         <h2>{t('geohunter.admin.retry_settings', {}, 'Answer retry settings')}</h2>
         <form onSubmit={handleSaveSettings} className="form-grid">
           <div className="form-row">
-            <label>
-              <input
-                type="checkbox"
-                checked={retryEnabled}
-                onChange={(event) => setRetryEnabled(event.target.checked)}
-              />{' '}
-              {t('geohunter.admin.retry_enabled', {}, 'Allow teams to retry incorrect answers')}
+            <label className="blindhike-toggle-row" htmlFor="geohunter-retry-enabled">
+              <span className="blindhike-toggle-label">{t('geohunter.admin.retry_enabled', {}, 'Allow teams to retry incorrect answers')}</span>
+              <span className="game-type-switch">
+                <input
+                  id="geohunter-retry-enabled"
+                  type="checkbox"
+                  checked={retryEnabled}
+                  onChange={(event) => setRetryEnabled(event.target.checked)}
+                />
+                <span className="game-type-switch-track" aria-hidden="true" />
+              </span>
             </label>
           </div>
           <div className="form-row">

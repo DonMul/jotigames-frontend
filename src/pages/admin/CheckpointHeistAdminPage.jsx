@@ -75,19 +75,18 @@ export default function CheckpointHeistAdminPage() {
       {success ? <div className="flash flash-success">{success}</div> : null}
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
 
-      <div className="geo-layout">
-        <section className="overview-panel">
-          <h2>{t('common.map', {}, 'Map')}</h2>
-          <AdminOverviewMap
-            entities={checkpoints}
-            getLabel={(cp) => cp.title || '-'}
-            getColor={(cp) => cp.marker_color || '#dc2626'}
-            getRadius={(cp) => Number(cp.radius_meters || 25)}
-            ariaLabel={t('checkpoint_heist.admin.map_label', {}, 'Checkpoints map')}
-          />
-        </section>
+      <section className="overview-panel">
+        <h2>{t('common.map', {}, 'Map')}</h2>
+        <AdminOverviewMap
+          entities={checkpoints}
+          getLabel={(cp) => cp.title || '-'}
+          getColor={(cp) => cp.marker_color || '#dc2626'}
+          getRadius={(cp) => Number(cp.radius_meters || 25)}
+          ariaLabel={t('checkpoint_heist.admin.map_label', {}, 'Checkpoints map')}
+        />
+      </section>
 
-        <section className="overview-panel">
+      <section className="overview-panel">
         <h2>{t('checkpoint_heist.admin.checkpoints_list', {}, 'Checkpoints')}</h2>
         <table className="admin-table">
           <thead>
@@ -111,8 +110,12 @@ export default function CheckpointHeistAdminPage() {
                 <td>{checkpoint.radius_meters}</td>
                 <td>{checkpoint.points}</td>
                 <td className="table-actions-inline">
-                  <button className="btn btn-ghost btn-small" type="button" onClick={() => handleMoveCheckpoint(index, 'up')} disabled={index === 0}>\u2191</button>
-                  <button className="btn btn-ghost btn-small" type="button" onClick={() => handleMoveCheckpoint(index, 'down')} disabled={index === checkpoints.length - 1}>\u2193</button>
+                  <button className="btn btn-ghost btn-small" type="button" onClick={() => handleMoveCheckpoint(index, 'up')} disabled={index === 0}>
+                    ↑
+                  </button>
+                  <button className="btn btn-ghost btn-small" type="button" onClick={() => handleMoveCheckpoint(index, 'down')} disabled={index === checkpoints.length - 1}>
+                    ↓
+                  </button>
                   <Link className="btn btn-edit btn-small" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints/' + checkpoint.id + '/edit'}>{t('button.edit', {}, 'Edit')}</Link>
                   <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteCheckpoint(checkpoint)}>{t('button.delete', {}, 'Delete')}</button>
                 </td>
@@ -121,8 +124,7 @@ export default function CheckpointHeistAdminPage() {
             {checkpoints.length === 0 ? (<tr><td colSpan={7} className="muted">{t('checkpoint_heist.admin.empty_checkpoints', {}, 'No checkpoints yet')}</td></tr>) : null}
           </tbody>
         </table>
-        </section>
-      </div>
+      </section>
     </main>
   )
 }

@@ -5,6 +5,7 @@ import { buildEggIcon } from './shared/birdsMapIcons'
 import {
   attachUserLocationCentering,
   configureLeafletDefaultMarkerIcons,
+  createLeafletTileLayer,
   createTeamLogoIcon,
   toNumberOrNull,
 } from './shared/leafletMapCommon'
@@ -57,10 +58,7 @@ export default function BirdsOfPreyAdminOverviewMap({ teams, eggs, t }) {
     })
     mapRef.current = map
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map)
+    createLeafletTileLayer().addTo(map)
 
     const detachUserCentering = attachUserLocationCentering(map, {
       zoom: 15,

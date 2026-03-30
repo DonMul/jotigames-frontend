@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GeoPolygonDrawMap from '../../components/GeoPolygonDrawMap'
 import { gameApi, moduleApi } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
 import { useI18n } from '../../lib/i18n'
@@ -112,8 +113,13 @@ export default function CourierRushSettingsPage() {
             <input id="courier-max-pickups" type="number" min="1" max="25" value={configForm.max_active_pickups} onChange={(e) => setConfigForm((c) => ({ ...c, max_active_pickups: e.target.value }))} required />
           </div>
           <div className="form-row">
-            <label htmlFor="courier-spawn-area">{t('courier_rush.admin.pickup_spawn_area', {}, 'Pickup spawn area (GeoJSON Polygon)')}</label>
-            <textarea id="courier-spawn-area" rows={6} value={configForm.pickup_spawn_area_geojson} onChange={(e) => setConfigForm((c) => ({ ...c, pickup_spawn_area_geojson: e.target.value }))} />
+            <label>{t('courier_rush.admin.pickup_spawn_area', {}, 'Pickup spawn area (GeoJSON Polygon)')}</label>
+            <p className="muted">{t('courier_rush.admin.pickup_spawn_area_help', {}, 'Klik op de kaart om hoekpunten te plaatsen voor het spawngebied.')}</p>
+            <GeoPolygonDrawMap
+              value={configForm.pickup_spawn_area_geojson}
+              onChange={(value) => setConfigForm((c) => ({ ...c, pickup_spawn_area_geojson: value }))}
+              ariaLabel={t('courier_rush.admin.pickup_spawn_area', {}, 'Pickup spawn area (GeoJSON Polygon)')}
+            />
           </div>
           <div className="overview-actions">
             <button className="btn btn-primary" type="submit">{t('courier_rush.admin.save_settings', {}, 'Save settings')}</button>

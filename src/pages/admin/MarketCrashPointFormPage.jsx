@@ -202,143 +202,149 @@ export default function MarketCrashPointFormPage() {
         <section className="admin-block">
           <form onSubmit={submitPoint} className="market-crash-point-form">
             <section className="market-crash-form-section">
-              <h3>{t('market_crash.admin.form_title', {}, 'Title')}</h3>
-              <input
-                value={pointForm.title}
-                onChange={(event) => setPointForm((current) => ({ ...current, title: event.target.value }))}
-                required
-              />
+              <h3>{t('market_crash.admin.form_title', {}, 'Point title')}</h3>
+              <label>
+                <span>{t('market_crash.admin.form_title', {}, 'Point title')}</span>
+                <input
+                  value={pointForm.title}
+                  onChange={(event) => setPointForm((current) => ({ ...current, title: event.target.value }))}
+                  required
+                />
+              </label>
             </section>
 
             <section className="market-crash-form-section">
               <h3>{t('market_crash.admin.form_resource_settings', {}, 'Resource settings')}</h3>
               <p className="muted">{t('market_crash.admin.form_resource_settings_help', {}, 'Enable resources and configure buy/sell/fluctuation')}</p>
-              <div className="market-crash-resource-list">
-                {resources.map((resource) => {
-                  const key = String(resource.id)
-                  const setting = pointForm.resource_settings[key] || {
-                    enabled: false,
-                    buy_price: String(Number(resource.default_price || 25)),
-                    sell_price: String(Number(resource.default_price || 25)),
-                    tick_seconds: '5',
-                    fluctuation_percent: '10',
-                  }
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>{t('market_crash.admin.resource_table_name', {}, 'Name')}</th>
+                    <th>{t('market_crash.admin.enabled', {}, 'Enabled')}</th>
+                    <th>{t('market_crash.admin.form_buy_resources', {}, 'Buy')}</th>
+                    <th>{t('market_crash.admin.form_sell_resources', {}, 'Sell')}</th>
+                    <th>{t('market_crash.admin.form_tick_seconds', {}, 'Tick seconds')}</th>
+                    <th>{t('market_crash.admin.form_fluctuation_percent', {}, 'Max fluctuation %')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resources.map((resource) => {
+                    const key = String(resource.id)
+                    const setting = pointForm.resource_settings[key] || {
+                      enabled: false,
+                      buy_price: String(Number(resource.default_price || 25)),
+                      sell_price: String(Number(resource.default_price || 25)),
+                      tick_seconds: '5',
+                      fluctuation_percent: '10',
+                    }
 
-                  return (
-                    <article className="market-crash-resource-row" key={resource.id}>
-                      <label className="market-crash-resource-toggle">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(setting.enabled)}
-                          onChange={(event) =>
-                            setPointForm((current) => ({
-                              ...current,
-                              resource_settings: {
-                                ...current.resource_settings,
-                                [key]: {
-                                  ...setting,
-                                  enabled: event.target.checked,
+                    return (
+                      <tr key={resource.id}>
+                        <td>{resource.name}</td>
+                        <td>
+                          <span className="game-type-switch">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(setting.enabled)}
+                              onChange={(event) =>
+                                setPointForm((current) => ({
+                                  ...current,
+                                  resource_settings: {
+                                    ...current.resource_settings,
+                                    [key]: {
+                                      ...setting,
+                                      enabled: event.target.checked,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                            <span className="game-type-switch-track" aria-hidden="true" />
+                          </span>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="1"
+                            value={setting.buy_price}
+                            onChange={(event) =>
+                              setPointForm((current) => ({
+                                ...current,
+                                resource_settings: {
+                                  ...current.resource_settings,
+                                  [key]: {
+                                    ...setting,
+                                    buy_price: event.target.value,
+                                  },
                                 },
-                              },
-                            }))
-                          }
-                        />
-                        <span>{resource.name}</span>
-                        <span className="market-crash-default-price">{t('market_crash.admin.resource_table_default_price', {}, 'Default')}: {resource.default_price}</span>
-                      </label>
-
-                      <div className="market-crash-resource-fields">
-                        <div className="market-crash-resource-pair">
-                          <label>
-                            <span>{t('market_crash.admin.form_buy_resources', {}, 'Buy')}</span>
-                            <input
-                              type="number"
-                              min="1"
-                              value={setting.buy_price}
-                              onChange={(event) =>
-                                setPointForm((current) => ({
-                                  ...current,
-                                  resource_settings: {
-                                    ...current.resource_settings,
-                                    [key]: {
-                                      ...setting,
-                                      buy_price: event.target.value,
-                                    },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="1"
+                            value={setting.sell_price}
+                            onChange={(event) =>
+                              setPointForm((current) => ({
+                                ...current,
+                                resource_settings: {
+                                  ...current.resource_settings,
+                                  [key]: {
+                                    ...setting,
+                                    sell_price: event.target.value,
                                   },
-                                }))
-                              }
-                            />
-                          </label>
-                          <label>
-                            <span>{t('market_crash.admin.form_sell_resources', {}, 'Sell')}</span>
-                            <input
-                              type="number"
-                              min="1"
-                              value={setting.sell_price}
-                              onChange={(event) =>
-                                setPointForm((current) => ({
-                                  ...current,
-                                  resource_settings: {
-                                    ...current.resource_settings,
-                                    [key]: {
-                                      ...setting,
-                                      sell_price: event.target.value,
-                                    },
+                                },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="1"
+                            value={setting.tick_seconds}
+                            onChange={(event) =>
+                              setPointForm((current) => ({
+                                ...current,
+                                resource_settings: {
+                                  ...current.resource_settings,
+                                  [key]: {
+                                    ...setting,
+                                    tick_seconds: event.target.value,
                                   },
-                                }))
-                              }
-                            />
-                          </label>
-                        </div>
-                        <div className="market-crash-resource-pair">
-                          <label>
-                            <span>{t('market_crash.admin.form_tick_seconds', {}, 'Tick seconds')}</span>
-                            <input
-                              type="number"
-                              min="1"
-                              value={setting.tick_seconds}
-                              onChange={(event) =>
-                                setPointForm((current) => ({
-                                  ...current,
-                                  resource_settings: {
-                                    ...current.resource_settings,
-                                    [key]: {
-                                      ...setting,
-                                      tick_seconds: event.target.value,
-                                    },
+                                },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="0.1"
+                            max="100"
+                            step="0.1"
+                            value={setting.fluctuation_percent}
+                            onChange={(event) =>
+                              setPointForm((current) => ({
+                                ...current,
+                                resource_settings: {
+                                  ...current.resource_settings,
+                                  [key]: {
+                                    ...setting,
+                                    fluctuation_percent: event.target.value,
                                   },
-                                }))
-                              }
-                            />
-                          </label>
-                          <label>
-                            <span>{t('market_crash.admin.form_fluctuation_percent', {}, 'Fluctuation %')}</span>
-                            <input
-                              type="number"
-                              min="0.1"
-                              max="100"
-                              step="0.1"
-                              value={setting.fluctuation_percent}
-                              onChange={(event) =>
-                                setPointForm((current) => ({
-                                  ...current,
-                                  resource_settings: {
-                                    ...current.resource_settings,
-                                    [key]: {
-                                      ...setting,
-                                      fluctuation_percent: event.target.value,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
+                                },
+                              }))
+                            }
+                          />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </section>
 
             <section className="market-crash-form-section">
@@ -349,6 +355,7 @@ export default function MarketCrashPointFormPage() {
                 onChange={(nextLat, nextLon) => setPointForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
                 ariaLabel={t('market_crash.admin.form_map', {}, 'Point location map')}
               />
+              <p className="muted" style={{ marginTop: '0.5rem' }}>{t('common.map_select_hint', {}, 'Click on the map to set the location.')}</p>
               <div className="market-crash-inline-grid">
                 <label>
                   <span>{t('market_crash.admin.form_radius', {}, 'Radius')}</span>
@@ -366,29 +373,6 @@ export default function MarketCrashPointFormPage() {
                     type="color"
                     value={pointForm.marker_color}
                     onChange={(event) => setPointForm((current) => ({ ...current, marker_color: event.target.value }))}
-                  />
-                </label>
-              </div>
-
-              <div className="market-crash-inline-grid">
-                <label>
-                  <span>{t('market_crash.admin.form_latitude', {}, 'Latitude')}</span>
-                  <input
-                    type="number"
-                    step="0.0000001"
-                    value={pointForm.latitude}
-                    onChange={(event) => setPointForm((current) => ({ ...current, latitude: event.target.value }))}
-                    required
-                  />
-                </label>
-                <label>
-                  <span>{t('market_crash.admin.form_longitude', {}, 'Longitude')}</span>
-                  <input
-                    type="number"
-                    step="0.0000001"
-                    value={pointForm.longitude}
-                    onChange={(event) => setPointForm((current) => ({ ...current, longitude: event.target.value }))}
-                    required
                   />
                 </label>
               </div>

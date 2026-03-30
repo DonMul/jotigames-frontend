@@ -9,6 +9,7 @@ export default function GeoHunterTeamPanel({
   currentTeamId,
   t,
   onAnswerQuestion,
+  onLocationUpdate,
   answering = false,
 }) {
   const mapContainerRef = useRef(null)
@@ -51,12 +52,18 @@ export default function GeoHunterTeamPanel({
   }, [state?.last_actions, currentTeamId])
 
   const nearbyPois = useMemo(() => {
+    const serverNearbyIds = Array.isArray(state?.nearby_poi_ids)
+      ? new Set(state.nearby_poi_ids.map((value) => String(value || '')))
+      : null
+    if (serverNearbyIds) {
+      return pois.filter((poi) => poi.is_active && !answeredIds.has(poi.id) && serverNearbyIds.has(poi.id))
+    }
     if (!currentPosition) return []
     return pois.filter((p) => {
       if (!p.is_active || answeredIds.has(p.id)) return false
       return haversineDistance(currentPosition.latitude, currentPosition.longitude, p.latitude, p.longitude) <= p.radius_meters
     })
-  }, [currentPosition, pois, answeredIds])
+  }, [currentPosition, pois, answeredIds, state?.nearby_poi_ids])
 
   const score = Number(state?.score || state?.score_delta || 0)
 
@@ -77,6 +84,19 @@ export default function GeoHunterTeamPanel({
     )
     return () => navigator.geolocation.clearWatch(watchId)
   }, [])
+
+  useEffect(() => {
+    if (typeof onLocationUpdate !== 'function' || !currentPosition) {
+      return
+    }
+    onLocationUpdate(currentPosition)
+    const intervalId = window.setInterval(() => {
+      onLocationUpdate(currentPosition)
+    }, 10000)
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [currentPosition, onLocationUpdate])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return

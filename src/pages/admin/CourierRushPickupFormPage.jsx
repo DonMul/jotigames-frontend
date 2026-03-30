@@ -75,7 +75,7 @@ export default function CourierRushPickupFormPage() {
       if (isEdit) { await moduleApi.updateCourierRushPickup(auth.token, gameId, pickupId, payload) }
       else { await moduleApi.createCourierRushPickup(auth.token, gameId, payload) }
       navigate('/admin/courier-rush/' + gameId + '/pickups', { state: { flashSuccess: t('courier_rush.admin.pickup_saved', {}, 'Pickup saved') } })
-    } catch (err) { setError(err.message || 'Failed to save pickup') }
+    } catch (err) { setError(err.message || t('courier_rush.pickup.createFailed', {}, 'Failed to create pickup')) }
     finally { setSaving(false) }
   }
 
@@ -96,15 +96,23 @@ export default function CourierRushPickupFormPage() {
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
             <div className="form-row"><label htmlFor="pickup-title">{t('courier_rush.admin.table_title', {}, 'Title')}</label><input id="pickup-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
-            <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.pickup_map_label', {}, 'Pickup location')} />
-            <div className="form-row form-row-inline">
-              <div><label htmlFor="pickup-lat">{t('courier_rush.admin.latitude', {}, 'Latitude')}</label><input id="pickup-lat" type="number" step="0.000001" value={form.latitude} onChange={(e) => setForm((c) => ({ ...c, latitude: e.target.value }))} required /></div>
-              <div><label htmlFor="pickup-lon">{t('courier_rush.admin.longitude', {}, 'Longitude')}</label><input id="pickup-lon" type="number" step="0.000001" value={form.longitude} onChange={(e) => setForm((c) => ({ ...c, longitude: e.target.value }))} required /></div>
+            <div className="form-row">
+              <label>{t('courier_rush.admin.pickup_map_label', {}, 'Pickup location')}</label>
+              <p className="muted">{t('courier_rush.admin.location_map_help', {}, 'Klik op de kaart om de locatie te selecteren.')}</p>
+              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.pickup_map_label', {}, 'Pickup location')} />
             </div>
             <div className="form-row"><label htmlFor="pickup-radius">{t('courier_rush.admin.table_radius', {}, 'Radius')}</label><input id="pickup-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="pickup-points">{t('courier_rush.admin.table_points', {}, 'Points')}</label><input id="pickup-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="pickup-color">{t('common.color', {}, 'Color')}</label><input id="pickup-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
-            <div className="form-row"><label><input type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} /> {t('courier_rush.admin.active', {}, 'Active')}</label></div>
+            <div className="form-row">
+              <label className="blindhike-toggle-row" htmlFor="courier-pickup-active">
+                <span className="blindhike-toggle-label">{t('courier_rush.admin.active', {}, 'Active')}</span>
+                <span className="game-type-switch">
+                  <input id="courier-pickup-active" type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} />
+                  <span className="game-type-switch-track" aria-hidden="true" />
+                </span>
+              </label>
+            </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
               <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/pickups'}>{t('button.cancel', {}, 'Cancel')}</Link>

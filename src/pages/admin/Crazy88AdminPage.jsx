@@ -13,6 +13,7 @@ export default function Crazy88AdminPage() {
 
   const [game, setGame] = useState(null)
   const [tasks, setTasks] = useState([])
+  const [config, setConfig] = useState({ visibility_mode: 'all_visible' })
   const [reviews, setReviews] = useState({ pending_count: 0, has_assigned_submission: false, threads: [] })
   const [exportGrouping, setExportGrouping] = useState('team_task')
   const [loading, setLoading] = useState(true)
@@ -34,13 +35,15 @@ export default function Crazy88AdminPage() {
     setLoading(true)
     setError('')
     try {
-      const [gameRecord, tasksPayload, reviewsPayload] = await Promise.all([
+      const [gameRecord, tasksPayload, reviewsPayload, configPayload] = await Promise.all([
         gameApi.getGame(auth.token, gameId),
         moduleApi.getCrazy88Tasks(auth.token, gameId),
         moduleApi.getCrazy88Reviews(auth.token, gameId).catch(() => ({ pending_count: 0, has_assigned_submission: false, threads: [] })),
+        moduleApi.getCrazy88Config(auth.token, gameId).catch(() => ({ config: { visibility_mode: 'all_visible' } })),
       ])
       setGame(gameRecord)
       setTasks(Array.isArray(tasksPayload?.tasks) ? tasksPayload.tasks : [])
+      setConfig(configPayload?.config || { visibility_mode: 'all_visible' })
       setReviews({
         pending_count: Number(reviewsPayload?.pending_count || 0),
         has_assigned_submission: Boolean(reviewsPayload?.has_assigned_submission),
@@ -65,6 +68,37 @@ export default function Crazy88AdminPage() {
       setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
     } catch (err) {
       setError(err.message || t('crazy88.admin.task_delete_failed', {}, 'Failed to delete task'))
+    }
+  }
+
+  async function moveTask(taskId, direction) {
+    const currentIndex = sortedTasks.findIndex((task) => String(task.id) === String(taskId))
+    if (currentIndex < 0) {
+      return
+    }
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    if (targetIndex < 0 || targetIndex >= sortedTasks.length) {
+      return
+    }
+
+    const ordered = [...sortedTasks]
+    const [item] = ordered.splice(currentIndex, 1)
+    ordered.splice(targetIndex, 0, item)
+
+    setError('')
+    setSuccess('')
+    try {
+      const payload = await moduleApi.reorderCrazy88Tasks(auth.token, gameId, ordered.map((task) => task.id))
+      const orderedIds = Array.isArray(payload?.ordered_ids) ? payload.ordered_ids.map((value) => String(value || '')) : ordered.map((task) => String(task.id || ''))
+      const byId = new Map(tasks.map((task) => [String(task.id || ''), task]))
+      const reordered = orderedIds.map((id) => byId.get(id)).filter(Boolean)
+      const used = new Set(reordered.map((task) => String(task.id || '')))
+      const tail = tasks.filter((task) => !used.has(String(task.id || '')))
+      setTasks([...reordered, ...tail])
+      setSuccess(t('button.save', {}, 'Saved'))
+    } catch (err) {
+      setError(err.message || t('crazy88.admin.reorder_failed', {}, 'Failed to reorder tasks'))
     }
   }
 
@@ -134,7 +168,7 @@ export default function Crazy88AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {sortedTasks.map((task) => (
+            {sortedTasks.map((task, index) => (
               <tr key={task.id}>
                 <td>
                   <strong>{task.title}</strong>
@@ -143,11 +177,29 @@ export default function Crazy88AdminPage() {
                 </td>
                 <td>{task.points}</td>
                 <td>
-                  {task.latitude !== null && task.longitude !== null
-                    ? `${task.latitude}, ${task.longitude} \u00b7 ${task.radius_meters}m`
-                    : <span className="muted">{t('crazy88.admin.location_not_set', {}, 'Not set')}</span>}
+                  {config.visibility_mode === 'all_visible'
+                    ? t('crazy88.visibility.all_visible', {}, 'All visible')
+                    : task.latitude !== null && task.longitude !== null
+                      ? `${task.latitude}, ${task.longitude} · ${task.radius_meters}m`
+                      : <span className="muted">{t('crazy88.admin.location_not_set', {}, 'Not set')}</span>}
                 </td>
                 <td className="table-actions-inline">
+                  <button
+                    className="btn btn-ghost btn-small"
+                    type="button"
+                    onClick={() => moveTask(task.id, 'up')}
+                    disabled={index === 0}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="btn btn-ghost btn-small"
+                    type="button"
+                    onClick={() => moveTask(task.id, 'down')}
+                    disabled={index === sortedTasks.length - 1}
+                  >
+                    ↓
+                  </button>
                   <Link className="btn btn-edit btn-small" to={'/admin/crazy88/' + gameId + '/tasks/' + task.id + '/edit'}>
                     {t('button.edit', {}, 'Edit')}
                   </Link>

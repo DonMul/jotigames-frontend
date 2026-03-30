@@ -181,16 +181,18 @@ export default function CodeConspiracyConfigurePage() {
             />
           </div>
 
-          <div className="form-row">
-            <label>
+          <label className="blindhike-toggle-row" htmlFor="code-conspiracy-penalty-enabled">
+            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.penalty_enabled', {}, 'Enable penalty')}</span>
+            <span className="game-type-switch">
               <input
+                id="code-conspiracy-penalty-enabled"
                 type="checkbox"
                 checked={form.penalty_enabled}
                 onChange={(event) => setForm((current) => ({ ...current, penalty_enabled: event.target.checked }))}
-              />{' '}
-              {t('code_conspiracy.admin.penalty_enabled', {}, 'Enable penalty')}
-            </label>
-          </div>
+              />
+              <span className="game-type-switch-track" aria-hidden="true" />
+            </span>
+          </label>
 
           <div className="form-row">
             <label htmlFor="cc-penalty-value">{t('code_conspiracy.admin.penalty_value', {}, 'Penalty value')}</label>
@@ -205,16 +207,18 @@ export default function CodeConspiracyConfigurePage() {
             />
           </div>
 
-          <div className="form-row">
-            <label>
+          <label className="blindhike-toggle-row" htmlFor="code-conspiracy-first-bonus-enabled">
+            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.first_bonus_enabled', {}, 'Enable first correct bonus')}</span>
+            <span className="game-type-switch">
               <input
+                id="code-conspiracy-first-bonus-enabled"
                 type="checkbox"
                 checked={form.first_bonus_enabled}
                 onChange={(event) => setForm((current) => ({ ...current, first_bonus_enabled: event.target.checked }))}
-              />{' '}
-              {t('code_conspiracy.admin.first_bonus_enabled', {}, 'Enable first correct bonus')}
-            </label>
-          </div>
+              />
+              <span className="game-type-switch-track" aria-hidden="true" />
+            </span>
+          </label>
 
           <div className="form-row">
             <label htmlFor="cc-first-bonus-points">{t('code_conspiracy.admin.first_bonus_points', {}, 'First bonus points')}</label>

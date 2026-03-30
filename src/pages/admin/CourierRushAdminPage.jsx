@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
 import AdminOverviewMap from '../../components/AdminOverviewMap'
@@ -19,17 +19,6 @@ export default function CourierRushAdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(location.state?.flashSuccess || '')
-
-  const summaryRows = useMemo(
-    () => [
-      { label: t('courier_rush.admin.pickups', {}, 'Pickups'), value: String(pickups.length) },
-      { label: t('courier_rush.admin.dropoffs', {}, 'Dropoffs'), value: String(dropoffs.length) },
-      { label: t('courier_rush.admin.pickup_mode', {}, 'Pickup mode'), value: configForm.pickup_mode === 'random' ? t('courier_rush.admin.pickup_mode_random', {}, 'Random') : t('courier_rush.admin.pickup_mode_predefined', {}, 'Predefined') },
-      { label: t('courier_rush.admin.dropoff_mode', {}, 'Dropoff mode'), value: configForm.dropoff_mode === 'fixed' ? t('courier_rush.admin.dropoff_mode_fixed', {}, 'Fixed') : t('courier_rush.admin.dropoff_mode_random', {}, 'Random') },
-      { label: t('courier_rush.admin.max_active_pickups', {}, 'Max active pickups'), value: String(configForm.max_active_pickups || '3') },
-    ],
-    [configForm.dropoff_mode, configForm.max_active_pickups, configForm.pickup_mode, dropoffs.length, pickups.length, t],
-  )
 
   async function loadAll() {
     setLoading(true)
@@ -91,15 +80,6 @@ export default function CourierRushAdminPage() {
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('common.summary', {}, 'Summary')}</h2>
-        <table className="admin-table">
-          <tbody>
-            {summaryRows.map((row) => (<tr key={row.label}><th>{row.label}</th><td>{row.value}</td></tr>))}
-          </tbody>
-        </table>
-      </section>
-
-      <section className="admin-block">
         <h2>{t('common.map', {}, 'Map')}</h2>
         <AdminOverviewMap
           entities={[...pickups.map((p) => ({ ...p, _type: 'pickup' })), ...dropoffs.map((d) => ({ ...d, _type: 'dropoff' }))]}
@@ -114,7 +94,9 @@ export default function CourierRushAdminPage() {
         <section className="overview-panel">
           <div className="overview-header" style={{ marginBottom: '0.5rem' }}>
             <h2>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h2>
-            <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/new'}>{t('courier_rush.admin.pickup_new_heading', {}, 'New pickup')}</Link>
+            {configForm.pickup_mode === 'predefined' ? (
+              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/new'}>{t('courier_rush.admin.pickup_new_heading', {}, 'New pickup')}</Link>
+            ) : null}
           </div>
           <table className="admin-table">
             <thead>
@@ -149,7 +131,9 @@ export default function CourierRushAdminPage() {
         <section className="overview-panel">
           <div className="overview-header" style={{ marginBottom: '0.5rem' }}>
             <h2>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</h2>
-            <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/new'}>{t('courier_rush.admin.dropoff_new_heading', {}, 'New dropoff')}</Link>
+            {configForm.dropoff_mode === 'fixed' ? (
+              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/new'}>{t('courier_rush.admin.dropoff_new_heading', {}, 'New dropoff')}</Link>
+            ) : null}
           </div>
           <table className="admin-table">
             <thead>

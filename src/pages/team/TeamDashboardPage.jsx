@@ -800,6 +800,54 @@ export default function TeamDashboardPage() {
         return
       }
 
+      if (eventName === 'team.geohunter.nearby.updated') {
+        if (!isGeoHunter) {
+          return
+        }
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+        const nearbyPoiIds = Array.isArray(payload?.nearby_poi_ids) ? payload.nearby_poi_ids.map((value) => String(value || '')).filter(Boolean) : []
+        setState((previous) => ({
+          ...(previous && typeof previous === 'object' ? previous : {}),
+          nearby_poi_ids: nearbyPoiIds,
+        }))
+        return
+      }
+
+      if (eventName === 'team.echo_hunt.nearby.updated') {
+        if (!isEchoHunt) {
+          return
+        }
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+        const nearbyBeaconIds = Array.isArray(payload?.nearby_beacon_ids) ? payload.nearby_beacon_ids.map((value) => String(value || '')).filter(Boolean) : []
+        setState((previous) => ({
+          ...(previous && typeof previous === 'object' ? previous : {}),
+          nearby_beacon_ids: nearbyBeaconIds,
+        }))
+        return
+      }
+
+      if (eventName === 'team.territory_control.nearby.updated') {
+        if (!isTerritoryControl) {
+          return
+        }
+        const payloadTeamId = String(payload?.team_id || payload?.teamId || '').trim()
+        if (!payloadTeamId || payloadTeamId !== String(teamId)) {
+          return
+        }
+        const nearbyZoneIds = Array.isArray(payload?.nearby_zone_ids) ? payload.nearby_zone_ids.map((value) => String(value || '')).filter(Boolean) : []
+        setState((previous) => ({
+          ...(previous && typeof previous === 'object' ? previous : {}),
+          nearby_zone_ids: nearbyZoneIds,
+        }))
+        return
+      }
+
       if (eventName === 'team.market_crash.prices.updated') {
         if (!isMarketCrash) {
           return
@@ -1446,6 +1494,75 @@ export default function TeamDashboardPage() {
           nearby_point_ids: nearbyPointIds,
         }
       })
+    } catch {
+    }
+  }
+
+  async function handleGeoHunterLocationUpdate(position) {
+    if (!isGeoHunter || !gameId || !teamId || !position) {
+      return
+    }
+    const latitude = Number(position?.latitude)
+    const longitude = Number(position?.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    try {
+      const response = await moduleApi.updateGeoHunterLocation(auth.token, gameId, teamId, { latitude, longitude })
+      const location = response?.location && typeof response.location === 'object' ? response.location : null
+      const nearbyPoiIds = Array.isArray(response?.nearby_poi_ids) ? response.nearby_poi_ids.map((value) => String(value || '')).filter(Boolean) : []
+      setState((previous) => ({
+        ...(previous && typeof previous === 'object' ? previous : {}),
+        ...(location ? { team_location: location } : {}),
+        nearby_poi_ids: nearbyPoiIds,
+      }))
+    } catch {
+    }
+  }
+
+  async function handleEchoHuntLocationUpdate(position) {
+    if (!isEchoHunt || !gameId || !teamId || !position) {
+      return
+    }
+    const latitude = Number(position?.latitude)
+    const longitude = Number(position?.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    try {
+      const response = await moduleApi.updateEchoHuntLocation(auth.token, gameId, teamId, { latitude, longitude })
+      const location = response?.location && typeof response.location === 'object' ? response.location : null
+      const nearbyBeaconIds = Array.isArray(response?.nearby_beacon_ids) ? response.nearby_beacon_ids.map((value) => String(value || '')).filter(Boolean) : []
+      setState((previous) => ({
+        ...(previous && typeof previous === 'object' ? previous : {}),
+        ...(location ? { team_location: location } : {}),
+        nearby_beacon_ids: nearbyBeaconIds,
+      }))
+    } catch {
+    }
+  }
+
+  async function handleTerritoryControlLocationUpdate(position) {
+    if (!isTerritoryControl || !gameId || !teamId || !position) {
+      return
+    }
+    const latitude = Number(position?.latitude)
+    const longitude = Number(position?.longitude)
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return
+    }
+
+    try {
+      const response = await moduleApi.updateTerritoryControlLocation(auth.token, gameId, teamId, { latitude, longitude })
+      const location = response?.location && typeof response.location === 'object' ? response.location : null
+      const nearbyZoneIds = Array.isArray(response?.nearby_zone_ids) ? response.nearby_zone_ids.map((value) => String(value || '')).filter(Boolean) : []
+      setState((previous) => ({
+        ...(previous && typeof previous === 'object' ? previous : {}),
+        ...(location ? { team_location: location } : {}),
+        nearby_zone_ids: nearbyZoneIds,
+      }))
     } catch {
     }
   }
@@ -2271,6 +2388,7 @@ export default function TeamDashboardPage() {
                 currentTeamId={teamId}
                 t={t}
                 onClaimBeacon={handleClaimBeacon}
+                onLocationUpdate={handleEchoHuntLocationUpdate}
                 claiming={claimingBeacon}
               />
             </Suspense>
@@ -2283,6 +2401,7 @@ export default function TeamDashboardPage() {
                 currentTeamId={teamId}
                 t={t}
                 onAnswerQuestion={handleAnswerGeoQuestion}
+                onLocationUpdate={handleGeoHunterLocationUpdate}
                 answering={answeringQuestion}
               />
             </Suspense>
@@ -2321,6 +2440,7 @@ export default function TeamDashboardPage() {
                 currentTeamId={teamId}
                 t={t}
                 onClaimZone={handleClaimZone}
+                onLocationUpdate={handleTerritoryControlLocationUpdate}
                 claiming={claimingZone}
               />
             </Suspense>

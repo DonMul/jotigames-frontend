@@ -15,8 +15,6 @@ export default function MarketCrashAdminPage() {
   const [game, setGame] = useState(null)
   const [resources, setResources] = useState([])
   const [points, setPoints] = useState([])
-  const [newResourceName, setNewResourceName] = useState('')
-  const [newResourceDefaultPrice, setNewResourceDefaultPrice] = useState('25')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -66,62 +64,6 @@ export default function MarketCrashAdminPage() {
     }
   }, [location?.state])
 
-  async function submitNewResource(event) {
-    event.preventDefault()
-    setError('')
-    setSuccess('')
-
-    const name = newResourceName.trim().toLowerCase()
-    const defaultPrice = Number(newResourceDefaultPrice || 25)
-    if (!name) {
-      setError('Resource name is required')
-      return
-    }
-
-    try {
-      const adminData = await moduleApi.createMarketCrashResource(auth.token, gameId, {
-        name,
-        default_price: defaultPrice,
-      })
-      applyAdminData(adminData)
-      setNewResourceName('')
-      setNewResourceDefaultPrice('25')
-      setSuccess(t('button.save', {}, 'Saved'))
-    } catch (err) {
-      setError(err.message || 'Failed to add resource')
-    }
-  }
-
-  async function updateResourcePrice(resourceId, defaultPrice) {
-    setError('')
-    setSuccess('')
-    try {
-      const adminData = await moduleApi.updateMarketCrashResource(auth.token, gameId, resourceId, {
-        default_price: Number(defaultPrice || 1),
-      })
-      applyAdminData(adminData)
-      setSuccess(t('button.save', {}, 'Saved'))
-    } catch (err) {
-      setError(err.message || 'Failed to update resource')
-    }
-  }
-
-  async function deleteResource(resource) {
-    if (!window.confirm(t('market_crash.admin.resource_delete_confirm', { name: resource?.name || '' }, 'Delete resource?'))) {
-      return
-    }
-
-    setError('')
-    setSuccess('')
-    try {
-      const adminData = await moduleApi.deleteMarketCrashResource(auth.token, gameId, resource.id)
-      applyAdminData(adminData)
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
-    } catch (err) {
-      setError(err.message || 'Failed to delete resource')
-    }
-  }
-
   async function deletePoint(point) {
     if (!window.confirm(t('market_crash.admin.point_delete_confirm', { title: point?.title || '' }, 'Delete point?'))) {
       return
@@ -143,8 +85,8 @@ export default function MarketCrashAdminPage() {
       <div className="geo-header">
         <div>
           <p className="overview-kicker">{t('market_crash.admin.kicker', {}, 'Market Crash')}</p>
-          <h1>{t('market_crash.admin.points_heading', { game: game?.name || '' }, `Market points · ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('market_crash.admin.points_subtitle', {}, 'Manage resources and trade points')}</p>
+          <h1>{t('market_crash.admin.points_heading', { game: game?.name || '' }, `Points management · ${game?.name || '-'}`)}</h1>
+          <p className="overview-subtitle">{t('market_crash.admin.points_subtitle', {}, 'Manage trade points')}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
@@ -157,123 +99,57 @@ export default function MarketCrashAdminPage() {
       {success ? <div className="flash flash-success">{success}</div> : null}
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
 
-      <div className="geo-layout">
-        <section className="overview-panel">
-          <h2>{t('market_crash.admin.resource_list', {}, 'Resources')}</h2>
+      <section className="overview-panel">
+        <h2>{t('common.map', {}, 'Map')}</h2>
+        <div className="overview-actions" style={{ marginBottom: '0.75rem' }}>
+          <Link className="btn btn-primary btn-small" to={`/admin/market-crash/${gameId}/points/new`}>
+            {t('market_crash.admin.add_marker', {}, 'Add marker')}
+          </Link>
+        </div>
+        <MarketCrashPointsMap points={points} t={t} />
+      </section>
 
-          <form onSubmit={submitNewResource} className="admin-inline-form" style={{ marginBottom: '0.75rem' }}>
-            <input
-              type="text"
-              value={newResourceName}
-              onChange={(event) => setNewResourceName(event.target.value)}
-              placeholder="wood"
-              required
-            />
-            <input
-              type="number"
-              min="1"
-              className="market-crash-resource-price-input"
-              value={newResourceDefaultPrice}
-              onChange={(event) => setNewResourceDefaultPrice(event.target.value)}
-              required
-            />
-            <button className="btn btn-small btn-primary" type="submit">
-              {t('market_crash.admin.resource_add', {}, 'Add resource')}
-            </button>
-          </form>
-
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>{t('market_crash.admin.resource_table_name', {}, 'Name')}</th>
-                <th>{t('market_crash.admin.resource_table_default_price', {}, 'Default price')}</th>
-                <th>{t('market_crash.admin.resource_table_actions', {}, 'Actions')}</th>
+      <section className="overview-panel">
+        <h2>{t('market_crash.admin.point_list', {}, 'Points')}</h2>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>{t('market_crash.admin.point_table_title', {}, 'Title')}</th>
+              <th>{t('market_crash.admin.point_table_resource_config', {}, 'Resource config')}</th>
+              <th>{t('market_crash.admin.point_table_actions', {}, 'Actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {points.map((point) => (
+              <tr key={point.id}>
+                <td>{point.title}</td>
+                <td>
+                  {Array.isArray(point.resource_settings) && point.resource_settings.length > 0
+                    ? point.resource_settings.map((setting) => (
+                        <span key={`${point.id}-${setting.resource_id}`} className="tag tag-cool" style={{ marginRight: '0.25rem' }}>
+                          {setting.resource_name || resourcesById[setting.resource_id]?.name || setting.resource_id} · B {setting.buy_price} · S {setting.sell_price} · {setting.tick_seconds}s ±{setting.fluctuation_percent}%
+                        </span>
+                      ))
+                    : <span className="muted">-</span>}
+                </td>
+                <td className="table-actions-inline">
+                  <Link className="btn btn-edit btn-small" to={`/admin/market-crash/${gameId}/points/${point.id}/edit`}>
+                    {t('button.edit', {}, 'Edit')}
+                  </Link>
+                  <button className="btn btn-remove btn-small" type="button" onClick={() => deletePoint(point)}>
+                    {t('button.delete', {}, 'Delete')}
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {resources.map((resource) => (
-                <tr key={resource.id}>
-                  <td>{resource.name}</td>
-                  <td className="market-crash-resource-price-cell">
-                    <input
-                      type="number"
-                      min="1"
-                      className="market-crash-resource-price-input"
-                      defaultValue={resource.default_price}
-                      onBlur={(event) => {
-                        const nextValue = Number(event.target.value || resource.default_price)
-                        if (nextValue !== Number(resource.default_price)) {
-                          updateResourcePrice(resource.id, nextValue)
-                        }
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <button className="btn btn-remove btn-small" type="button" onClick={() => deleteResource(resource)}>
-                      {t('button.delete', {}, 'Delete')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {resources.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="muted">{t('market_crash.admin.resource_empty', {}, 'No resources yet')}</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </section>
-
-        <section className="overview-panel">
-          <h2>{t('market_crash.admin.point_list', {}, 'Points')}</h2>
-          <div className="overview-actions" style={{ marginBottom: '0.75rem' }}>
-            <Link className="btn btn-primary btn-small" to={`/admin/market-crash/${gameId}/points/new`}>
-              {t('market_crash.admin.add_marker', {}, 'Add marker')}
-            </Link>
-          </div>
-
-          <MarketCrashPointsMap points={points} t={t} />
-
-          <table className="admin-table">
-            <thead>
+            ))}
+            {points.length === 0 ? (
               <tr>
-                <th>{t('market_crash.admin.point_table_title', {}, 'Title')}</th>
-                <th>{t('market_crash.admin.point_table_resource_config', {}, 'Resource config')}</th>
-                <th>{t('market_crash.admin.point_table_actions', {}, 'Actions')}</th>
+                <td colSpan={3} className="muted">{t('market_crash.admin.point_empty', {}, 'No points yet')}</td>
               </tr>
-            </thead>
-            <tbody>
-              {points.map((point) => (
-                <tr key={point.id}>
-                  <td>{point.title}</td>
-                  <td>
-                    {Array.isArray(point.resource_settings) && point.resource_settings.length > 0
-                      ? point.resource_settings.map((setting) => (
-                          <span key={`${point.id}-${setting.resource_id}`} className="tag tag-cool" style={{ marginRight: '0.25rem' }}>
-                            {setting.resource_name || resourcesById[setting.resource_id]?.name || setting.resource_id} · B {setting.buy_price} · S {setting.sell_price} · {setting.tick_seconds}s ±{setting.fluctuation_percent}%
-                          </span>
-                        ))
-                      : <span className="muted">-</span>}
-                  </td>
-                  <td className="table-actions-inline">
-                    <Link className="btn btn-edit btn-small" to={`/admin/market-crash/${gameId}/points/${point.id}/edit`}>
-                      {t('button.edit', {}, 'Edit')}
-                    </Link>
-                    <button className="btn btn-remove btn-small" type="button" onClick={() => deletePoint(point)}>
-                      {t('button.delete', {}, 'Delete')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {points.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="muted">{t('market_crash.admin.point_empty', {}, 'No points yet')}</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </section>
-      </div>
+            ) : null}
+          </tbody>
+        </table>
+      </section>
     </main>
   )
 }

@@ -89,10 +89,10 @@ export default function TeamFormPage() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-navy-900">{isEdit ? t('teamForm.editTitle') : t('teamForm.newTitle')}</h1>
+        <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{isEdit ? t('teamForm.editTitle') : t('teamForm.newTitle')}</h1>
         <Link className="btn btn-ghost" to={backPath}>
           {t('teamForm.back')}
         </Link>
@@ -106,19 +106,19 @@ export default function TeamFormPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6 dark:border-slate-700 dark:bg-slate-900">
           <div className="space-y-1.5">
-            <label htmlFor="team-name" className="block text-sm font-medium text-navy-700">{t('teamForm.name')}</label>
+            <label htmlFor="team-name" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('teamForm.name')}</label>
             <input
               id="team-name"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
               value={teamName}
               onChange={(event) => setTeamName(event.target.value)}
               required
             />
           </div>
 
-          <p className="text-xs text-gray-400">{t('teamForm.codeGeneratedHint')}</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">{t('teamForm.codeGeneratedHint')}</p>
 
           <TeamLogoPicker value={logoPath} onChange={setLogoPath} disabled={saving} />
 

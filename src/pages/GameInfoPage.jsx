@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 
 import DetailedGameInfoPage from '../components/DetailedGameInfoPage'
+import { gameApi } from '../lib/api'
 import { GAME_BY_SLUG } from '../lib/gameCatalog'
 import { useAuth } from '../lib/auth'
 import { getDetailedGameInfoConfig } from '../lib/detailedGameInfoContent'
@@ -196,7 +197,7 @@ function buildBirdsOfPreyPerfectFor(t) {
   ]
 }
 
-function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t }) {
+function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, showPricingCta, t }) {
   const highlights = useMemo(() => buildBirdsOfPreyHighlights(t), [t])
   const flow = useMemo(() => buildBirdsOfPreyFlow(t), [t])
   const featureCards = useMemo(() => buildBirdsOfPreyFeatureCards(t), [t])
@@ -274,51 +275,51 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t 
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+            <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:bg-brand-900/20 dark:text-brand-300">
               {t('birds_of_prey.info.sectionBattleKicker')}
             </span>
-            <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+            <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">
               {t('birds_of_prey.info.sectionBattleTitle')}
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-navy-500">
+            <p className="mt-4 text-lg leading-relaxed text-navy-500 dark:text-slate-400">
               {t('birds_of_prey.info.sectionBattleText')}
             </p>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {featureCards.map((card) => (
-              <article key={card.title} className="group rounded-3xl border border-warm-200 bg-warm-50/70 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10">
+              <article key={card.title} className="group rounded-3xl border border-warm-200 bg-warm-50/70 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
                 <span className="text-3xl">{card.icon}</span>
-                <h3 className="mt-4 font-display text-xl font-bold text-navy-900">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-navy-600">{card.text}</p>
+                <h3 className="mt-4 font-display text-xl font-bold text-navy-900 dark:text-white">{card.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-navy-600 dark:text-slate-300">{card.text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="birds-how-to-play" className="bg-gradient-to-b from-warm-50 to-white py-16 sm:py-24">
+      <section id="birds-how-to-play" className="bg-gradient-to-b from-warm-50 to-white py-16 sm:py-24 dark:from-slate-900 dark:to-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
             <div>
-              <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 shadow-sm ring-1 ring-warm-200">
+              <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 shadow-sm ring-1 ring-warm-200 dark:bg-slate-800 dark:text-brand-300 dark:ring-slate-700">
                 {t('birds_of_prey.info.sectionHowKicker')}
               </span>
-              <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+              <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">
                 {t('birds_of_prey.info.sectionHowTitle')}
               </h2>
-              <p className="mt-4 text-lg leading-relaxed text-navy-500">
+              <p className="mt-4 text-lg leading-relaxed text-navy-500 dark:text-slate-400">
                 {t('birds_of_prey.info.sectionHowText')}
               </p>
 
-              <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm">
-                <h3 className="font-display text-lg font-bold text-navy-900">{t('birds_of_prey.info.playStylesTitle')}</h3>
+              <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{t('birds_of_prey.info.playStylesTitle')}</h3>
                 <ul className="mt-4 space-y-3">
                   {playStyles.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600">
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600 dark:text-slate-300">
                       <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400" />
                       {item}
                     </li>
@@ -329,14 +330,14 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t 
 
             <div className="grid gap-5">
               {flow.map((step) => (
-                <div key={step.number} className="rounded-3xl border border-warm-200 bg-white p-6 shadow-sm transition-all hover:border-brand-200 hover:shadow-lg">
+                <div key={step.number} className="rounded-3xl border border-warm-200 bg-white p-6 shadow-sm transition-all hover:border-brand-200 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-500 font-display text-lg font-bold text-white shadow-lg shadow-brand-500/20">
                       {step.number}
                     </div>
                     <div>
-                      <h3 className="font-display text-lg font-bold text-navy-900">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-navy-600">{step.text}</p>
+                      <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-navy-600 dark:text-slate-300">{step.text}</p>
                     </div>
                   </div>
                 </div>
@@ -373,25 +374,25 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t 
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[2rem] border border-warm-200 bg-gradient-to-br from-warm-50 via-white to-brand-50 p-8 shadow-sm sm:p-10">
+          <div className="rounded-[2rem] border border-warm-200 bg-gradient-to-br from-warm-50 via-white to-brand-50 p-8 shadow-sm sm:p-10 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
             <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
               <div>
-                <span className="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                <span className="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:bg-brand-900/20 dark:text-brand-300">
                   {t('birds_of_prey.info.perfectForKicker')}
                 </span>
-                <h2 className="mt-4 font-display text-3xl font-bold text-navy-900">
+                <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 dark:text-white">
                   {t('birds_of_prey.info.perfectForTitle')}
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-navy-500">
+                <p className="mt-4 text-base leading-relaxed text-navy-500 dark:text-slate-400">
                   {t('birds_of_prey.info.perfectForText')}
                 </p>
               </div>
 
               <ul className="space-y-4">
                 {perfectFor.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm leading-relaxed text-navy-700 shadow-sm">
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm leading-relaxed text-navy-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                     <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-400" />
                     {item}
                   </li>
@@ -402,12 +403,12 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t 
         </div>
       </section>
 
-      <section className="bg-gradient-to-b from-white to-warm-50 py-16 sm:py-20">
+      <section className="bg-gradient-to-b from-white to-warm-50 py-16 sm:py-20 dark:from-slate-950 dark:to-slate-900">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl font-bold text-navy-900 sm:text-4xl">
+          <h2 className="font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">
             {t('birds_of_prey.info.ctaTitle')}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-navy-500">
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-navy-500 dark:text-slate-400">
             {t('birds_of_prey.info.ctaText')}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -420,9 +421,11 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t 
                 {t('birds_of_prey.info.ctaPrimaryGuest')}
               </Link>
             )}
-            <Link to="/pricing" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3.5 text-sm font-semibold text-navy-700 transition-all hover:border-brand-300 hover:text-brand-600">
-              {t('birds_of_prey.info.ctaSecondary')}
-            </Link>
+            {showPricingCta ? (
+              <Link to="/pricing" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3.5 text-sm font-semibold text-navy-700 transition-all hover:border-brand-300 hover:text-brand-600 dark:border-slate-600 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300">
+                {t('birds_of_prey.info.ctaSecondary')}
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
@@ -436,6 +439,7 @@ export default function GameInfoPage() {
   const { t } = useI18n()
   const game = GAME_BY_SLUG[slug]
   const [activeTab, setActiveTab] = useState('flow')
+  const [isMonetisationEnabled, setIsMonetisationEnabled] = useState(false)
   const gameName = game ? t(`gameCatalog.${game.type}.name`) : ''
   const gameShortDescription = game ? t(`gameCatalog.${game.type}.shortDescription`) : ''
   const gameSubtitle = game ? t(`gameCatalog.${game.type}.subtitle`) : ''
@@ -446,14 +450,36 @@ export default function GameInfoPage() {
   const optionCards = useMemo(() => (game ? buildOptionCards(gameName, t) : []), [game, gameName, t])
   const exampleSections = useMemo(() => (game ? buildExampleSections(gameName, t) : []), [game, gameName, t])
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadMonetisationStatus() {
+      try {
+        const status = await gameApi.getMonetisationStatus()
+        if (!cancelled) {
+          setIsMonetisationEnabled(Boolean(status?.enabled))
+        }
+      } catch {
+        if (!cancelled) {
+          setIsMonetisationEnabled(false)
+        }
+      }
+    }
+
+    loadMonetisationStatus()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   if (!game) return <Navigate to="/" replace />
 
   if (game.type === 'birds_of_prey') {
-    return <BirdsOfPreyInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} t={t} />
+    return <BirdsOfPreyInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} showPricingCta={isMonetisationEnabled} t={t} />
   }
 
   if (detailedContent) {
-    return <DetailedGameInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} t={t} content={detailedContent} />
+    return <DetailedGameInfoPage game={game} gameName={gameName} gameSubtitle={gameSubtitle} isAuthenticated={isAuthenticated} showPricingCta={isMonetisationEnabled} t={t} content={detailedContent} />
   }
 
   const tabs = [
@@ -480,24 +506,24 @@ export default function GameInfoPage() {
       </section>
 
       {/* What is it */}
-      <section className="py-16 sm:py-20">
+      <section className="py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-warm-200 bg-white p-8 sm:p-10 shadow-sm">
-            <h2 className="font-display text-2xl font-bold text-navy-900 mb-4">{t('gameInfo.whatIsIt')}</h2>
-            <p className="text-navy-600 leading-relaxed mb-3">{gameShortDescription}</p>
-            <p className="text-navy-500 leading-relaxed">{gameSubtitle}</p>
+          <div className="rounded-2xl border border-warm-200 bg-white p-8 sm:p-10 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <h2 className="font-display text-2xl font-bold text-navy-900 mb-4 dark:text-white">{t('gameInfo.whatIsIt')}</h2>
+            <p className="text-navy-600 leading-relaxed mb-3 dark:text-slate-300">{gameShortDescription}</p>
+            <p className="text-navy-500 leading-relaxed dark:text-slate-400">{gameSubtitle}</p>
           </div>
         </div>
       </section>
 
       {/* Tabs */}
-      <section className="pb-20 sm:pb-28" data-game-info-tabs>
+      <section className="pb-20 sm:pb-28 dark:bg-slate-950" data-game-info-tabs>
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Tab bar */}
           <div className="flex justify-center mb-10" role="tablist" aria-label={gameName}>
-            <div className="inline-flex rounded-full border border-warm-200 bg-warm-50 p-1">
+            <div className="inline-flex rounded-full border border-warm-200 bg-warm-50 p-1 dark:border-slate-700 dark:bg-slate-900">
               {tabs.map((tab) => (
-                <button key={tab.id} type="button" role="tab" onClick={() => setActiveTab(tab.id)} className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${activeTab === tab.id ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900'}`}>
+                <button key={tab.id} type="button" role="tab" onClick={() => setActiveTab(tab.id)} className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${activeTab === tab.id ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900 dark:text-slate-300 dark:hover:text-white'}`}>
                   {tab.label}
                 </button>
               ))}
@@ -512,8 +538,8 @@ export default function GameInfoPage() {
                   <div className="mx-auto w-12 h-12 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-display text-lg font-bold shadow-lg shadow-brand-500/25 mb-4">
                     {step.number}
                   </div>
-                  <h4 className="font-display font-bold text-navy-900 mb-2">{step.title}</h4>
-                  <p className="text-sm text-navy-600 leading-relaxed">{step.text}</p>
+                  <h4 className="font-display font-bold text-navy-900 mb-2 dark:text-white">{step.title}</h4>
+                  <p className="text-sm text-navy-600 leading-relaxed dark:text-slate-300">{step.text}</p>
                 </div>
               ))}
             </div>
@@ -523,9 +549,9 @@ export default function GameInfoPage() {
           <div role="tabpanel" hidden={activeTab !== 'options'}>
             <div className="grid sm:grid-cols-3 gap-6">
               {optionCards.map((option) => (
-                <div key={option.title} className="rounded-2xl border border-warm-200 bg-white p-6 hover:border-brand-200 hover:shadow-lg transition-all">
-                  <h4 className="font-display font-bold text-navy-900 mb-2">{option.title}</h4>
-                  <p className="text-sm text-navy-600 leading-relaxed">{option.text}</p>
+                <div key={option.title} className="rounded-2xl border border-warm-200 bg-white p-6 hover:border-brand-200 hover:shadow-lg transition-all dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
+                  <h4 className="font-display font-bold text-navy-900 mb-2 dark:text-white">{option.title}</h4>
+                  <p className="text-sm text-navy-600 leading-relaxed dark:text-slate-300">{option.text}</p>
                 </div>
               ))}
             </div>
@@ -535,11 +561,11 @@ export default function GameInfoPage() {
           <div role="tabpanel" hidden={activeTab !== 'examples'}>
             <div className="space-y-6">
               {exampleSections.map((section) => (
-                <div key={section.title} className="rounded-2xl border border-warm-200 bg-white p-6 sm:p-8">
-                  <h4 className="font-display text-lg font-bold text-navy-900 mb-4">{section.title}</h4>
+                <div key={section.title} className="rounded-2xl border border-warm-200 bg-white p-6 sm:p-8 dark:border-slate-700 dark:bg-slate-900">
+                  <h4 className="font-display text-lg font-bold text-navy-900 mb-4 dark:text-white">{section.title}</h4>
                   <ul className="space-y-3">
                     {section.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-sm text-navy-600">
+                      <li key={item} className="flex items-start gap-3 text-sm text-navy-600 dark:text-slate-300">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
                         {item}
                       </li>
@@ -553,10 +579,10 @@ export default function GameInfoPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-warm-50 to-white">
+      <section className="py-16 sm:py-20 bg-gradient-to-b from-warm-50 to-white dark:from-slate-900 dark:to-slate-950">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-navy-900 mb-4">{t('gameInfo.ctaTitle')}</h2>
-          <p className="text-navy-500 mb-8 max-w-xl mx-auto">{t('gameInfo.ctaText')}</p>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-navy-900 mb-4 dark:text-white">{t('gameInfo.ctaTitle')}</h2>
+          <p className="text-navy-500 mb-8 max-w-xl mx-auto dark:text-slate-400">{t('gameInfo.ctaText')}</p>
           {isAuthenticated ? (
             <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
               {t('gameInfo.openGames')}

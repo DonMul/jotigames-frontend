@@ -63,18 +63,17 @@ export default function TerritoryControlAdminPage() {
       {success ? <div className="flash flash-success">{success}</div> : null}
       {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
 
-      <div className="geo-layout">
-        <section className="overview-panel">
-          <h2>{t('common.map', {}, 'Map')}</h2>
-          <AdminOverviewMap
-            entities={zones}
-            getLabel={(zone) => zone.title || '-'}
-            getRadius={(zone) => Number(zone.radius_meters || 35)}
-            ariaLabel={t('territory_control.admin.map_label', {}, 'Territory Control zones map')}
-          />
-        </section>
+      <section className="overview-panel">
+        <h2>{t('common.map', {}, 'Map')}</h2>
+        <AdminOverviewMap
+          entities={zones}
+          getLabel={(zone) => zone.title || '-'}
+          getRadius={(zone) => Number(zone.radius_meters || 35)}
+          ariaLabel={t('territory_control.admin.map_label', {}, 'Territory Control zones map')}
+        />
+      </section>
 
-        <section className="overview-panel">
+      <section className="overview-panel">
           <h2>{t('territory_control.admin.zone_list', {}, 'Zone list')}</h2>
           {zones.length === 0 ? <p className="muted">{t('territory_control.admin.zone_empty', {}, 'No zones yet')}</p> : null}
           {zones.length > 0 ? (
@@ -102,8 +101,7 @@ export default function TerritoryControlAdminPage() {
               </tbody>
             </table>
           ) : null}
-        </section>
-      </div>
+      </section>
     </main>
   )
 }

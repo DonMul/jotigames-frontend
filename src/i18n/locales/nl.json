@@ -241,7 +241,9 @@
     "manageNodes": "Nodes beheren",
     "manageZones": "Zones beheren",
     "managePoints": "Punten beheren",
+    "manageResources": "Resources beheren",
     "manageTasks": "Taken beheren",
+    "manageCourierPoints": "Drop-off en pick-up punten",
     "manageBeacons": "Bakens beheren",
     "manageCheckpoints": "Checkpoints beheren",
     "manageHotspots": "Hotspots beheren",
@@ -642,6 +644,10 @@
       "kicker": "Marktcrash",
       "points_heading": "Marktpunten · {game}",
       "points_subtitle": "Beheer resources en handelspunten",
+      "resources_heading": "Resourcebeheer · {game}",
+      "resources_subtitle": "Beheer resources en standaardprijzen",
+      "resources_management": "Resourcebeheer",
+      "points_management": "Puntenbeheer",
       "overview_subtitle": "Livestatus van de marktcrash",
       "overview_map": "Market Crash live kaart",
       "resource_list": "Bronnen",
@@ -651,8 +657,14 @@
       "resource_table_actions": "Acties",
       "resource_empty": "Nog geen resources",
       "resource_delete_confirm": "Resource {name} verwijderen?",
+      "resource_required_name": "Resourcenaam is verplicht",
+      "resource_not_found": "Resource niet gevonden",
+      "resource_save_failed": "Resource opslaan mislukt",
+      "resource_new_heading": "Nieuwe resource",
+      "resource_edit_heading": "Resource bewerken",
+      "resource_invalid_price": "Standaardprijs moet minimaal 1 zijn",
       "point_list": "Punten",
-      "point_table_title": "titel",
+      "point_table_title": "Titel",
       "point_table_resource_config": "Resource-config",
       "point_table_actions": "Acties",
       "point_empty": "Nog geen punten",
@@ -662,11 +674,12 @@
       "point_not_found": "Punt niet gevonden",
       "point_saved": "Punt opgeslagen",
       "point_save_failed": "Punt opslaan mislukt",
-      "latitude_longitude_required": "Breedtegraad en lengtegraad zijn verplicht",
+      "latitude_longitude_required": "Kies een locatie op de kaart",
       "point_resource_required": "Schakel minimaal één resource in voor dit punt",
-      "form_title": "titel",
+      "form_title": "Punttitel",
       "form_resource_settings": "Resource-instellingen",
       "form_resource_settings_help": "Schakel resources in en configureer koop/verkoop/fluctuatie",
+      "enabled": "Actief",
       "form_buy_resources": "Kopen",
       "form_sell_resources": "Verkopen",
       "form_tick_seconds": "Tick-seconden",
@@ -977,7 +990,10 @@
     "map": "Kaart",
     "lat": "Lat",
     "lon": "Lon",
-    "color": "Kleur"
+    "color": "Kleur",
+    "map_select_hint": "Klik op de kaart om de locatie te kiezen.",
+    "move_up": "Omhoog",
+    "move_down": "Omlaag"
   },
   "geohunter": {
     "admin": {
@@ -986,7 +1002,7 @@
       "settings_heading": "Instellingen",
       "settings_subtitle": "Spelinstellingen configureren",
       "manage_pois": "POI's beheren",
-      "retry_enabled": "Opnieuw proberen ingeschakeld",
+      "retry_enabled": "Teams mogen vragen opnieuw proberen",
       "retry_timeout": "Time-out opnieuw proberen (seconden)",
       "retry_settings": "Instellingen voor opnieuw beantwoorden",
       "save_failed": "Opslaan mislukt",
@@ -1084,7 +1100,7 @@
       "settings_subtitle": "Spelinstellingen configureren",
       "manage_tasks": "Taken beheren",
       "visibility_mode": "Zichtbaarheidsmodus",
-      "tasks_heading": "Taken · {game}",
+      "tasks_heading": "Taken",
       "tasks_subtitle": "Beheer taken en beoordeel inzendingen",
       "task_list": "Takenlijst",
       "table_title": "Titel",
@@ -1121,7 +1137,12 @@
       "accept": "Accepteren",
       "reject": "Afwijzen",
       "task_not_found": "Taak niet gevonden",
-      "task_map_label": "Kaart taaklocatie"
+      "task_map_label": "Kaart taaklocatie",
+      "reorder_failed": "Taken herschikken mislukt"
+    },
+    "task": {
+      "createFailed": "Taak aanmaken mislukt",
+      "reorderFailed": "Taken herschikken mislukt"
     },
     "visibility": {
       "all_visible": "Alles zichtbaar",
@@ -1202,6 +1223,7 @@
       "max_active_pickups": "Max actieve ophaalplaatsen",
       "max_pickups_range": "Max actieve ophaalplaatsen moet tussen 1 en 25 zijn",
       "pickup_spawn_area": "Ophaal-spawngebied (GeoJSON Polygon)",
+      "spawn_area_help": "Teken het spawngebied op de kaart.",
       "save_settings": "Instellingen opslaan",
       "save_failed": "Opslaan mislukt",
       "load_failed": "Laden mislukt",
@@ -1231,7 +1253,15 @@
       "lat_lon_required": "Breedtegraad en lengtegraad zijn verplicht",
       "pickup_map_label": "Kaart ophaalplaats",
       "dropoff_map_label": "Kaart afleverpunt",
-      "map_label": "Ophaalplaatsen en afleverpunten kaart"
+      "map_label": "Ophaalplaatsen en afleverpunten kaart",
+      "location_picker": "Locatiekiezer",
+      "location_map_help": "Klik op de kaart om de locatie te kiezen."
+    },
+    "pickup": {
+      "createFailed": "Ophaalplaats aanmaken mislukt"
+    },
+    "dropoff": {
+      "createFailed": "Afleverpunt aanmaken mislukt"
     },
     "info": {
       "kicker": "Logistieke veldrace",
@@ -1612,6 +1642,18 @@
     }
   },
   "echo_hunt": {
+    "admin": {
+      "kicker": "Echo Hunt",
+      "back": "Terug",
+      "create_beacon": "Baken toevoegen",
+      "edit_beacon": "Baken bewerken",
+      "save_failed": "Baken opslaan mislukt",
+      "beacon_saved": "Baken is opgeslagen",
+      "load_failed": "Baken laden mislukt",
+      "location": "Locatie",
+      "location_required": "Kies een locatie op de kaart",
+      "map_label": "Bakenskaart"
+    },
     "info": {
       "kicker": "Signaaljacht in het veld",
       "eyebrow": "Verborgen bakens, proximity, perfecte timing",

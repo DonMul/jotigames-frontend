@@ -3,6 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import {
   attachUserLocationCentering,
+  createLeafletTileLayer,
   configureLeafletDefaultMarkerIcons,
   toNumberOrNull,
 } from './shared/leafletMapCommon'
@@ -46,10 +47,7 @@ export default function GeoLocationPicker({
     mapRef.current = map
     map.setView(FALLBACK_CENTER, 15)
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map)
+    createLeafletTileLayer().addTo(map)
 
     const detachUserCentering = attachUserLocationCentering(map, {
       zoom: 15,

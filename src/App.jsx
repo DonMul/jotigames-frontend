@@ -54,6 +54,7 @@ const ResourceRunNodeFormPage = lazy(() => import('./pages/admin/ResourceRunNode
 const TerritoryControlAdminPage = lazy(() => import('./pages/admin/TerritoryControlAdminPage'))
 const TerritoryControlZoneFormPage = lazy(() => import('./pages/admin/TerritoryControlZoneFormPage'))
 const EchoHuntAdminPage = lazy(() => import('./pages/admin/EchoHuntAdminPage'))
+const EchoHuntBeaconFormPage = lazy(() => import('./pages/admin/EchoHuntBeaconFormPage'))
 const CheckpointHeistAdminPage = lazy(() => import('./pages/admin/CheckpointHeistAdminPage'))
 const CheckpointHeistCheckpointFormPage = lazy(() => import('./pages/admin/CheckpointHeistCheckpointFormPage'))
 const CourierRushAdminPage = lazy(() => import('./pages/admin/CourierRushAdminPage'))
@@ -63,6 +64,8 @@ const CourierRushDropoffFormPage = lazy(() => import('./pages/admin/CourierRushD
 const PandemicResponseAdminPage = lazy(() => import('./pages/admin/PandemicResponseAdminPage'))
 const PandemicResponseSettingsPage = lazy(() => import('./pages/admin/PandemicResponseSettingsPage'))
 const MarketCrashAdminPage = lazy(() => import('./pages/admin/MarketCrashAdminPage'))
+const MarketCrashResourcesPage = lazy(() => import('./pages/admin/MarketCrashResourcesPage'))
+const MarketCrashResourceFormPage = lazy(() => import('./pages/admin/MarketCrashResourceFormPage'))
 const MarketCrashPointFormPage = lazy(() => import('./pages/admin/MarketCrashPointFormPage'))
 const BirdsOfPreyConfigurePage = lazy(() => import('./pages/admin/BirdsOfPreyConfigurePage'))
 const CodeConspiracyConfigurePage = lazy(() => import('./pages/admin/CodeConspiracyConfigurePage'))
@@ -334,6 +337,14 @@ function AppRoutes() {
           element={renderProtectedAdminGame(<EchoHuntAdminPage />)}
         />
         <Route
+          path="/admin/echo-hunt/:gameId/beacons/new"
+          element={renderProtectedAdminGame(<EchoHuntBeaconFormPage />)}
+        />
+        <Route
+          path="/admin/echo-hunt/:gameId/beacons/:beaconId/edit"
+          element={renderProtectedAdminGame(<EchoHuntBeaconFormPage />)}
+        />
+        <Route
           path="/admin/checkpoint-heist/:gameId/checkpoints"
           element={renderProtectedAdminGame(<CheckpointHeistAdminPage />)}
         />
@@ -388,6 +399,18 @@ function AppRoutes() {
         <Route
           path="/admin/market-crash/:gameId/points"
           element={renderProtectedAdminGame(<MarketCrashAdminPage />)}
+        />
+        <Route
+          path="/admin/market-crash/:gameId/resources"
+          element={renderProtectedAdminGame(<MarketCrashResourcesPage />)}
+        />
+        <Route
+          path="/admin/market-crash/:gameId/resources/new"
+          element={renderProtectedAdminGame(<MarketCrashResourceFormPage />)}
+        />
+        <Route
+          path="/admin/market-crash/:gameId/resources/:resourceId/edit"
+          element={renderProtectedAdminGame(<MarketCrashResourceFormPage />)}
         />
         <Route
           path="/admin/market-crash/:gameId/points/new"

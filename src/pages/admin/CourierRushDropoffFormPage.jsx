@@ -74,7 +74,7 @@ export default function CourierRushDropoffFormPage() {
       if (isEdit) { await moduleApi.updateCourierRushDropoff(auth.token, gameId, dropoffId, payload) }
       else { await moduleApi.createCourierRushDropoff(auth.token, gameId, payload) }
       navigate('/admin/courier-rush/' + gameId + '/dropoffs', { state: { flashSuccess: t('courier_rush.admin.dropoff_saved', {}, 'Dropoff saved') } })
-    } catch (err) { setError(err.message || 'Failed to save dropoff') }
+    } catch (err) { setError(err.message || t('courier_rush.dropoff.createFailed', {}, 'Failed to create dropoff')) }
     finally { setSaving(false) }
   }
 
@@ -95,14 +95,22 @@ export default function CourierRushDropoffFormPage() {
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
             <div className="form-row"><label htmlFor="dropoff-title">{t('courier_rush.admin.table_title', {}, 'Title')}</label><input id="dropoff-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
-            <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.dropoff_map_label', {}, 'Dropoff location')} />
-            <div className="form-row form-row-inline">
-              <div><label htmlFor="dropoff-lat">{t('courier_rush.admin.latitude', {}, 'Latitude')}</label><input id="dropoff-lat" type="number" step="0.000001" value={form.latitude} onChange={(e) => setForm((c) => ({ ...c, latitude: e.target.value }))} required /></div>
-              <div><label htmlFor="dropoff-lon">{t('courier_rush.admin.longitude', {}, 'Longitude')}</label><input id="dropoff-lon" type="number" step="0.000001" value={form.longitude} onChange={(e) => setForm((c) => ({ ...c, longitude: e.target.value }))} required /></div>
+            <div className="form-row">
+              <label>{t('courier_rush.admin.dropoff_map_label', {}, 'Dropoff location')}</label>
+              <p className="muted">{t('courier_rush.admin.location_map_help', {}, 'Klik op de kaart om de locatie te selecteren.')}</p>
+              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.dropoff_map_label', {}, 'Dropoff location')} />
             </div>
             <div className="form-row"><label htmlFor="dropoff-radius">{t('courier_rush.admin.table_radius', {}, 'Radius')}</label><input id="dropoff-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="dropoff-color">{t('common.color', {}, 'Color')}</label><input id="dropoff-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
-            <div className="form-row"><label><input type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} /> {t('courier_rush.admin.active', {}, 'Active')}</label></div>
+            <div className="form-row">
+              <label className="blindhike-toggle-row" htmlFor="courier-dropoff-active">
+                <span className="blindhike-toggle-label">{t('courier_rush.admin.active', {}, 'Active')}</span>
+                <span className="game-type-switch">
+                  <input id="courier-dropoff-active" type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} />
+                  <span className="game-type-switch-track" aria-hidden="true" />
+                </span>
+              </label>
+            </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
               <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/dropoffs'}>{t('button.cancel', {}, 'Cancel')}</Link>

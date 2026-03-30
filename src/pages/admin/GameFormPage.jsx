@@ -147,10 +147,10 @@ export default function GameFormPage() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-navy-900">{isEdit ? t('gameForm.editTitle') : t('gameForm.newTitle')}</h1>
+        <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{isEdit ? t('gameForm.editTitle') : t('gameForm.newTitle')}</h1>
         <Link className="btn btn-ghost" to={backPath}>
           {t('gameForm.back')}
         </Link>
@@ -164,13 +164,13 @@ export default function GameFormPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6 dark:border-slate-700 dark:bg-slate-900">
           {/* Name */}
           <div className="space-y-1.5">
-            <label htmlFor="game-name" className="block text-sm font-medium text-navy-700">{t('gameForm.name')}</label>
+            <label htmlFor="game-name" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.name')}</label>
             <input
               id="game-name"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
@@ -180,7 +180,7 @@ export default function GameFormPage() {
 
           {/* Game type picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-navy-700">{t('gameForm.type')}</label>
+            <label className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.type')}</label>
             {/* Hidden native select for accessibility */}
             <select
               id="game-type"
@@ -213,7 +213,7 @@ export default function GameFormPage() {
                     className={`flex flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-3 text-center transition-all duration-150 ${
                       isSelected
                         ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-200'
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800'
                     }`}
                     aria-pressed={isSelected}
                     role="radio"
@@ -238,7 +238,7 @@ export default function GameFormPage() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                       </div>
                     )}
-                    <span className={`text-xs font-medium ${isSelected ? 'text-brand-700' : 'text-navy-700'}`}>
+                    <span className={`text-xs font-medium ${isSelected ? 'text-brand-700 dark:text-brand-300' : 'text-navy-700 dark:text-slate-300'}`}>
                       {t(`gameCatalog.${type}.name`, {}, gameInfo?.name || type)}
                     </span>
                   </button>
@@ -250,10 +250,10 @@ export default function GameFormPage() {
           {/* Code (edit only) */}
           {isEdit ? (
             <div className="space-y-1.5">
-              <label htmlFor="game-code" className="block text-sm font-medium text-navy-700">{t('gameForm.code')}</label>
+              <label htmlFor="game-code" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.code')}</label>
               <input
                 id="game-code"
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 font-mono focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 font-mono focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
                 required
@@ -265,10 +265,10 @@ export default function GameFormPage() {
           {/* Date/time row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="game-start" className="block text-sm font-medium text-navy-700">{t('gameForm.starts')}</label>
+              <label htmlFor="game-start" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.starts')}</label>
               <input
                 id="game-start"
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                 type="datetime-local"
                 value={startAt}
                 onChange={(event) => setStartAt(event.target.value)}
@@ -276,10 +276,10 @@ export default function GameFormPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="game-end" className="block text-sm font-medium text-navy-700">{t('gameForm.ends')}</label>
+              <label htmlFor="game-end" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.ends')}</label>
               <input
                 id="game-end"
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                 type="datetime-local"
                 value={endAt}
                 onChange={(event) => setEndAt(event.target.value)}

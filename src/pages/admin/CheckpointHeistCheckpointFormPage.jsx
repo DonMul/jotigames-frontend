@@ -97,16 +97,24 @@ export default function CheckpointHeistCheckpointFormPage() {
           <form onSubmit={handleSubmit}>
             <div className="form-row"><label htmlFor="checkpoint-title">{t('checkpoint_heist.admin.table_title', {}, 'Title')}</label><input id="checkpoint-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="checkpoint-points">{t('checkpoint_heist.admin.table_points', {}, 'Points')}</label><input id="checkpoint-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
-            <div className="form-row form-row-inline">
+            <div className="form-row">
+              <label>{t('checkpoint_heist.admin.map_label', {}, 'Checkpoint location')}</label>
+              <p className="muted">{t('checkpoint_heist.admin.location_map_help', {}, 'Klik op de kaart om de checkpointlocatie te selecteren.')}</p>
               <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('checkpoint_heist.admin.map_label', {}, 'Checkpoint location')} />
-              <div><label htmlFor="checkpoint-lat">{t('checkpoint_heist.admin.latitude', {}, 'Latitude')}</label><input id="checkpoint-lat" type="number" step="0.000001" value={form.latitude} onChange={(e) => setForm((c) => ({ ...c, latitude: e.target.value }))} required /></div>
-              <div><label htmlFor="checkpoint-lon">{t('checkpoint_heist.admin.longitude', {}, 'Longitude')}</label><input id="checkpoint-lon" type="number" step="0.000001" value={form.longitude} onChange={(e) => setForm((c) => ({ ...c, longitude: e.target.value }))} required /></div>
             </div>
             <div className="form-row form-row-inline">
               <div><label htmlFor="checkpoint-radius">{t('checkpoint_heist.admin.table_radius', {}, 'Radius')}</label><input id="checkpoint-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
               <div><label htmlFor="checkpoint-color">{t('common.color', {}, 'Color')}</label><input id="checkpoint-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
             </div>
-            <div className="form-row"><label><input type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} /> {t('checkpoint_heist.admin.active', {}, 'Active')}</label></div>
+            <div className="form-row">
+              <label className="blindhike-toggle-row" htmlFor="checkpoint-active-toggle">
+                <span className="blindhike-toggle-label">{t('checkpoint_heist.admin.active', {}, 'Active')}</span>
+                <span className="game-type-switch">
+                  <input id="checkpoint-active-toggle" type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} />
+                  <span className="game-type-switch-track" aria-hidden="true" />
+                </span>
+              </label>
+            </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
               <Link className="btn btn-ghost" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints'}>{t('button.cancel', {}, 'Cancel')}</Link>

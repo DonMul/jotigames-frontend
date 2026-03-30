@@ -10,15 +10,23 @@ import {
   toNumberOrNull,
 } from './shared/leafletMapCommon'
 
-export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
+export default function GameLiveOverviewMap({
+  teams,
+  entities,
+  entityColor = '#2563eb',
+  getEntityLabel,
+  getEntityColor,
+  getEntityRadius,
+  ariaLabel,
+}) {
   const mapContainerRef = useRef(null)
   const mapRef = useRef(null)
-  const pointLayerRef = useRef(null)
+  const entityLayerRef = useRef(null)
   const teamLayerRef = useRef(null)
   const hasInitializedViewportRef = useRef(false)
 
   const teamRows = useMemo(() => (Array.isArray(teams) ? teams : []), [teams])
-  const pointRows = useMemo(() => (Array.isArray(points) ? points : []), [points])
+  const entityRows = useMemo(() => (Array.isArray(entities) ? entities : []), [entities])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) {
@@ -45,7 +53,7 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
       },
     })
 
-    pointLayerRef.current = L.layerGroup().addTo(map)
+    entityLayerRef.current = L.layerGroup().addTo(map)
     teamLayerRef.current = L.layerGroup().addTo(map)
 
     return () => {
@@ -54,43 +62,41 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
         mapRef.current.remove()
         mapRef.current = null
       }
-      pointLayerRef.current = null
+      entityLayerRef.current = null
       teamLayerRef.current = null
     }
   }, [])
 
   useEffect(() => {
-    if (!mapRef.current || !pointLayerRef.current || !teamLayerRef.current) {
+    if (!mapRef.current || !entityLayerRef.current || !teamLayerRef.current) {
       return
     }
 
     const map = mapRef.current
-    pointLayerRef.current.clearLayers()
+    const bounds = []
+    entityLayerRef.current.clearLayers()
     teamLayerRef.current.clearLayers()
 
-    const bounds = []
-
-    for (const point of pointRows) {
-      const lat = toNumberOrNull(point?.latitude)
-      const lon = toNumberOrNull(point?.longitude)
+    for (const entity of entityRows) {
+      const lat = toNumberOrNull(entity?.latitude)
+      const lon = toNumberOrNull(entity?.longitude)
       if (lat === null || lon === null) {
         continue
       }
 
-      const color = String(point?.marker_color || '#2563eb')
-      const radius = Number(point?.radius_meters || 25)
-      const resourceSettings = Array.isArray(point?.resource_settings) ? point.resource_settings : []
-      const popupLines = resourceSettings.map((setting) => (
-        `${String(setting?.resource_name || setting?.resource_id || '')}: B ${Number(setting?.buy_price || 0)} · S ${Number(setting?.sell_price || 0)}`
-      ))
+      const color = typeof getEntityColor === 'function' ? getEntityColor(entity) : String(entity?.marker_color || entityColor)
+      const radius = typeof getEntityRadius === 'function' ? Number(getEntityRadius(entity) || 0) : Number(entity?.radius_meters || 0)
+      const label = typeof getEntityLabel === 'function' ? getEntityLabel(entity) : String(entity?.title || '-')
 
-      L.circle([lat, lon], {
-        radius,
-        color,
-        fillColor: color,
-        fillOpacity: 0.14,
-        weight: 1,
-      }).addTo(pointLayerRef.current)
+      if (radius > 0) {
+        L.circle([lat, lon], {
+          radius,
+          color,
+          fillColor: color,
+          fillOpacity: 0.14,
+          weight: 1,
+        }).addTo(entityLayerRef.current)
+      }
 
       L.circleMarker([lat, lon], {
         radius: 6,
@@ -98,16 +104,16 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
         fillColor: color,
         fillOpacity: 1,
       })
-        .bindPopup(`<strong>${String(point?.title || '-')}</strong><br>${popupLines.join('<br>') || '-'}`)
-        .addTo(pointLayerRef.current)
+        .bindPopup(`<strong>${label}</strong>`)
+        .addTo(entityLayerRef.current)
 
       bounds.push([lat, lon])
     }
 
     for (const team of teamRows) {
-      const teamId = String(team?.team_id || team?.id || '')
       const lat = toNumberOrNull(team?.lat)
       const lon = toNumberOrNull(team?.lon)
+      const teamId = String(team?.team_id || team?.id || '')
       if (!teamId || lat === null || lon === null) {
         continue
       }
@@ -125,10 +131,7 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
             weight: 2,
           })
 
-      marker
-        .bindPopup(`${teamName}<br>${t('market_crash.team.cash', {}, 'Cash')}: ${Number(team?.cash || 0)}<br>${t('moduleOverview.score', {}, 'Score')}: ${Number(team?.score || 0)}`)
-        .addTo(teamLayerRef.current)
-
+      marker.bindPopup(teamName).addTo(teamLayerRef.current)
       bounds.push([lat, lon])
     }
 
@@ -152,7 +155,7 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
       window.cancelAnimationFrame(frameId)
       window.clearTimeout(timeoutId)
     }
-  }, [pointRows, t, teamRows])
+  }, [entityColor, entityRows, getEntityColor, getEntityLabel, getEntityRadius, teamRows])
 
-  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('market_crash.admin.overview_map', {}, 'Market Crash live map')} />
+  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={ariaLabel || 'Live game map'} />
 }

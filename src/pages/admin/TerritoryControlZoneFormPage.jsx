@@ -92,10 +92,10 @@ export default function TerritoryControlZoneFormPage() {
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
             <div className="form-row"><label htmlFor="zone-title">{t('territory_control.admin.zone_field_name', {}, 'Name')}</label><input id="zone-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
-            <div className="form-row form-row-inline">
+            <div className="form-row">
+              <label>{t('territory_control.admin.zone_map_label', {}, 'Zone location')}</label>
+              <p className="muted">{t('territory_control.admin.location_map_help', {}, 'Klik op de kaart om de zonelocatie te selecteren.')}</p>
               <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('territory_control.admin.zone_map_label', {}, 'Zone location')} />
-              <div><label htmlFor="zone-lat">{t('territory_control.admin.zone_field_lat', {}, 'Latitude')}</label><input id="zone-lat" type="number" step="0.000001" value={form.latitude} onChange={(e) => setForm((c) => ({ ...c, latitude: e.target.value }))} required /></div>
-              <div><label htmlFor="zone-lon">{t('territory_control.admin.zone_field_lon', {}, 'Longitude')}</label><input id="zone-lon" type="number" step="0.000001" value={form.longitude} onChange={(e) => setForm((c) => ({ ...c, longitude: e.target.value }))} required /></div>
             </div>
             <div className="form-row"><label htmlFor="zone-radius">{t('territory_control.admin.zone_field_radius', {}, 'Radius')}</label><input id="zone-radius" type="number" min="10" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="zone-points">{t('territory_control.admin.zone_field_points', {}, 'Capture points')}</label><input id="zone-points" type="number" min="1" value={form.capture_points} onChange={(e) => setForm((c) => ({ ...c, capture_points: e.target.value }))} required /></div>

@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'
 
 import {
   attachUserLocationCentering,
+  createLeafletTileLayer,
   configureLeafletDefaultMarkerIcons,
   toNumberOrNull,
 } from './shared/leafletMapCommon'
@@ -32,10 +33,7 @@ export default function MarketCrashPointsMap({ points, t }) {
     })
     mapRef.current = map
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map)
+    createLeafletTileLayer().addTo(map)
 
     layerRef.current = L.layerGroup().addTo(map)
 

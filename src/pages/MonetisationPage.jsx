@@ -164,42 +164,42 @@ export default function MonetisationPage() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-20 bg-warm-50/70">
+      <section className="py-16 sm:py-20 bg-warm-50/70 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-8">
-            <h2 className="font-display text-3xl font-bold text-navy-900">{t('monetisation.plansTitle')}</h2>
-            <p className="mt-3 text-navy-600">{t('monetisation.plansSubtitle')}</p>
+            <h2 className="font-display text-3xl font-bold text-navy-900 dark:text-white">{t('monetisation.plansTitle')}</h2>
+            <p className="mt-3 text-navy-600 dark:text-slate-400">{t('monetisation.plansSubtitle')}</p>
           </div>
 
-          <div className="mb-8 rounded-2xl border border-brand-200 bg-white p-6 sm:p-8 shadow-sm">
-            <h3 className="font-display text-2xl font-bold text-navy-900">{t('monetisation.calculatorTitle')}</h3>
-            <p className="mt-2 text-sm text-navy-600">{t('monetisation.calculatorSubtitle')}</p>
+          <div className="mb-8 rounded-2xl border border-brand-200 bg-white p-6 sm:p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <h3 className="font-display text-2xl font-bold text-navy-900 dark:text-white">{t('monetisation.calculatorTitle')}</h3>
+            <p className="mt-2 text-sm text-navy-600 dark:text-slate-400">{t('monetisation.calculatorSubtitle')}</p>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-navy-500">{t('monetisation.calculatorTeams')}</span>
+                <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-navy-500 dark:text-slate-400">{t('monetisation.calculatorTeams')}</span>
                 <input
                   type="number"
                   min="1"
                   step="1"
                   value={calculatorTeams}
                   onChange={(event) => setCalculatorTeams(event.target.value)}
-                  className="w-full rounded-lg border border-warm-300 px-3 py-2 text-navy-900 outline-none focus:border-brand-400"
+                  className="w-full rounded-lg border border-warm-300 px-3 py-2 text-navy-900 outline-none focus:border-brand-400 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                 />
               </label>
               <label className="block">
-                <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-navy-500">{t('monetisation.calculatorHours')}</span>
+                <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-navy-500 dark:text-slate-400">{t('monetisation.calculatorHours')}</span>
                 <input
                   type="number"
                   min="1"
                   step="0.5"
                   value={calculatorHours}
                   onChange={(event) => setCalculatorHours(event.target.value)}
-                  className="w-full rounded-lg border border-warm-300 px-3 py-2 text-navy-900 outline-none focus:border-brand-400"
+                  className="w-full rounded-lg border border-warm-300 px-3 py-2 text-navy-900 outline-none focus:border-brand-400 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                 />
               </label>
             </div>
-            <div className="mt-5 rounded-xl bg-brand-50 border border-brand-100 p-4">
-              <p className="text-sm text-navy-700">
+            <div className="mt-5 rounded-xl bg-brand-50 border border-brand-100 p-4 dark:border-brand-800/60 dark:bg-brand-900/20">
+              <p className="text-sm text-navy-700 dark:text-slate-200">
                 {t('monetisation.calculatorMinutesResult', { minutes: calculatorMinutes.toLocaleString('nl-NL') })}
               </p>
               {recommendedPlan ? (
@@ -207,22 +207,22 @@ export default function MonetisationPage() {
                   {t('monetisation.calculatorRecommendation', { plan: recommendedPlan.name })}
                 </p>
               ) : null}
-              <p className="mt-2 text-xs text-navy-500">{t('monetisation.calculatorUpsellHint')}</p>
+              <p className="mt-2 text-xs text-navy-500 dark:text-slate-400">{t('monetisation.calculatorUpsellHint')}</p>
             </div>
           </div>
 
           {loadingPlans ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="h-60 rounded-2xl border border-warm-200 bg-white animate-pulse" />
+                <div key={item} className="h-60 rounded-2xl border border-warm-200 bg-white animate-pulse dark:border-slate-700 dark:bg-slate-900" />
               ))}
             </div>
           ) : plans.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {plans.map((plan) => (
-                <article key={plan.id} className={`rounded-2xl border bg-white p-6 shadow-sm hover:shadow-lg transition-all ${recommendedPlan?.id === plan.id ? 'border-brand-400 ring-2 ring-brand-100' : 'border-warm-200 hover:border-brand-200'}`}>
+                <article key={plan.id} className={`rounded-2xl border bg-white p-6 shadow-sm hover:shadow-lg transition-all dark:bg-slate-900 ${recommendedPlan?.id === plan.id ? 'border-brand-400 ring-2 ring-brand-100 dark:ring-brand-900/60' : 'border-warm-200 hover:border-brand-200 dark:border-slate-700 dark:hover:border-brand-500/50'}`}>
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-display text-2xl font-bold text-navy-900">{plan.name}</h3>
+                    <h3 className="font-display text-2xl font-bold text-navy-900 dark:text-white">{plan.name}</h3>
                     <div className="flex flex-col gap-1 items-end">
                       {plan.is_default ? (
                         <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">{t('monetisation.defaultPackage')}</span>
@@ -232,38 +232,38 @@ export default function MonetisationPage() {
                       ) : null}
                     </div>
                   </div>
-                  <p className="mt-4 text-3xl font-bold text-navy-900">
+                  <p className="mt-4 text-3xl font-bold text-navy-900 dark:text-white">
                     {plan.price_cents > 0 ? formatCents(plan.price_cents, plan.currency) : t('monetisation.free')}
-                    <span className="ml-1 text-sm font-medium text-navy-500">{t('monetisation.perMonth')}</span>
+                    <span className="ml-1 text-sm font-medium text-navy-500 dark:text-slate-400">{t('monetisation.perMonth')}</span>
                   </p>
-                  <p className="mt-3 text-sm font-medium text-brand-700 bg-brand-50 rounded-lg px-3 py-2 inline-flex">
+                  <p className="mt-3 text-sm font-medium text-brand-700 bg-brand-50 rounded-lg px-3 py-2 inline-flex dark:bg-brand-900/20 dark:text-brand-300">
                     {minutesText(plan.monthly_minutes, t)}
                   </p>
-                  <p className="mt-4 text-sm text-navy-600 leading-relaxed">
+                  <p className="mt-4 text-sm text-navy-600 leading-relaxed dark:text-slate-300">
                     {t('monetisation.planPitch', { name: plan.name })}
                   </p>
                 </article>
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-warm-200 bg-white p-8 text-center text-navy-600">
+            <div className="rounded-2xl border border-warm-200 bg-white p-8 text-center text-navy-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
               {isMonetisationEnabled ? t('monetisation.noPlansFallback') : t('monetisation.disabledFallback')}
             </div>
           )}
         </div>
       </section>
 
-      <section className="py-16 sm:py-20">
+      <section className="py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-            <div className="rounded-2xl border border-warm-200 bg-white p-8 shadow-sm">
-              <h2 className="font-display text-3xl font-bold text-navy-900">{t('monetisation.howItWorksTitle')}</h2>
-              <p className="mt-4 text-navy-600 leading-relaxed">{t('monetisation.howItWorksBody')}</p>
+            <div className="rounded-2xl border border-warm-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+              <h2 className="font-display text-3xl font-bold text-navy-900 dark:text-white">{t('monetisation.howItWorksTitle')}</h2>
+              <p className="mt-4 text-navy-600 leading-relaxed dark:text-slate-300">{t('monetisation.howItWorksBody')}</p>
               <div className="mt-6 rounded-xl bg-navy-900 p-5 text-white">
                 <p className="text-xs uppercase tracking-wide text-brand-300 font-semibold">{t('monetisation.formulaLabel')}</p>
                 <p className="mt-2 text-lg font-semibold">{t('monetisation.formula')}</p>
               </div>
-              <ul className="mt-6 space-y-3 text-sm text-navy-600">
+              <ul className="mt-6 space-y-3 text-sm text-navy-600 dark:text-slate-300">
                 <li className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-brand-500" />{t('monetisation.factOne')}</li>
                 <li className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-brand-500" />{t('monetisation.factTwo')}</li>
                 <li className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-brand-500" />{t('monetisation.factThree')}</li>
@@ -271,18 +271,18 @@ export default function MonetisationPage() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-display text-2xl font-bold text-navy-900">{t('monetisation.examplesTitle')}</h3>
+              <h3 className="font-display text-2xl font-bold text-navy-900 dark:text-white">{t('monetisation.examplesTitle')}</h3>
               {usageExamples.map((example) => (
-                <div key={example.key} className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm">
+                <div key={example.key} className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                   <p className="text-sm font-semibold text-brand-700">{t(`monetisation.${example.key}Title`)}</p>
-                  <p className="mt-2 text-lg font-bold text-navy-900">{t(`monetisation.${example.key}Headline`, { minutes: example.minutes.toLocaleString('nl-NL') })}</p>
-                  <p className="mt-2 text-sm text-navy-600">{t(`monetisation.${example.key}Math`, {
+                  <p className="mt-2 text-lg font-bold text-navy-900 dark:text-white">{t(`monetisation.${example.key}Headline`, { minutes: example.minutes.toLocaleString('nl-NL') })}</p>
+                  <p className="mt-2 text-sm text-navy-600 dark:text-slate-300">{t(`monetisation.${example.key}Math`, {
                     hours: example.durationHours,
                     teams: example.teams,
                     games: example.gamesAtOnce,
                     total: Number(example.durationHours * 60 * example.teams * example.gamesAtOnce).toLocaleString('nl-NL'),
                   })}</p>
-                  <p className="mt-2 text-sm text-navy-500">{example.extra}</p>
+                  <p className="mt-2 text-sm text-navy-500 dark:text-slate-400">{example.extra}</p>
                 </div>
               ))}
             </div>
@@ -290,15 +290,15 @@ export default function MonetisationPage() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-warm-50 to-white">
+      <section className="py-16 sm:py-20 bg-gradient-to-b from-warm-50 to-white dark:from-slate-900 dark:to-slate-950">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold text-navy-900">{t('monetisation.bottomTitle')}</h2>
-          <p className="mt-4 text-lg text-navy-600">{t('monetisation.bottomText')}</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-navy-900 dark:text-white">{t('monetisation.bottomTitle')}</h2>
+          <p className="mt-4 text-lg text-navy-600 dark:text-slate-400">{t('monetisation.bottomText')}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link to={isAuthenticated ? '/admin/games' : '/register'} className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
               {isAuthenticated ? t('monetisation.bottomCtaAuthenticated') : t('monetisation.bottomCtaRegister')}
             </Link>
-            <Link to="/team-login" className="inline-flex items-center rounded-full border border-navy-200 px-8 py-3 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all">
+            <Link to="/team-login" className="inline-flex items-center rounded-full border border-navy-200 px-8 py-3 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all dark:border-slate-600 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300">
               {t('monetisation.bottomCtaTeam')}
             </Link>
           </div>

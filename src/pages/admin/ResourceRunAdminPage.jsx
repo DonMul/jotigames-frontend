@@ -96,8 +96,7 @@ export default function ResourceRunAdminPage() {
                     <td>{node.resource_type}</td>
                     <td>{node.points}</td>
                     <td>
-                      <span style={{ display: 'inline-flex', width: 18, height: 18, borderRadius: '50%', border: '1px solid var(--stroke)', background: node.marker_color, marginRight: '0.5rem' }} />
-                      <span className="muted">{node.marker_color}</span>
+                      <span style={{ display: 'inline-flex', width: 18, height: 18, borderRadius: '50%', border: '1px solid var(--stroke)', background: node.marker_color }} />
                     </td>
                     <td className="text-right table-actions-inline">
                       <Link className="btn btn-edit btn-small" to={'/admin/resource-run/' + gameId + '/nodes/' + node.id + '/edit'}>{t('button.edit', {}, 'Edit')}</Link>

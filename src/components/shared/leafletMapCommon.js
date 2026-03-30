@@ -105,3 +105,19 @@ export function attachUserLocationCentering(map, options = {}) {
     }
   }
 }
+
+export function createLeafletTileLayer() {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  const url = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+  const attribution = isDark
+    ? '&copy; OpenStreetMap contributors &copy; CARTO'
+    : '&copy; OpenStreetMap contributors'
+
+  return L.tileLayer(url, {
+    attribution,
+    maxZoom: 19,
+  })
+}

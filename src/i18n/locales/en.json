@@ -194,7 +194,7 @@
     "gameCode": "Game code",
     "teamCode": "Team code",
     "signingIn": "Login…",
-    "signIn": "Login",
+    "signIn": "Sign in",
     "loginFailed": "Login failed"
   },
   "gamesPage": {
@@ -1366,7 +1366,7 @@
       "perfectForTwo": "Groups that prefer to play straight away rather than hearing a lot of rules first.",
       "perfectForThree": "Tournaments where you want to see a lot of action and clear score differences.",
       "perfectForFour": "Areas with sufficient spread to make route choices relevant.",
-      "ctaTitle": "Ready to put on a quick scoring expedition?",
+      "ctaTitle": "Ready to launch a quick scoring expedition?",
       "ctaText": "Place your nodes, give them character with points and color and let teams experience how addictive a simple but razor-sharp claim loop can be."
     }
   },

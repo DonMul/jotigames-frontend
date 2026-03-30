@@ -96,10 +96,10 @@ export default function ResourceRunNodeFormPage() {
           <form onSubmit={handleSubmit}>
             <div className="form-row"><label htmlFor="node-title">{t('resource_run.admin.node_field_title', {}, 'Title')}</label><input id="node-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="node-type">{t('resource_run.admin.node_field_type', {}, 'Type')}</label><input id="node-type" value={form.resource_type} onChange={(e) => setForm((c) => ({ ...c, resource_type: e.target.value }))} required /></div>
-            <div className="form-row form-row-inline">
+            <div className="form-row">
+              <label>{t('resource_run.admin.node_map_label', {}, 'Node location')}</label>
+              <p className="muted">{t('resource_run.admin.location_map_help', {}, 'Klik op de kaart om de node-locatie te selecteren.')}</p>
               <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('resource_run.admin.node_map_label', {}, 'Node location')} />
-              <div><label htmlFor="node-lat">{t('resource_run.admin.node_field_lat', {}, 'Latitude')}</label><input id="node-lat" type="number" step="0.000001" value={form.latitude} onChange={(e) => setForm((c) => ({ ...c, latitude: e.target.value }))} required /></div>
-              <div><label htmlFor="node-lon">{t('resource_run.admin.node_field_lon', {}, 'Longitude')}</label><input id="node-lon" type="number" step="0.000001" value={form.longitude} onChange={(e) => setForm((c) => ({ ...c, longitude: e.target.value }))} required /></div>
             </div>
             <div className="form-row"><label htmlFor="node-radius">{t('resource_run.admin.node_field_radius', {}, 'Radius')}</label><input id="node-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
             <div className="form-row"><label htmlFor="node-points">{t('resource_run.admin.node_field_points', {}, 'Points')}</label><input id="node-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>

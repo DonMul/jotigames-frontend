@@ -11,7 +11,7 @@ export default function Crazy88SettingsPage() {
   const { t } = useI18n()
 
   const [game, setGame] = useState(null)
-  const [config, setConfig] = useState({ visibility_mode: 'all_visible' })
+  const [config, setConfig] = useState({ visibility_mode: 'all_visible', show_highscore: true })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -25,7 +25,7 @@ export default function Crazy88SettingsPage() {
         moduleApi.getCrazy88Config(auth.token, gameId),
       ])
       setGame(gameRecord)
-      setConfig(configPayload?.config || { visibility_mode: 'all_visible' })
+      setConfig(configPayload?.config || { visibility_mode: 'all_visible', show_highscore: true })
     } catch (err) {
       setError(err.message || t('crazy88.admin.load_failed', {}, 'Failed to load settings'))
     } finally {
@@ -42,6 +42,7 @@ export default function Crazy88SettingsPage() {
     try {
       await moduleApi.updateCrazy88Config(auth.token, gameId, {
         visibility_mode: config.visibility_mode === 'geo_locked' ? 'geo_locked' : 'all_visible',
+        show_highscore: Boolean(config.show_highscore),
       })
       await loadAll()
       setSuccess(t('button.save', {}, 'Saved'))
@@ -82,6 +83,20 @@ export default function Crazy88SettingsPage() {
               <option value="all_visible">{t('crazy88.visibility.all_visible', {}, 'All visible')}</option>
               <option value="geo_locked">{t('crazy88.visibility.geo_locked', {}, 'Geo locked')}</option>
             </select>
+          </div>
+          <div className="form-row">
+            <label className="blindhike-toggle-row" htmlFor="crazy88-show-highscore">
+              <span className="blindhike-toggle-label">{t('crazy88.admin.show_highscore', {}, 'Show highscore')}</span>
+              <span className="game-type-switch">
+                <input
+                  id="crazy88-show-highscore"
+                  type="checkbox"
+                  checked={Boolean(config.show_highscore)}
+                  onChange={(event) => setConfig((current) => ({ ...current, show_highscore: event.target.checked }))}
+                />
+                <span className="game-type-switch-track" aria-hidden="true" />
+              </span>
+            </label>
           </div>
           <button className="btn btn-primary" type="submit">{t('button.save', {}, 'Save')}</button>
         </form>

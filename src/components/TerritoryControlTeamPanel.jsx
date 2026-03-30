@@ -9,6 +9,7 @@ export default function TerritoryControlTeamPanel({
   currentTeamId,
   t,
   onClaimZone,
+  onLocationUpdate,
   claiming = false,
 }) {
   const mapContainerRef = useRef(null)
@@ -44,12 +45,18 @@ export default function TerritoryControlTeamPanel({
   }, [state?.last_actions, currentTeamId])
 
   const nearbyZones = useMemo(() => {
+    const serverNearbyIds = Array.isArray(state?.nearby_zone_ids)
+      ? new Set(state.nearby_zone_ids.map((value) => String(value || '')))
+      : null
+    if (serverNearbyIds) {
+      return zones.filter((zone) => zone.is_active && !claimedIds.has(zone.id) && serverNearbyIds.has(zone.id))
+    }
     if (!currentPosition) return []
     return zones.filter((z) => {
       if (!z.is_active || claimedIds.has(z.id)) return false
       return haversineDistance(currentPosition.latitude, currentPosition.longitude, z.latitude, z.longitude) <= z.radius_meters
     })
-  }, [currentPosition, zones, claimedIds])
+  }, [currentPosition, zones, claimedIds, state?.nearby_zone_ids])
 
   const score = Number(state?.score || state?.score_delta || 0)
 
@@ -70,6 +77,19 @@ export default function TerritoryControlTeamPanel({
     )
     return () => navigator.geolocation.clearWatch(watchId)
   }, [])
+
+  useEffect(() => {
+    if (typeof onLocationUpdate !== 'function' || !currentPosition) {
+      return
+    }
+    onLocationUpdate(currentPosition)
+    const intervalId = window.setInterval(() => {
+      onLocationUpdate(currentPosition)
+    }, 10000)
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [currentPosition, onLocationUpdate])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return

@@ -197,35 +197,15 @@ export default function GeoHunterPoiFormPage() {
               </select>
             </div>
 
-            <div className="form-row form-row-inline">
+            <div className="form-row">
+              <label>{t('geohunter.admin.poi_field_location', {}, 'Location')}</label>
+              <p className="muted">{t('geohunter.admin.poi_map_help', {}, 'Click on the map to place the POI.')}</p>
               <GeoLocationPicker
                 latitude={form.latitude}
                 longitude={form.longitude}
                 onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
                 ariaLabel={t('geohunter.admin.poi_field_title', {}, 'POI location')}
               />
-              <div>
-                <label htmlFor="poi-lat">{t('geohunter.admin.poi_field_lat', {}, 'Latitude')}</label>
-                <input
-                  id="poi-lat"
-                  type="number"
-                  step="0.000001"
-                  value={form.latitude}
-                  onChange={(event) => setForm((current) => ({ ...current, latitude: event.target.value }))}
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="poi-lon">{t('geohunter.admin.poi_field_lon', {}, 'Longitude')}</label>
-                <input
-                  id="poi-lon"
-                  type="number"
-                  step="0.000001"
-                  value={form.longitude}
-                  onChange={(event) => setForm((current) => ({ ...current, longitude: event.target.value }))}
-                  required
-                />
-              </div>
             </div>
 
             <div className="form-row">

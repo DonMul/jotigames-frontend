@@ -152,30 +152,6 @@ export default function BlindHikeConfigurePage() {
               onChange={handleMapPick}
               ariaLabel={t('blindhike.target_location', {}, 'Target location')}
             />
-            <div className="form-row form-row-inline">
-              <div>
-                <label htmlFor="target-lat">{t('blindhike.target_latitude', {}, 'Target latitude')}</label>
-                <p className="muted">{t('blindhike.target_latitude_help', {}, 'Latitude of the hidden end target in decimal degrees.')}</p>
-                <input
-                  id="target-lat"
-                  type="number"
-                  step="0.0000001"
-                  value={config.target_lat}
-                  onChange={(event) => setConfig((current) => ({ ...current, target_lat: event.target.value }))}
-                />
-              </div>
-              <div>
-                <label htmlFor="target-lon">{t('blindhike.target_longitude', {}, 'Target longitude')}</label>
-                <p className="muted">{t('blindhike.target_longitude_help', {}, 'Longitude of the hidden end target in decimal degrees.')}</p>
-                <input
-                  id="target-lon"
-                  type="number"
-                  step="0.0000001"
-                  value={config.target_lon}
-                  onChange={(event) => setConfig((current) => ({ ...current, target_lon: event.target.value }))}
-                />
-              </div>
-            </div>
           </div>
 
           <div className="form-section">

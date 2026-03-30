@@ -9,6 +9,7 @@ export default function EchoHuntTeamPanel({
   currentTeamId,
   t,
   onClaimBeacon,
+  onLocationUpdate,
   claiming = false,
 }) {
   const mapContainerRef = useRef(null)
@@ -45,13 +46,19 @@ export default function EchoHuntTeamPanel({
   }, [state?.last_actions, currentTeamId])
 
   const nearbyBeacons = useMemo(() => {
+    const serverNearbyIds = Array.isArray(state?.nearby_beacon_ids)
+      ? new Set(state.nearby_beacon_ids.map((value) => String(value || '')))
+      : null
+    if (serverNearbyIds) {
+      return beacons.filter((beacon) => beacon.is_active && !claimedIds.has(beacon.id) && serverNearbyIds.has(beacon.id))
+    }
     if (!currentPosition) return []
     return beacons.filter((b) => {
       if (!b.is_active || claimedIds.has(b.id)) return false
       const dist = haversineDistance(currentPosition.latitude, currentPosition.longitude, b.latitude, b.longitude)
       return dist <= b.radius_meters
     })
-  }, [currentPosition, beacons, claimedIds])
+  }, [currentPosition, beacons, claimedIds, state?.nearby_beacon_ids])
 
   const score = Number(state?.score || state?.score_delta || 0)
 
@@ -77,6 +84,19 @@ export default function EchoHuntTeamPanel({
     )
     return () => navigator.geolocation.clearWatch(watchId)
   }, [])
+
+  useEffect(() => {
+    if (typeof onLocationUpdate !== 'function' || !currentPosition) {
+      return
+    }
+    onLocationUpdate(currentPosition)
+    const intervalId = window.setInterval(() => {
+      onLocationUpdate(currentPosition)
+    }, 10000)
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [currentPosition, onLocationUpdate])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return

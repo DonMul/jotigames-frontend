@@ -47,30 +47,30 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4">
+    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4 dark:bg-slate-950">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-bold text-navy-900">{t('auth.createAccount')}</h1>
-          <p className="mt-2 text-navy-500">{t('auth.registerIntro')}</p>
+          <h1 className="font-display text-3xl font-bold text-navy-900 dark:text-white">{t('auth.createAccount')}</h1>
+          <p className="mt-2 text-navy-500 dark:text-slate-400">{t('auth.registerIntro')}</p>
         </div>
 
-        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8">
+        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="registerEmail" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.email')}</label>
-              <input id="registerEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+              <label htmlFor="registerEmail" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.email')}</label>
+              <input id="registerEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerUsername" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.username')}</label>
-              <input id="registerUsername" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+              <label htmlFor="registerUsername" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.username')}</label>
+              <input id="registerUsername" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerPassword" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.password')}</label>
-              <input id="registerPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+              <label htmlFor="registerPassword" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.password')}</label>
+              <input id="registerPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerPasswordConfirm" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.confirmPassword')}</label>
-              <input id="registerPasswordConfirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+              <label htmlFor="registerPasswordConfirm" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.confirmPassword')}</label>
+              <input id="registerPasswordConfirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
 
             {error ? <div className="flash flash-error">{error}</div> : null}
@@ -81,7 +81,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-navy-500 mt-6">
+          <p className="text-center text-sm text-navy-500 mt-6 dark:text-slate-400">
             {t('auth.hasAccount')} <Link to="/login" className="font-medium text-brand-600 hover:text-brand-700">{t('auth.login')}</Link>
           </p>
         </div>

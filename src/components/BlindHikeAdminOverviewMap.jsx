@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { attachUserLocationCentering, toNumberOrNull } from './shared/leafletMapCommon'
+import { attachUserLocationCentering, createLeafletTileLayer, toNumberOrNull } from './shared/leafletMapCommon'
 
 function buildTeamColor(teamId) {
   const raw = String(teamId || '')
@@ -46,10 +46,7 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
     })
     mapRef.current = map
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map)
+    createLeafletTileLayer().addTo(map)
 
     const detachUserCentering = attachUserLocationCentering(map, {
       zoom: 15,

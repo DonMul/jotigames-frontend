@@ -54,20 +54,20 @@ export default function LoginPage({ defaultMode = 'user' }) {
   }
 
   return (
-    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4">
+    <section className="min-h-[70vh] flex items-center justify-center py-16 px-4 dark:bg-slate-950">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-bold text-navy-900">{t('auth.loginTitle')}</h1>
-          <p className="mt-2 text-navy-500">{t('auth.loginSubtitle')}</p>
+          <h1 className="font-display text-3xl font-bold text-navy-900 dark:text-white">{t('auth.loginTitle')}</h1>
+          <p className="mt-2 text-navy-500 dark:text-slate-400">{t('auth.loginSubtitle')}</p>
         </div>
 
-        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8">
+        <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20">
           {/* Mode tabs */}
-          <div className="inline-flex w-full rounded-full border border-warm-200 bg-warm-50 p-1 mb-6">
-            <button type="button" onClick={() => setMode('user')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'user' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900'}`}>
+          <div className="inline-flex w-full rounded-full border border-warm-200 bg-warm-50 p-1 mb-6 dark:border-slate-700 dark:bg-slate-800">
+            <button type="button" onClick={() => setMode('user')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'user' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900 dark:text-slate-300 dark:hover:text-white'}`}>
               {t('auth.user')}
             </button>
-            <button type="button" onClick={() => setMode('team')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'team' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900'}`}>
+            <button type="button" onClick={() => setMode('team')} className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${mode === 'team' ? 'bg-brand-500 text-white shadow-sm' : 'text-navy-600 hover:text-navy-900 dark:text-slate-300 dark:hover:text-white'}`}>
               {t('auth.team')}
             </button>
           </div>
@@ -76,23 +76,23 @@ export default function LoginPage({ defaultMode = 'user' }) {
             {mode === 'user' ? (
               <>
                 <div>
-                  <label htmlFor="email" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.email')}</label>
-                  <input id="email" aria-label={`${t('auth.email')} Email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <label htmlFor="email" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.email')}</label>
+                  <input id="email" aria-label={`${t('auth.email')} Email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.password')}</label>
-                  <input id="password" aria-label={`${t('auth.password')} Password`} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <label htmlFor="password" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.password')}</label>
+                  <input id="password" aria-label={`${t('auth.password')} Password`} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                 </div>
               </>
             ) : (
               <>
                 <div>
-                  <label htmlFor="gameCode" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.gameCode')}</label>
-                  <input id="gameCode" value={gameCode} onChange={(e) => setGameCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <label htmlFor="gameCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.gameCode')}</label>
+                  <input id="gameCode" value={gameCode} onChange={(e) => setGameCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                 </div>
                 <div>
-                  <label htmlFor="teamCode" className="block text-xs font-medium text-navy-600 mb-1.5">{t('auth.teamCode')}</label>
-                  <input id="teamCode" value={teamCode} onChange={(e) => setTeamCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition" />
+                  <label htmlFor="teamCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.teamCode')}</label>
+                  <input id="teamCode" value={teamCode} onChange={(e) => setTeamCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                 </div>
               </>
             )}
@@ -104,7 +104,7 @@ export default function LoginPage({ defaultMode = 'user' }) {
             </button>
           </form>
 
-          <p className="text-center text-sm text-navy-500 mt-6">
+          <p className="text-center text-sm text-navy-500 mt-6 dark:text-slate-400">
             {t('auth.noAccount')} <Link to="/register" className="font-medium text-brand-600 hover:text-brand-700">{t('auth.register')}</Link>
           </p>
         </div>

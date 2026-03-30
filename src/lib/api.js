@@ -369,7 +369,10 @@ export const moduleApi = {
   createCrazy88Task: (token, gameId, body) => apiRequest(`/api/crazy88/${gameId}/tasks`, { method: 'POST', token, body }),
   updateCrazy88Task: (token, gameId, taskId, body) => apiRequest(`/api/crazy88/${gameId}/tasks/${taskId}`, { method: 'PUT', token, body }),
   deleteCrazy88Task: (token, gameId, taskId) => apiRequest(`/api/crazy88/${gameId}/tasks/${taskId}`, { method: 'DELETE', token }),
+  reorderCrazy88Tasks: (token, gameId, ordered_ids) =>
+    apiRequest(`/api/crazy88/${gameId}/tasks/reorder`, { method: 'POST', token, body: { ordered_ids } }),
   getCrazy88Reviews: (token, gameId) => apiRequest(`/api/crazy88/${gameId}/reviews`, { token }),
+  unlockCrazy88Review: (token, gameId) => apiRequest(`/api/crazy88/${gameId}/reviews/unlock`, { method: 'POST', token }),
   judgeCrazy88Submission: (token, gameId, body) => apiRequest(`/api/crazy88/${gameId}/review/judge`, { method: 'POST', token, body }),
   async exportCrazy88Files(token, gameId, grouping = 'team_task') {
     const locale = getCurrentLocale()
@@ -411,6 +414,8 @@ export const moduleApi = {
       token,
       body: { retry_enabled, retry_timeout_seconds },
     }),
+  updateGeoHunterLocation: (token, gameId, teamId, body) =>
+    apiRequest(`/api/geohunter/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),
   getResourceRunNodes: (token, gameId) => apiRequest(`/api/resource-run/${gameId}/nodes`, { token }),
   getResourceRunNode: (token, gameId, nodeId) => apiRequest(`/api/resource-run/${gameId}/nodes/${nodeId}`, { token }),
   createResourceRunNode: (token, gameId, body) => apiRequest(`/api/resource-run/${gameId}/nodes`, { method: 'POST', token, body }),
@@ -423,6 +428,8 @@ export const moduleApi = {
   updateTerritoryZone: (token, gameId, zoneId, body) =>
     apiRequest(`/api/territory-control/${gameId}/zones/${zoneId}`, { method: 'PUT', token, body }),
   deleteTerritoryZone: (token, gameId, zoneId) => apiRequest(`/api/territory-control/${gameId}/zones/${zoneId}`, { method: 'DELETE', token }),
+  updateTerritoryControlLocation: (token, gameId, teamId, body) =>
+    apiRequest(`/api/territory-control/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),
   getBlindHikeConfig: (token, gameId) => apiRequest(`/api/blindhike/${gameId}/config`, { token }),
   updateBlindHikeConfig: (token, gameId, body) => apiRequest(`/api/blindhike/${gameId}/config`, { method: 'PUT', token, body }),
   getCourierRushConfig: (token, gameId) => apiRequest(`/api/courier-rush/${gameId}/config`, { token }),
@@ -443,6 +450,8 @@ export const moduleApi = {
   updateEchoHuntBeacon: (token, gameId, beaconId, body) =>
     apiRequest(`/api/echo-hunt/${gameId}/beacons/${beaconId}`, { method: 'PUT', token, body }),
   deleteEchoHuntBeacon: (token, gameId, beaconId) => apiRequest(`/api/echo-hunt/${gameId}/beacons/${beaconId}`, { method: 'DELETE', token }),
+  updateEchoHuntLocation: (token, gameId, teamId, body) =>
+    apiRequest(`/api/echo-hunt/${gameId}/teams/${teamId}/location/update`, { method: 'POST', token, body }),
   getCheckpointHeistCheckpoints: (token, gameId) => apiRequest(`/api/checkpoint-heist/${gameId}/checkpoints`, { token }),
   createCheckpointHeistCheckpoint: (token, gameId, body) =>
     apiRequest(`/api/checkpoint-heist/${gameId}/checkpoints`, { method: 'POST', token, body }),

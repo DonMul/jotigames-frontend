@@ -81,7 +81,7 @@ export default function GamePage() {
       territory_control: t('gamePage.manageZones'),
       market_crash: t('gamePage.managePoints'),
       crazy_88: t('gamePage.manageTasks'),
-      courier_rush: t('gamePage.configure'),
+      courier_rush: t('gamePage.manageCourierPoints', {}, 'Drop off and Pick Up points'),
       echo_hunt: t('gamePage.manageBeacons'),
       checkpoint_heist: t('gamePage.manageCheckpoints'),
       pandemic_response: t('gamePage.manageHotspots'),
@@ -193,7 +193,7 @@ export default function GamePage() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-center gap-4 mb-8">
         <div className="shrink-0">
@@ -206,8 +206,8 @@ export default function GamePage() {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-navy-900 truncate">{game?.name || t('gamePage.fallbackTitle')}</h1>
-          <p className="text-sm text-gray-500">{localizedGameTypeName}</p>
+          <h1 className="text-2xl font-bold text-navy-900 truncate dark:text-white">{game?.name || t('gamePage.fallbackTitle')}</h1>
+          <p className="text-sm text-gray-500 dark:text-slate-400">{localizedGameTypeName}</p>
         </div>
         <Link className="btn btn-ghost" to="/admin/games">
           {t('gamePage.backToGames')}
@@ -216,28 +216,28 @@ export default function GamePage() {
 
       {/* ── Stat cards ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.type')}</span>
-          <span className="text-base font-semibold text-navy-900">{localizedGameTypeName}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.type')}</span>
+          <span className="text-base font-semibold text-navy-900 dark:text-white">{localizedGameTypeName}</span>
         </article>
-        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.code')}</span>
-          <span className="text-base font-semibold text-navy-900 font-mono tracking-wide">{game?.code || '-'}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.code')}</span>
+          <span className="text-base font-semibold text-navy-900 font-mono tracking-wide dark:text-white">{game?.code || '-'}</span>
         </article>
-        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.starts')}</span>
-          <span className="text-base font-semibold text-navy-900">{formatDate(game?.start_at)}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.starts')}</span>
+          <span className="text-base font-semibold text-navy-900 dark:text-white">{formatDate(game?.start_at)}</span>
         </article>
-        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{t('gamePage.ends')}</span>
-          <span className="text-base font-semibold text-navy-900">{formatDate(game?.end_at)}</span>
+        <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.ends')}</span>
+          <span className="text-base font-semibold text-navy-900 dark:text-white">{formatDate(game?.end_at)}</span>
         </article>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {/* ── Quick actions ───────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-8">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-8 dark:border-slate-700 dark:bg-slate-900">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {gameTypeActionLabel && gameTypeActionPath ? (
             <Link className="btn btn-primary btn-small" to={gameTypeActionPath}>
@@ -247,6 +247,11 @@ export default function GamePage() {
           {gameTypeSettingsPath ? (
             <Link className="btn btn-ghost btn-small" to={gameTypeSettingsPath}>
               {t('gamePage.settings', {}, 'Settings')}
+            </Link>
+          ) : null}
+          {game?.game_type === 'market_crash' ? (
+            <Link className="btn btn-ghost btn-small" to={`/admin/market-crash/${gameId}/resources`}>
+              {t('gamePage.manageResources', {}, 'Manage resources')}
             </Link>
           ) : null}
           <Link className="inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-navy-800 transition-colors" to={`/admin/games/${gameId}/live-overview`}>
@@ -259,7 +264,7 @@ export default function GamePage() {
             </Link>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100 dark:border-slate-700">
           <div className="flex items-center gap-2">
             <Link className="btn btn-ghost btn-small" to={`/admin/games/${gameId}/bulk-tools`}>
               {t('gamePage.bulkTools')}
@@ -282,9 +287,9 @@ export default function GamePage() {
       {/* ── Members + Teams two-column ──────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Managers */}
-        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 dark:border-slate-700 dark:bg-slate-900">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-navy-900">{t('gamePage.managersTitle')}</h2>
+            <h2 className="text-lg font-semibold text-navy-900 dark:text-white">{t('gamePage.managersTitle')}</h2>
             <Link
               className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors"
               to={`/admin/games/${gameId}/members/new`}
@@ -293,7 +298,7 @@ export default function GamePage() {
               {t('gamePage.addMember')}
             </Link>
           </div>
-          {members.length === 0 ? <p className="text-sm text-gray-400">{t('gamePage.noMembers')}</p> : null}
+          {members.length === 0 ? <p className="text-sm text-gray-400 dark:text-slate-500">{t('gamePage.noMembers')}</p> : null}
           {members.length > 0 ? (
             <table className="admin-table">
               <thead>
@@ -334,7 +339,7 @@ export default function GamePage() {
                               </button>
                             </>
                           ) : (
-                            <span className="text-gray-400 text-sm">—</span>
+                            <span className="text-gray-400 text-sm dark:text-slate-500">—</span>
                           )}
                         </div>
                       </td>
@@ -347,9 +352,9 @@ export default function GamePage() {
         </section>
 
         {/* Teams */}
-        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 dark:border-slate-700 dark:bg-slate-900">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-navy-900">{t('gamePage.teams')}</h2>
+            <h2 className="text-lg font-semibold text-navy-900 dark:text-white">{t('gamePage.teams')}</h2>
             <Link
               className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors"
               to={`/admin/games/${gameId}/teams/new`}
@@ -358,7 +363,7 @@ export default function GamePage() {
               {t('gamePage.addTeam')}
             </Link>
           </div>
-          {teams.length === 0 ? <p className="text-sm text-gray-400">{t('gamePage.noTeams')}</p> : null}
+          {teams.length === 0 ? <p className="text-sm text-gray-400 dark:text-slate-500">{t('gamePage.noTeams')}</p> : null}
           {teams.length > 0 ? (
             <table className="admin-table">
               <thead>

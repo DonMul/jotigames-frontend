@@ -17,7 +17,7 @@ const DEFAULT_THEME = {
   ctaSecondaryClass: 'border-navy-200 hover:border-brand-300 hover:text-brand-600',
 }
 
-export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isAuthenticated, t, content }) {
+export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isAuthenticated, showPricingCta = false, t, content }) {
   const theme = { ...DEFAULT_THEME, ...(content?.theme || {}) }
   const howToPlayId = content?.howToPlayId || `${game?.slug || 'game'}-how-to-play`
   const panelPoints = Array.isArray(content?.panelPoints) ? content.panelPoints.filter(Boolean) : []
@@ -92,43 +92,43 @@ export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isA
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${theme.battleBadgeClass}`}>
               {content.battleKicker}
             </span>
-            <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">{content.battleTitle}</h2>
-            <p className="mt-4 text-lg leading-relaxed text-navy-500">{content.battleText}</p>
+            <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">{content.battleTitle}</h2>
+            <p className="mt-4 text-lg leading-relaxed text-navy-500 dark:text-slate-400">{content.battleText}</p>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {features.map((card) => (
-              <article key={card.title} className="group rounded-3xl border border-warm-200 bg-warm-50/70 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10">
+              <article key={card.title} className="group rounded-3xl border border-warm-200 bg-warm-50/70 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
                 <span className="text-3xl">{card.icon}</span>
-                <h3 className="mt-4 font-display text-xl font-bold text-navy-900">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-navy-600">{card.text}</p>
+                <h3 className="mt-4 font-display text-xl font-bold text-navy-900 dark:text-white">{card.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-navy-600 dark:text-slate-300">{card.text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id={howToPlayId} className="bg-gradient-to-b from-warm-50 to-white py-16 sm:py-24">
+      <section id={howToPlayId} className="bg-gradient-to-b from-warm-50 to-white py-16 sm:py-24 dark:from-slate-900 dark:to-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
             <div>
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] shadow-sm ring-1 ${theme.howBadgeClass}`}>
                 {content.howKicker}
               </span>
-              <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl">{content.howTitle}</h2>
-              <p className="mt-4 text-lg leading-relaxed text-navy-500">{content.howText}</p>
+              <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">{content.howTitle}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-navy-500 dark:text-slate-400">{content.howText}</p>
 
-              <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm">
-                <h3 className="font-display text-lg font-bold text-navy-900">{content.playStylesTitle}</h3>
+              <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{content.playStylesTitle}</h3>
                 <ul className="mt-4 space-y-3">
                   {playStyles.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600">
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600 dark:text-slate-300">
                       <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${theme.perfectDotClass}`} />
                       {item}
                     </li>
@@ -139,14 +139,14 @@ export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isA
 
             <div className="grid gap-5">
               {flow.map((step) => (
-                <div key={step.number} className="rounded-3xl border border-warm-200 bg-white p-6 shadow-sm transition-all hover:border-brand-200 hover:shadow-lg">
+                <div key={step.number} className="rounded-3xl border border-warm-200 bg-white p-6 shadow-sm transition-all hover:border-brand-200 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
                   <div className="flex items-start gap-4">
                     <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-display text-lg font-bold text-white shadow-lg ${theme.howStepClass}`}>
                       {step.number}
                     </div>
                     <div>
-                      <h3 className="font-display text-lg font-bold text-navy-900">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-navy-600">{step.text}</p>
+                      <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-navy-600 dark:text-slate-300">{step.text}</p>
                     </div>
                   </div>
                 </div>
@@ -179,21 +179,21 @@ export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isA
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[2rem] border border-warm-200 bg-gradient-to-br from-warm-50 via-white to-brand-50 p-8 shadow-sm sm:p-10">
+          <div className="rounded-[2rem] border border-warm-200 bg-gradient-to-br from-warm-50 via-white to-brand-50 p-8 shadow-sm sm:p-10 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
             <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
               <div>
                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${theme.perfectBadgeClass}`}>
                   {content.perfectForKicker}
                 </span>
-                <h2 className="mt-4 font-display text-3xl font-bold text-navy-900">{content.perfectForTitle}</h2>
-                <p className="mt-4 text-base leading-relaxed text-navy-500">{content.perfectForText}</p>
+                <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 dark:text-white">{content.perfectForTitle}</h2>
+                <p className="mt-4 text-base leading-relaxed text-navy-500 dark:text-slate-400">{content.perfectForText}</p>
               </div>
 
               <ul className="space-y-4">
                 {perfectFor.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm leading-relaxed text-navy-700 shadow-sm">
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm leading-relaxed text-navy-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                     <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${theme.perfectDotClass}`} />
                     {item}
                   </li>
@@ -204,10 +204,10 @@ export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isA
         </div>
       </section>
 
-      <section className="bg-gradient-to-b from-white to-warm-50 py-16 sm:py-20">
+      <section className="bg-gradient-to-b from-white to-warm-50 py-16 sm:py-20 dark:from-slate-950 dark:to-slate-900">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl font-bold text-navy-900 sm:text-4xl">{content.ctaTitle}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-navy-500">{content.ctaText}</p>
+          <h2 className="font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">{content.ctaTitle}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-navy-500 dark:text-slate-400">{content.ctaText}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             {isAuthenticated ? (
               <Link to="/admin/games" className={`inline-flex items-center rounded-full px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-all ${theme.ctaPrimaryClass}`}>
@@ -218,9 +218,11 @@ export default function DetailedGameInfoPage({ game, gameName, gameSubtitle, isA
                 {t('gameInfo.getStarted')}
               </Link>
             )}
-            <Link to="/pricing" className={`inline-flex items-center rounded-full border-2 px-8 py-3.5 text-sm font-semibold text-navy-700 transition-all ${theme.ctaSecondaryClass}`}>
-              {content.ctaSecondary}
-            </Link>
+            {showPricingCta ? (
+              <Link to="/pricing" className={`inline-flex items-center rounded-full border-2 px-8 py-3.5 text-sm font-semibold text-navy-700 transition-all dark:text-slate-200 dark:border-slate-600 ${theme.ctaSecondaryClass}`}>
+                {content.ctaSecondary}
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
