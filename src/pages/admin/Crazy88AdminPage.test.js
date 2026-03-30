@@ -34,16 +34,9 @@ describe('Crazy88AdminPage', () => {
     expect(listSource).toContain('moduleApi.deleteCrazy88Task')
   })
 
-  it('supports task judging', () => {
-    expect(listSource).toContain('moduleApi.judgeCrazy88Submission')
-  })
-
-  it('supports file export', () => {
-    expect(listSource).toContain('moduleApi.exportCrazy88Files')
-  })
-
-  it('supports review loading', () => {
-    expect(listSource).toContain('moduleApi.getCrazy88Reviews')
+  it('does not include judging UI on tasks page', () => {
+    expect(listSource).not.toContain('moduleApi.judgeCrazy88Submission')
+    expect(listSource).not.toContain('moduleApi.getCrazy88Reviews')
   })
 
   it('uses auth context for API calls', () => {

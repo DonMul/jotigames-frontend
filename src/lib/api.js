@@ -374,6 +374,41 @@ export const moduleApi = {
   getCrazy88Reviews: (token, gameId) => apiRequest(`/api/crazy88/${gameId}/reviews`, { token }),
   unlockCrazy88Review: (token, gameId) => apiRequest(`/api/crazy88/${gameId}/reviews/unlock`, { method: 'POST', token }),
   judgeCrazy88Submission: (token, gameId, body) => apiRequest(`/api/crazy88/${gameId}/review/judge`, { method: 'POST', token, body }),
+  async submitCrazy88Task(token, gameId, teamId, payload = {}) {
+    const locale = getCurrentLocale()
+    const formData = new FormData()
+    formData.append('task_id', String(payload?.task_id || '').trim())
+    if (String(payload?.team_message || '').trim()) {
+      formData.append('team_message', String(payload.team_message).trim())
+    }
+    if (String(payload?.proof_text || '').trim()) {
+      formData.append('proof_text', String(payload.proof_text).trim())
+    }
+    if (payload?.proof_file instanceof File) {
+      formData.append('proof_file', payload.proof_file)
+    }
+
+    const response = await fetch(toApiUrl(`/api/crazy88/${gameId}/teams/${teamId}/task/submit`), {
+      method: 'POST',
+      headers: {
+        'X-Locale': locale,
+        'Accept-Language': locale,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    })
+
+    const responsePayload = await parseJsonSafe(response)
+    if (!response.ok) {
+      const message = responsePayload?.message || responsePayload?.detail || `Request failed (${response.status})`
+      const error = new Error(message)
+      error.status = response.status
+      error.payload = responsePayload
+      throw error
+    }
+
+    return responsePayload
+  },
   async exportCrazy88Files(token, gameId, grouping = 'team_task') {
     const locale = getCurrentLocale()
     const response = await fetch(toApiUrl(`/api/crazy88/${gameId}/exports/files`), {

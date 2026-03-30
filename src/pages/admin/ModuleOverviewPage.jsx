@@ -31,6 +31,10 @@ const EK_STATE_TO_FLAG = {
   attack: 'pending_attack',
 }
 
+const CRAZY88_INLINE_PREVIEW_MAX_BYTES = 20 * 1024 * 1024
+const CRAZY88_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'avif'])
+const CRAZY88_VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'mov', 'm4v'])
+
 export default function ModuleOverviewPage() {
   const { gameId } = useParams()
   const { auth } = useAuth()
@@ -42,6 +46,7 @@ export default function ModuleOverviewPage() {
   const [overview, setOverview] = useState(null)
   const [moduleDetails, setModuleDetails] = useState(null)
   const [crazy88Reviews, setCrazy88Reviews] = useState({ pending_count: 0, has_assigned_submission: false, threads: [] })
+  const [crazy88JudgeMessages, setCrazy88JudgeMessages] = useState({})
   const [explodingHandByTeam, setExplodingHandByTeam] = useState({})
   const [explodingPendingActionsByTeam, setExplodingPendingActionsByTeam] = useState({})
   const [loading, setLoading] = useState(false)
@@ -75,6 +80,105 @@ export default function ModuleOverviewPage() {
     return parsed.toLocaleString()
   }
 
+  function resolveProofUrl(proofPath) {
+    const value = String(proofPath || '').trim()
+    if (!value) {
+      return ''
+    }
+    if (/^(https?:|blob:|data:)/i.test(value)) {
+      return value
+    }
+    return toAssetUrl(value)
+  }
+
+  function getProofPreviewType(submission) {
+    const mimeType = String(submission?.proof_mime_type || '').toLowerCase()
+    if (mimeType.startsWith('image/')) {
+      return 'image'
+    }
+    if (mimeType.startsWith('video/')) {
+      return 'video'
+    }
+    if (mimeType === 'application/pdf') {
+      return 'pdf'
+    }
+    const rawName = String(submission?.proof_original_name || submission?.proof_path || '')
+    const extension = rawName.includes('.') ? rawName.split('.').pop().toLowerCase() : ''
+    if (CRAZY88_IMAGE_EXTENSIONS.has(extension)) {
+      return 'image'
+    }
+    if (CRAZY88_VIDEO_EXTENSIONS.has(extension)) {
+      return 'video'
+    }
+    if (extension === 'pdf') {
+      return 'pdf'
+    }
+    return null
+  }
+
+  function canInlinePreviewProof(submission) {
+    const size = Number(submission?.proof_size || 0)
+    if (size > CRAZY88_INLINE_PREVIEW_MAX_BYTES) {
+      return false
+    }
+    return Boolean(getProofPreviewType(submission))
+  }
+
+  function renderCrazy88SubmissionProof(submission) {
+    if (!submission?.proof_path) {
+      return null
+    }
+    const proofUrl = resolveProofUrl(submission.proof_path)
+    if (!proofUrl) {
+      return null
+    }
+    const previewType = getProofPreviewType(submission)
+    const inlinePreview = canInlinePreviewProof(submission)
+    const fileName = submission.proof_original_name || t('crazy88.team.proof_file_default', {}, 'Proof file')
+    const tooLargeForPreview = Number(submission?.proof_size || 0) > CRAZY88_INLINE_PREVIEW_MAX_BYTES
+
+    return (
+      <div className="space-y-2">
+        <a
+          className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300"
+          href={proofUrl}
+          target="_blank"
+          rel="noreferrer"
+          download={!inlinePreview ? fileName : undefined}
+        >
+          {inlinePreview
+            ? t('crazy88.admin.open_file_new_tab', {}, 'Open full file in new tab')
+            : `⬇ ${t('crazy88.admin.download_file', {}, 'Download file')}`}
+          {`: ${fileName}`}
+        </a>
+
+        {tooLargeForPreview ? (
+          <p className="text-xs text-gray-500 dark:text-slate-400">
+            {t('crazy88.admin.preview_too_large', {}, 'Inline preview hidden because the file is too large.')}
+          </p>
+        ) : null}
+
+        {inlinePreview && previewType === 'image' ? (
+          <a href={proofUrl} target="_blank" rel="noreferrer" className="block">
+            <img src={proofUrl} alt={fileName} className="max-h-72 w-auto max-w-full rounded-lg border border-gray-200 object-contain dark:border-slate-700" loading="lazy" />
+          </a>
+        ) : null}
+
+        {inlinePreview && previewType === 'video' ? (
+          <video className="max-h-72 w-full rounded-lg border border-gray-200 bg-black dark:border-slate-700" controls preload="metadata">
+            <source src={proofUrl} type={submission?.proof_mime_type || undefined} />
+          </video>
+        ) : null}
+
+        {inlinePreview && previewType === 'pdf' ? (
+          <a href={proofUrl} target="_blank" rel="noreferrer" className="block">
+            <iframe title={fileName} src={proofUrl} className="h-72 w-full rounded-lg border border-gray-200 bg-white dark:border-slate-700" />
+          </a>
+        ) : null}
+      </div>
+    )
+  }
+
   const sortedTeams = [...teams].sort((a, b) => {
     const left = isBlindHike
       ? Number(a?.blindhike_markers ?? a?.markers ?? 0)
@@ -104,6 +208,9 @@ export default function ModuleOverviewPage() {
         location_updated_at: team?.location_updated_at || null,
       }))
     : []
+  const hideOverviewDataForCrazy88 = isCrazy88
+    && moduleDetails?.kind === 'crazy_88'
+    && !Boolean(moduleDetails?.config?.show_highscore ?? true)
 
   function getTeamNameById(teamId) {
     const normalizedTeamId = String(teamId || '').trim()
@@ -1094,6 +1201,35 @@ export default function ModuleOverviewPage() {
     }
   }, [auth?.token, gameId, isBirdsOfPrey, isBlindHike, isExplodingKittens, isMarketCrash])
 
+  useEffect(() => {
+    if (!auth?.token || !gameId) {
+      return
+    }
+    if (!isCrazy88 || moduleDetails?.kind !== 'crazy_88') {
+      return
+    }
+    if (crazy88Reviews?.has_assigned_submission) {
+      return
+    }
+
+    let cancelled = false
+    const refresh = async () => {
+      try {
+        const payload = await moduleApi.getCrazy88Reviews(auth.token, gameId)
+        if (!cancelled) {
+          setCrazy88Reviews(payload || { pending_count: 0, has_assigned_submission: false, threads: [] })
+        }
+      } catch {
+      }
+    }
+
+    const intervalId = window.setInterval(refresh, 5000)
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [auth?.token, gameId, isCrazy88, moduleDetails?.kind, crazy88Reviews?.has_assigned_submission])
+
   async function handleCreateTeam(event) {
     event.preventDefault()
     try {
@@ -1156,12 +1292,22 @@ export default function ModuleOverviewPage() {
     }
   }
 
-  async function handleJudgeCrazy88Submission(teamId, submissionId, accepted) {
+  async function handleJudgeCrazy88Submission(teamId, submissionId, accepted, judgeMessage = '') {
     try {
       await moduleApi.submitAdminAction(auth.token, 'crazy_88', gameId, {
         team_id: String(teamId || ''),
         submission_id: String(submissionId || ''),
         accepted: Boolean(accepted),
+        judge_message: String(judgeMessage || '').trim() || undefined,
+      })
+      setCrazy88JudgeMessages((current) => {
+        const key = `${String(teamId || '')}:${String(submissionId || '')}`
+        if (!(key in current)) {
+          return current
+        }
+        const next = { ...current }
+        delete next[key]
+        return next
       })
       await loadAll()
     } catch (err) {
@@ -1174,7 +1320,7 @@ export default function ModuleOverviewPage() {
       await moduleApi.unlockCrazy88Review(auth.token, gameId)
       window.location.assign(`/admin/games/${gameId}`)
     } catch (err) {
-      setError(err.message || t('crazy88.review.unlockFailed', {}, 'Failed to unlock review'))
+      setError(err.message || t('crazy88.admin.unlock_failed', {}, 'Failed to unlock review'))
     }
   }
 
@@ -1272,12 +1418,13 @@ export default function ModuleOverviewPage() {
           </section>
         ) : null}
 
-        <section className="overview-panel">
-          <h2>{t('moduleOverview.overviewData')}</h2>
-          {sortedTeams.length === 0 ? <p>{t('gamePage.noTeams', {}, 'No teams')}</p> : null}
-          {sortedTeams.length > 0 ? (
-            <section className="overview-grid overview-grid-ek" id="overview-grid">
-              {sortedTeams.map((team) => {
+        {!hideOverviewDataForCrazy88 ? (
+          <section className="overview-panel">
+            <h2>{t('moduleOverview.overviewData')}</h2>
+            {sortedTeams.length === 0 ? <p>{t('gamePage.noTeams', {}, 'No teams')}</p> : null}
+            {sortedTeams.length > 0 ? (
+              <section className="overview-grid overview-grid-ek" id="overview-grid">
+                {sortedTeams.map((team) => {
                 const markers = Number(team?.blindhike_markers ?? team?.markers ?? 0)
                 const lives = Number(team?.lives || 0)
                 const score = Number(team?.score ?? team?.geo_score ?? 0)
@@ -1387,10 +1534,11 @@ export default function ModuleOverviewPage() {
                     </div>
                   </article>
                 )
-              })}
-            </section>
-          ) : null}
-        </section>
+                })}
+              </section>
+            ) : null}
+          </section>
+        ) : null}
 
         {game?.game_type === 'geohunter' && moduleDetails?.kind === 'geohunter' ? (
           <section className="overview-panel">
@@ -1629,55 +1777,17 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'crazy_88' && moduleDetails?.kind === 'crazy_88' ? (
           <section className="overview-panel">
-            <h2>{t('crazy88.admin.tasks_subtitle', {}, 'Crazy88 live state')}</h2>
-            <table className="admin-table">
-              <tbody>
-                <tr>
-                  <th>{t('moduleOverview.teamCount', {}, 'Teams')}</th>
-                  <td>{liveOverviewTeams.length}</td>
-                </tr>
-                <tr>
-                  <th>{t('crazy88.admin.review_subtitle', { count: crazy88Reviews?.pending_count || 0 }, 'Pending reviews')}</th>
-                  <td>{Number(crazy88Reviews?.pending_count || 0)}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h3 style={{ marginTop: '1rem' }}>{t('teamDashboard.highscore', {}, 'Highscore')}</h3>
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>{t('moduleOverview.teamName', {}, 'Team')}</th>
-                  <th>{t('moduleOverview.score', {}, 'Score')}</th>
-                  <th>{t('moduleOverview.updatedAt', {}, 'Updated')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {liveOverviewTeams
-                  .slice()
-                  .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
-                  .map((team) => (
-                  <tr key={team.team_id || team.id}>
-                    <td>{team.name || '-'}</td>
-                    <td>{Number(team.score || 0)}</td>
-                    <td>{formatDate(team.location_updated_at)}</td>
-                  </tr>
-                ))}
-                {liveOverviewTeams.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="muted">{t('moduleOverview.noTeams', {}, 'No teams')}</td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-
-            <h3 style={{ marginTop: '1rem' }}>{t('moduleOverview.crazyReview', {}, 'Crazy 88 review')}</h3>
+            <h2>{t('crazy88.admin.review_subtitle', { count: crazy88Reviews?.pending_count || 0 }, 'Pending reviews')}</h2>
             {!crazy88Reviews?.has_assigned_submission ? (
               <p className="muted">{t('crazy88.admin.review_empty', {}, 'No submission assigned right now')}</p>
             ) : null}
             {crazy88Reviews?.has_assigned_submission ? (
-              <button className="btn btn-ghost btn-small" type="button" onClick={handleUnlockCrazy88Review}>
-                {t('crazy88.review.unlock', {}, 'Unlock review assignment')}
+              <button
+                className="btn btn-small border-2 border-indigo-400 bg-indigo-50 font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-500 dark:bg-indigo-900/40 dark:text-indigo-200"
+                type="button"
+                onClick={handleUnlockCrazy88Review}
+              >
+                {t('crazy88.admin.unlock_review_assignment', {}, 'Unlock review assignment')}
               </button>
             ) : null}
             <div className="geo-layout" style={{ marginTop: '1rem' }}>
@@ -1686,32 +1796,81 @@ export default function ModuleOverviewPage() {
                   <h3>{thread.task_title} · {thread.team_name}</h3>
                   <p className="muted">{t('crazy88.admin.task_points', { points: thread.task_points || 0 }, `Points: ${thread.task_points || 0}`)}</p>
 
-                  <div className="crazy88-chat">
-                    {(thread.submissions || []).map((submission) => (
-                      <article key={submission.id} className="geo-card">
-                        <p className="muted">{submission.submitted_at || '-'}</p>
-                        <p><strong>{submission.status || 'pending'}</strong></p>
-                        {submission.team_message ? <p>{submission.team_message}</p> : null}
-                        {submission.proof_text ? <p>{submission.proof_text}</p> : null}
-                        {submission.proof_path ? (
-                          <p><a href={submission.proof_path} target="_blank" rel="noreferrer">{submission.proof_original_name || t('crazy88.team.proof_file_default', {}, 'Proof file')}</a></p>
-                        ) : null}
-                        {submission.reviewed_at ? (
-                          <p className="muted">{submission.reviewed_at}{submission.judge_message ? ` · ${submission.judge_message}` : ''}</p>
-                        ) : null}
-                        {submission.status === 'pending' ? (
-                          <div className="table-actions-inline">
-                            <button className="btn btn-primary btn-small" type="button" onClick={() => handleJudgeCrazy88Submission(thread.team_id, submission.id, true)}>
-                              {t('crazy88.admin.accept', {}, 'Accept')}
-                            </button>
-                            <button className="btn btn-remove btn-small" type="button" onClick={() => handleJudgeCrazy88Submission(thread.team_id, submission.id, false)}>
-                              {t('crazy88.admin.reject', {}, 'Reject')}
-                            </button>
+                  {(() => {
+                    const orderedSubmissions = [...(Array.isArray(thread.submissions) ? thread.submissions : [])].sort((left, right) => {
+                      const leftTime = Date.parse(left?.submitted_at || left?.reviewed_at || '')
+                      const rightTime = Date.parse(right?.submitted_at || right?.reviewed_at || '')
+                      const leftValid = Number.isFinite(leftTime)
+                      const rightValid = Number.isFinite(rightTime)
+                      if (leftValid && rightValid && rightTime !== leftTime) {
+                        return rightTime - leftTime
+                      }
+                      return String(right?.id || '').localeCompare(String(left?.id || ''))
+                    })
+                    const pendingSubmission = orderedSubmissions.find((submission) => String(submission?.status || '').toLowerCase() === 'pending') || null
+                    const pendingSubmissionKey = pendingSubmission
+                      ? `${String(thread.team_id || '')}:${String(pendingSubmission.id || '')}`
+                      : ''
+                    const judgeMessageDraft = pendingSubmissionKey
+                      ? String(crazy88JudgeMessages[pendingSubmissionKey] || '')
+                      : ''
+
+                    return (
+                      <>
+                        <div className="crazy88-chat mt-2 max-h-[32rem] space-y-3 overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800">
+                          {orderedSubmissions.map((submission) => (
+                            <div key={submission.id} className="space-y-2">
+                              <article className="max-w-[95%] rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm shadow-sm dark:border-brand-700 dark:bg-brand-900/30 dark:text-slate-100">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">{submission.submitted_at || '-'}</p>
+                                {submission.team_message ? <p>{submission.team_message}</p> : null}
+                                {submission.proof_text ? <p>{submission.proof_text}</p> : null}
+                                {renderCrazy88SubmissionProof(submission)}
+                              </article>
+
+                              <article className="ml-auto max-w-[95%] rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                                <p className="text-xs text-gray-500 dark:text-slate-400">{submission.reviewed_at || '-'}</p>
+                                <p><strong>{t(`crazy88.team.status_${submission.status || 'pending'}`, {}, submission.status || 'pending')}</strong></p>
+                                {submission.judge_message ? <p>{submission.judge_message}</p> : null}
+                              </article>
+                            </div>
+                          ))}
+                        </div>
+
+                        {pendingSubmission ? (
+                          <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                            <label className="block text-sm font-medium text-navy-900 dark:text-slate-100">
+                              <span>{t('crazy88.admin.judge_message_label', {}, 'Message to team (optional)')}</span>
+                              <textarea
+                                className="input mt-1 w-full"
+                                rows={2}
+                                value={judgeMessageDraft}
+                                onChange={(event) => {
+                                  const nextValue = event.target.value
+                                  setCrazy88JudgeMessages((current) => ({
+                                    ...current,
+                                    [pendingSubmissionKey]: nextValue,
+                                  }))
+                                }}
+                                placeholder={t('crazy88.admin.judge_message_placeholder', {}, 'Explain why this was accepted or rejected…')}
+                              />
+                            </label>
+                            <div className="table-actions-inline">
+                              <button
+                                className="btn btn-small border-2 border-emerald-500 bg-emerald-100 font-semibold text-emerald-800 hover:bg-emerald-200 dark:border-emerald-500 dark:bg-emerald-900/40 dark:text-emerald-200"
+                                type="button"
+                                onClick={() => handleJudgeCrazy88Submission(thread.team_id, pendingSubmission.id, true, judgeMessageDraft)}
+                              >
+                                {t('crazy88.admin.accept', {}, 'Accept')}
+                              </button>
+                              <button className="btn btn-remove btn-small" type="button" onClick={() => handleJudgeCrazy88Submission(thread.team_id, pendingSubmission.id, false, judgeMessageDraft)}>
+                                {t('crazy88.admin.reject', {}, 'Reject')}
+                              </button>
+                            </div>
                           </div>
                         ) : null}
-                      </article>
-                    ))}
-                  </div>
+                      </>
+                    )
+                  })()}
                 </section>
               ))}
             </div>

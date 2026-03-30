@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 
 const BlindHikeTeamPanel = lazy(() => import('../../components/BlindHikeTeamPanel'))
 const BirdsOfPreyTeamPanel = lazy(() => import('../../components/BirdsOfPreyTeamPanel'))
@@ -297,6 +297,7 @@ function formatActionCountdownLabel(remainingSeconds, t) {
 export default function TeamDashboardPage() {
   const { auth } = useAuth()
   const { t } = useI18n()
+  const { taskId: crazy88TaskIdParam } = useParams()
 
   const [bootstrap, setBootstrap] = useState(null)
   const [state, setState] = useState(null)
@@ -1750,13 +1751,18 @@ export default function TeamDashboardPage() {
     }
   }
 
-  async function handleSubmitCrazy88Task(taskId, message) {
+  async function handleSubmitCrazy88Task(taskId, payload = {}) {
     if (!isCrazy88 || !gameId || !teamId) return
     setActionError('')
     setActionSuccess('')
     setSubmittingTask(true)
     try {
-      const result = await moduleApi.submitAction(auth.token, 'crazy_88', gameId, teamId, { task_id: taskId, message })
+      const result = await moduleApi.submitCrazy88Task(auth.token, gameId, teamId, {
+        task_id: taskId,
+        team_message: String(payload?.team_message || '').trim() || undefined,
+        proof_text: String(payload?.proof_text || '').trim() || undefined,
+        proof_file: payload?.proof_file instanceof File ? payload.proof_file : undefined,
+      })
       setActionSuccess(String(result?.message_key || t('crazy88.task.submitted', {}, 'Task submitted')))
       await refreshState()
     } catch (err) {
@@ -2104,7 +2110,7 @@ export default function TeamDashboardPage() {
               <h1>{bootstrap?.team_name || t('teamDashboard.heading', {}, 'Team dashboard')}</h1>
               <p className="overview-subtitle">{bootstrap?.game_name || '-'}</p>
               <div className="overview-actions">
-                <Link className="btn btn-ghost" to="/team/edit">
+                <Link className="btn btn-primary" to="/team/edit">
                   {t('teamDashboard.editTeam', {}, 'Edit team')}
                 </Link>
               </div>
@@ -2474,6 +2480,8 @@ export default function TeamDashboardPage() {
                 t={t}
                 onSubmitTask={handleSubmitCrazy88Task}
                 submitting={submittingTask}
+                selectedTaskId={crazy88TaskIdParam ? decodeURIComponent(crazy88TaskIdParam) : ''}
+                detailBasePath="/team/crazy88/tasks"
               />
             </Suspense>
           ) : null}

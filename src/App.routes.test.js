@@ -14,6 +14,7 @@ const expectedRoutes = [
   '/team-login',
   '/info/games/:slug',
   '/team',
+  '/team/crazy88/tasks/:taskId',
   '/team/edit',
   '/team/scan/:qrToken',
   '/admin/games',

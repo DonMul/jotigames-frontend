@@ -213,6 +213,10 @@ function AppRoutes() {
           element={renderProtected(<TeamDashboardPage />)}
         />
         <Route
+          path="/team/crazy88/tasks/:taskId"
+          element={renderProtected(<TeamDashboardPage />)}
+        />
+        <Route
           path="/team/edit"
           element={renderProtected(<TeamEditPage />)}
         />

@@ -21,6 +21,8 @@ describe('Crazy88TeamPanel', () => {
       't',
       'onSubmitTask',
       'submitting',
+      'selectedTaskId',
+      'detailBasePath',
     ]
     for (const prop of expectedProps) {
       expect(source).toContain(prop)
@@ -34,6 +36,9 @@ describe('Crazy88TeamPanel', () => {
     expect(source).toContain("String(task.description || '')")
     expect(source).toContain('Number(task.points || 0)')
     expect(source).toContain("String(task.category || '')")
+    expect(source).toContain('task.submissions')
+    expect(source).toContain('task.latest_status')
+    expect(source).toContain('task.can_submit')
   })
 
   it('does not use Leaflet (form-based game)', () => {
@@ -44,18 +49,17 @@ describe('Crazy88TeamPanel', () => {
     expect(source).toContain('state?.highscore')
   })
 
-  it('tracks submitted tasks', () => {
-    expect(source).toContain('submittedTaskIds')
+  it('tracks status from submissions/actions', () => {
+    expect(source).toContain('statusByTaskId')
     expect(source).toContain('state?.last_actions')
   })
 
-  it('supports task selection and submission', () => {
-    expect(source).toContain('selectedTaskId')
-    expect(source).toContain('setSelectedTaskId')
+  it('supports task detail view and submission', () => {
+    expect(source).toContain('selectedTask')
+    expect(source).toContain('Link')
+    expect(source).toContain('team_message')
+    expect(source).toContain('proof_file')
+    expect(source).toContain('type="file"')
     expect(source).toContain('onSubmitTask')
-  })
-
-  it('filters only active tasks', () => {
-    expect(source).toContain('task.is_active')
   })
 })
