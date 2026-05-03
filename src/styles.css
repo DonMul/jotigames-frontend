@@ -262,6 +262,10 @@
   .text-right {
     text-align: right;
   }
+  .admin-table thead th.text-right,
+  .admin-table tbody td.text-right {
+    text-align: right;
+  }
   .table-actions-inline {
     @apply flex items-center justify-end gap-1.5;
   }

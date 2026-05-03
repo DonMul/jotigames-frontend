@@ -36,6 +36,7 @@ export default function AccountLayout() {
   const { auth } = useAuth()
   const { t } = useI18n()
   const [monetisationEnabled, setMonetisationEnabled] = useState(false)
+  const accountName = auth?.object?.user?.name || auth?.username || ''
 
   useEffect(() => {
     let cancelled = false
@@ -69,9 +70,9 @@ export default function AccountLayout() {
         <h1 className="text-2xl font-bold text-navy-900 dark:text-white">
           {t('account.title')}
         </h1>
-        {auth?.username && (
+        {accountName && (
           <p className="mt-1 text-sm text-navy-500 dark:text-slate-400">
-            {auth.username}
+            {accountName}
           </p>
         )}
       </div>

@@ -38,7 +38,7 @@ export default function CourierRushPickupFormPage() {
         if (isEdit) {
           const pickups = Array.isArray(pickupsPayload?.pickups) ? pickupsPayload.pickups : []
           const pickup = pickups.find((p) => String(p.id) === String(pickupId))
-          if (!pickup) throw new Error(t('courier_rush.admin.pickup_not_found', {}, 'Pickup not found'))
+          if (!pickup) throw new Error(t('courier_rush.admin.pickup_not_found', {}))
           setForm({
             title: String(pickup.title || ''),
             latitude: pickup.latitude == null ? '' : String(pickup.latitude),
@@ -67,15 +67,15 @@ export default function CourierRushPickupFormPage() {
       is_active: Boolean(form.is_active),
     }
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('courier_rush.admin.lat_lon_required', {}, 'Latitude and longitude are required'))
+      setError(t('validation.latLonRequired', {}))
       return
     }
     setSaving(true)
     try {
       if (isEdit) { await moduleApi.updateCourierRushPickup(auth.token, gameId, pickupId, payload) }
       else { await moduleApi.createCourierRushPickup(auth.token, gameId, payload) }
-      navigate('/admin/courier-rush/' + gameId + '/pickups', { state: { flashSuccess: t('courier_rush.admin.pickup_saved', {}, 'Pickup saved') } })
-    } catch (err) { setError(err.message || t('courier_rush.pickup.createFailed', {}, 'Failed to create pickup')) }
+      navigate('/admin/courier-rush/' + gameId + '/pickups', { state: { flashSuccess: t('status.saved', {}) } })
+    } catch (err) { setError(err.message || t('error.createFailed', {})) }
     finally { setSaving(false) }
   }
 
@@ -83,30 +83,30 @@ export default function CourierRushPickupFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('courier_rush.admin.kicker', {}, 'Courier Rush')}</p>
-          <h1>{isEdit ? t('courier_rush.admin.pickup_edit_heading', {}, 'Edit pickup') : t('courier_rush.admin.pickup_new_heading', {}, 'New pickup')}</h1>
+          <p className="overview-kicker">{t('courier_rush.admin.kicker', {})}</p>
+          <h1>{isEdit ? t('courier_rush.admin.pickup_edit_heading', {}) : t('courier_rush.admin.pickup_new_heading', {})}</h1>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/pickups'}>{t('courier_rush.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/pickups'}>{t('common.back', {})}</Link>
         </div>
       </div>
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
-            <div className="form-row"><label htmlFor="pickup-title">{t('courier_rush.admin.table_title', {}, 'Title')}</label><input id="pickup-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="pickup-title">{t('table.title', {})}</label><input id="pickup-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
             <div className="form-row">
-              <label>{t('courier_rush.admin.pickup_map_label', {}, 'Pickup location')}</label>
-              <p className="muted">{t('courier_rush.admin.location_map_help', {}, 'Klik op de kaart om de locatie te selecteren.')}</p>
-              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.pickup_map_label', {}, 'Pickup location')} />
+              <label>{t('courier_rush.admin.pickup_map_label', {})}</label>
+              <p className="muted">{t('courier_rush.admin.location_map_help', {})}</p>
+              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('courier_rush.admin.pickup_map_label', {})} />
             </div>
-            <div className="form-row"><label htmlFor="pickup-radius">{t('courier_rush.admin.table_radius', {}, 'Radius')}</label><input id="pickup-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="pickup-points">{t('courier_rush.admin.table_points', {}, 'Points')}</label><input id="pickup-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="pickup-color">{t('common.color', {}, 'Color')}</label><input id="pickup-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="pickup-radius">{t('table.radius', {})}</label><input id="pickup-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="pickup-points">{t('table.points', {})}</label><input id="pickup-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="pickup-color">{t('table.color', {})}</label><input id="pickup-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
             <div className="form-row">
               <label className="blindhike-toggle-row" htmlFor="courier-pickup-active">
-                <span className="blindhike-toggle-label">{t('courier_rush.admin.active', {}, 'Active')}</span>
+                <span className="blindhike-toggle-label">{t('status.active', {})}</span>
                 <span className="game-type-switch">
                   <input id="courier-pickup-active" type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} />
                   <span className="game-type-switch-track" aria-hidden="true" />
@@ -114,8 +114,8 @@ export default function CourierRushPickupFormPage() {
               </label>
             </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
-              <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/pickups'}>{t('button.cancel', {}, 'Cancel')}</Link>
+              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.state.saving', {}) : t('button.label.save', {})}</button>
+              <Link className="btn btn-ghost" to={'/admin/courier-rush/' + gameId + '/pickups'}>{t('button.label.cancel', {})}</Link>
             </div>
           </form>
         </section>

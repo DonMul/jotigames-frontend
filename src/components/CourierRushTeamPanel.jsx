@@ -142,14 +142,14 @@ export default function CourierRushTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('courier_rush.team.title', {}, 'Courier Rush')}</h2>
-        <p><strong>{t('courier_rush.team.score', {}, 'Score')}:</strong> {score}</p>
-        <p className="muted">{currentPosition ? t('courier_rush.team.gps_active', {}, 'GPS active') : t('courier_rush.team.location_required', {}, 'Waiting for location…')}</p>
+        <h2>{t('courier_rush.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
+        <p className="muted">{currentPosition ? t('status.gpsActive', {}) : t('status.waitingForLocation', {})}</p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('courier_rush.team.pickups_heading', {}, 'Pickups')}</h2>
+        <h2>{t('courier_rush.team.pickups_heading', {})}</h2>
         {nearbyPickups.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyPickups.map((p) => (
@@ -157,16 +157,16 @@ export default function CourierRushTeamPanel({
                 <strong>📦 {p.title}</strong>
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={confirmingPickup} onClick={() => onConfirmPickup(p.id)}>
-                  {confirmingPickup ? t('courier_rush.team.confirming', {}, 'Picking up…') : t('courier_rush.team.confirm_pickup', {}, 'Pick up')}
+                  {confirmingPickup ? t('courier_rush.team.confirming', {}) : t('courier_rush.team.confirm_pickup', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('courier_rush.team.move_to_pickup', {}, 'Move closer to a pickup point.') : t('courier_rush.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('courier_rush.team.move_to_pickup', {}) : t('status.waitingForLocation', {})}</p>
         )}
 
-        <h2 style={{ marginTop: '1.5rem' }}>{t('courier_rush.team.dropoffs_heading', {}, 'Drop-offs')}</h2>
+        <h2 style={{ marginTop: '1.5rem' }}>{t('courier_rush.team.dropoffs_heading', {})}</h2>
         {nearbyDropoffs.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyDropoffs.map((d) => (
@@ -174,19 +174,19 @@ export default function CourierRushTeamPanel({
                 <strong>🏁 {d.title}</strong> — {d.points} pts
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={confirmingDropoff} onClick={() => onConfirmDropoff(d.id)}>
-                  {confirmingDropoff ? t('courier_rush.team.dropping', {}, 'Dropping off…') : t('courier_rush.team.confirm_dropoff', {}, 'Drop off')}
+                  {confirmingDropoff ? t('courier_rush.team.dropping', {}) : t('courier_rush.team.confirm_dropoff', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('courier_rush.team.move_to_dropoff', {}, 'Move closer to a drop-off point.') : t('courier_rush.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('courier_rush.team.move_to_dropoff', {}) : t('status.waitingForLocation', {})}</p>
         )}
       </div>
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

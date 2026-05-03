@@ -31,7 +31,7 @@ export default function GeoHunterSettingsPage() {
       setRetryTimeoutSeconds(String(Number(poisPayload?.retry_timeout_seconds || 0)))
       setVisibilityMode(String(poisPayload?.visibility_mode || 'all_visible'))
     } catch (err) {
-      setError(err.message || t('geohunter.admin.load_failed', {}, 'Failed to load settings'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -53,9 +53,9 @@ export default function GeoHunterSettingsPage() {
         Number(retryTimeoutSeconds || 0),
         visibilityMode,
       )
-      setSuccess(t('button.save', {}, 'Saved'))
+      setSuccess(t('status.saved', {}))
     } catch (err) {
-      setError(err.message || t('geohunter.admin.save_failed', {}, 'Failed to save settings'))
+      setError(err.message || t('error.saveFailed', {}))
     }
   }
 
@@ -63,13 +63,12 @@ export default function GeoHunterSettingsPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('geohunter.admin.kicker', {}, 'GeoHunter')}</p>
-          <h1>{t('geohunter.admin.settings_heading', { game: game?.name || '' }, `Settings · ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('geohunter.admin.settings_subtitle', {}, 'Configure game-level settings')}</p>
+          <p className="overview-kicker">{t('gameCatalog.geohunter.name', {})} - {game?.name}</p>
+          <h1>{t('admin.header.game.settings', { game: game?.name || '' })}</h1>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('geohunter.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
 
         </div>
@@ -77,14 +76,13 @@ export default function GeoHunterSettingsPage() {
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('geohunter.admin.retry_settings', {}, 'Answer retry settings')}</h2>
         <form onSubmit={handleSaveSettings} className="form-grid">
           <div className="form-row">
             <label className="blindhike-toggle-row" htmlFor="geohunter-retry-enabled">
-              <span className="blindhike-toggle-label">{t('geohunter.admin.retry_enabled', {}, 'Allow teams to retry incorrect answers')}</span>
+              <span className="blindhike-toggle-label">{t('geohunter.admin.retry_enabled', {})}</span>
               <span className="game-type-switch">
                 <input
                   id="geohunter-retry-enabled"
@@ -97,7 +95,7 @@ export default function GeoHunterSettingsPage() {
             </label>
           </div>
           <div className="form-row">
-            <label htmlFor="retry-timeout-seconds">{t('geohunter.admin.retry_timeout', {}, 'Retry timeout (seconds)')}</label>
+            <label htmlFor="retry-timeout-seconds">{t('geohunter.admin.retry_timeout', {})}</label>
             <input
               id="retry-timeout-seconds"
               type="number"
@@ -108,19 +106,19 @@ export default function GeoHunterSettingsPage() {
             />
           </div>
           <div className="form-row">
-            <label htmlFor="geohunter-visibility-mode">{t('geohunter.admin.visibility_mode', {}, 'Question visibility')}</label>
+            <label htmlFor="geohunter-visibility-mode">{t('geohunter.admin.visibility_mode', {})}</label>
             <select
               id="geohunter-visibility-mode"
               value={visibilityMode}
               onChange={(event) => setVisibilityMode(String(event.target.value || 'all_visible'))}
             >
-              <option value="all_visible">{t('geohunter.admin.visibility_all_visible', {}, 'All questions visible')}</option>
-              <option value="in_range_only">{t('geohunter.admin.visibility_in_range_only', {}, 'Only visible when in range')}</option>
+              <option value="all_visible">{t('geohunter.admin.visibility_all_visible', {})}</option>
+              <option value="in_range_only">{t('geohunter.admin.visibility_in_range_only', {})}</option>
             </select>
           </div>
           <div className="overview-actions">
             <button className="btn btn-primary" type="submit">
-              {t('button.save', {}, 'Save')}
+              {t('button.label.save', {})}
             </button>
           </div>
         </form>

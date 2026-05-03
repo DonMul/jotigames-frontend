@@ -141,14 +141,14 @@ export default function TerritoryControlTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('territory_control.team.title', {}, 'Territory Control')}</h2>
-        <p><strong>{t('territory_control.team.score', {}, 'Score')}:</strong> {score}</p>
-        <p className="muted">{currentPosition ? t('territory_control.team.gps_active', {}, 'GPS active') : t('territory_control.team.location_required', {}, 'Waiting for location…')}</p>
+        <h2>{t('territory_control.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
+        <p className="muted">{currentPosition ? t('status.gpsActive', {}) : t('status.waitingForLocation', {})}</p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('territory_control.team.objective', {}, 'Zones')}</h2>
+        <h2>{t('territory_control.team.objective', {})}</h2>
         {nearbyZones.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyZones.map((z) => (
@@ -156,19 +156,19 @@ export default function TerritoryControlTeamPanel({
                 <strong>{z.title}</strong> — {z.points} pts
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimZone(z.id)}>
-                  {claiming ? t('territory_control.team.claiming', {}, 'Claiming…') : t('territory_control.team.claim_zone', {}, 'Claim zone')}
+                  {claiming ? t('territory_control.team.claiming', {}) : t('territory_control.team.claim_zone', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('territory_control.team.move_into_range', {}, 'Move closer to a zone to claim it.') : t('territory_control.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('territory_control.team.move_into_range', {}) : t('status.waitingForLocation', {})}</p>
         )}
 
-        <h3 style={{ marginTop: '1.5rem' }}>{t('territory_control.team.all_zones', {}, 'All zones')}</h3>
+        <h3 style={{ marginTop: '1.5rem' }}>{t('territory_control.team.all_zones', {})}</h3>
         {zones.length === 0 ? <p className="muted">-</p> : (
           <table className="admin-table">
-            <thead><tr><th>{t('territory_control.admin.table_title', {}, 'Title')}</th><th>{t('territory_control.admin.table_points', {}, 'Points')}</th><th>{t('territory_control.admin.table_status', {}, 'Status')}</th></tr></thead>
+            <thead><tr><th>{t('table.title', {})}</th><th>{t('table.points', {})}</th><th>{t('territory_control.admin.table_status', {})}</th></tr></thead>
             <tbody>
               {zones.filter((z) => z.is_active).map((z) => (
                 <tr key={z.id}><td>{z.title}</td><td>{z.points}</td><td>{claimedIds.has(z.id) ? '✅' : '—'}</td></tr>
@@ -180,7 +180,7 @@ export default function TerritoryControlTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

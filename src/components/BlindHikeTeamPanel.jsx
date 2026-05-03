@@ -219,33 +219,33 @@ export default function BlindHikeTeamPanel({
   return (
     <section className="team-dashboard-blindhike-layout">
       <div className="team-panel team-dashboard-blindhike-map-panel">
-        <h2>{t('blindhike.target_location', {}, 'Target location')}</h2>
-        <p className="muted">{t('teamDashboard.blindhike.mapHint', {}, 'The map is obscured. Only target and your markers are visible.')}</p>
-        <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('blindhike.target_location', {}, 'Target location')} />
+        <h2>{t('blindhike.target_location', {})}</h2>
+        <p className="muted">{t('teamDashboard.blindhike.mapHint', {})}</p>
+        <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('blindhike.target_location', {})} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('teamDashboard.blindhike.markerActions', {}, 'Marker placement')}</h2>
+        <h2>{t('teamDashboard.blindhike.markerActions', {})}</h2>
         <p>
-          <strong>{t('teamDashboard.blindhike.markersPlaced', {}, 'Markers placed')}:</strong>{' '}
+          <strong>{t('teamDashboard.blindhike.markersPlaced', {})}:</strong>{' '}
           {myMarkerCount}
         </p>
         {markerLimit !== null ? (
           <p>
-            <strong>{t('blindhike.max_markers', {}, 'Max markers')}:</strong>{' '}
+            <strong>{t('blindhike.max_markers', {})}:</strong>{' '}
             {markerLimit}
           </p>
         ) : null}
         <p>
-          <strong>{t('blindhike.finish_radius_meters', {}, 'Finish radius (meters)')}:</strong>{' '}
+          <strong>{t('blindhike.finish_radius_meters', {})}:</strong>{' '}
           {Number.isFinite(finishRadiusMeters) ? finishRadiusMeters : 25}
         </p>
         <p className="muted">
           {isFinished
-            ? t('teamDashboard.blindhike.finishedLocked', {}, 'Your team is finished. You can no longer place markers.')
+            ? t('teamDashboard.blindhike.finishedLocked', {})
             : currentPosition
-            ? t('teamDashboard.blindhike.locationReady', {}, 'Location found. You can place a marker.')
-            : t('teamDashboard.blindhike.waitingLocation', {}, 'Waiting for location…')}
+            ? t('teamDashboard.blindhike.locationReady', {})
+            : t('status.waitingForLocation', {})}
         </p>
         <button
           className="btn btn-primary"
@@ -254,16 +254,16 @@ export default function BlindHikeTeamPanel({
           onClick={() => onPlaceMarker(currentPosition)}
         >
           {isFinished
-            ? t('teamDashboard.blindhike.finished', {}, 'Finished')
+            ? t('teamDashboard.blindhike.finished', {})
             : placingMarker
-            ? t('teamDashboard.blindhike.placingMarker', {}, 'Placing marker…')
-            : t('teamDashboard.blindhike.placeMarker', {}, 'Place marker here')}
+            ? t('teamDashboard.blindhike.placingMarker', {})
+            : t('teamDashboard.blindhike.placeMarker', {})}
         </button>
       </div>
 
       <div className="team-panel">
-        <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
-        {highscore.length === 0 ? <p>{t('teamDashboard.noTeams', {}, 'No teams')}</p> : null}
+        <h2>{t('teamDashboard.highscore', {})}</h2>
+        {highscore.length === 0 ? <p>{t('status.noTeams', {})}</p> : null}
         {highscore.length > 0 ? (
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (

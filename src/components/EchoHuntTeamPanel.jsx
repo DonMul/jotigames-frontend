@@ -148,18 +148,18 @@ export default function EchoHuntTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('echo_hunt.team.title', {}, 'Echo Hunt')}</h2>
-        <p><strong>{t('echo_hunt.team.score', {}, 'Score')}:</strong> {score}</p>
+        <h2>{t('echo_hunt.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
         <p className="muted">
           {currentPosition
-            ? t('echo_hunt.team.gps_active', {}, 'GPS active')
-            : t('echo_hunt.team.location_required', {}, 'Waiting for location…')}
+            ? t('status.gpsActive', {})
+            : t('status.waitingForLocation', {})}
         </p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('echo_hunt.team.objective', {}, 'Beacons')}</h2>
+        <h2>{t('echo_hunt.team.objective', {})}</h2>
         {nearbyBeacons.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyBeacons.map((b) => (
@@ -167,7 +167,7 @@ export default function EchoHuntTeamPanel({
                 <strong>{b.title}</strong> — {b.points} pts
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimBeacon(b.id)}>
-                  {claiming ? t('echo_hunt.team.claiming', {}, 'Claiming…') : t('echo_hunt.team.claim_beacon', {}, 'Claim beacon')}
+                  {claiming ? t('echo_hunt.team.claiming', {}) : t('echo_hunt.team.claim_beacon', {})}
                 </button>
               </li>
             ))}
@@ -175,15 +175,15 @@ export default function EchoHuntTeamPanel({
         ) : (
           <p className="muted">
             {currentPosition
-              ? t('echo_hunt.team.move_into_range', {}, 'Move closer to a beacon to claim it.')
-              : t('echo_hunt.team.location_required', {}, 'Waiting for location…')}
+              ? t('echo_hunt.team.move_into_range', {})
+              : t('status.waitingForLocation', {})}
           </p>
         )}
 
-        <h3 style={{ marginTop: '1.5rem' }}>{t('echo_hunt.team.all_beacons', {}, 'All beacons')}</h3>
+        <h3 style={{ marginTop: '1.5rem' }}>{t('echo_hunt.team.all_beacons', {})}</h3>
         {beacons.length === 0 ? <p className="muted">-</p> : (
           <table className="admin-table">
-            <thead><tr><th>{t('echo_hunt.admin.table_title', {}, 'Title')}</th><th>{t('echo_hunt.admin.table_points', {}, 'Points')}</th><th>{t('echo_hunt.admin.table_status', {}, 'Status')}</th></tr></thead>
+            <thead><tr><th>{t('table.title', {})}</th><th>{t('table.points', {})}</th><th>{t('echo_hunt.admin.table_status', {})}</th></tr></thead>
             <tbody>
               {beacons.filter((b) => b.is_active).map((b) => (
                 <tr key={b.id}><td>{b.title}</td><td>{b.points}</td><td>{claimedIds.has(b.id) ? '✅' : '—'}</td></tr>
@@ -195,7 +195,7 @@ export default function EchoHuntTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

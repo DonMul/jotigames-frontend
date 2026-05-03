@@ -134,7 +134,7 @@ export default function ModuleOverviewPage() {
     }
     const previewType = getProofPreviewType(submission)
     const inlinePreview = canInlinePreviewProof(submission)
-    const fileName = submission.proof_original_name || t('crazy88.team.proof_file_default', {}, 'Proof file')
+    const fileName = submission.proof_original_name || t('crazy88.team.proof_file_default', {})
     const tooLargeForPreview = Number(submission?.proof_size || 0) > CRAZY88_INLINE_PREVIEW_MAX_BYTES
 
     return (
@@ -147,14 +147,14 @@ export default function ModuleOverviewPage() {
           download={!inlinePreview ? fileName : undefined}
         >
           {inlinePreview
-            ? t('crazy88.admin.open_file_new_tab', {}, 'Open full file in new tab')
-            : `⬇ ${t('crazy88.admin.download_file', {}, 'Download file')}`}
+            ? t('crazy88.admin.open_file_new_tab', {})
+            : `⬇ ${t('crazy88.admin.download_file', {})}`}
           {`: ${fileName}`}
         </a>
 
         {tooLargeForPreview ? (
           <p className="text-xs text-gray-500 dark:text-slate-400">
-            {t('crazy88.admin.preview_too_large', {}, 'Inline preview hidden because the file is too large.')}
+            {t('crazy88.admin.preview_too_large', {})}
           </p>
         ) : null}
 
@@ -399,7 +399,7 @@ export default function ModuleOverviewPage() {
     try {
       const gameRecord = await gameApi.getGame(auth.token, gameId)
       if (!gameRecord) {
-        throw new Error(t('moduleOverview.gameNotFound'))
+        throw new Error(t('error.gameNotFound'))
       }
 
       const [overviewData, teamsData, membersData, explodingCards, pendingActions] = await Promise.all([
@@ -444,7 +444,7 @@ export default function ModuleOverviewPage() {
         setTeamMessageTeamId(String(teamsData[0].id))
       }
     } catch (err) {
-      setError(err.message || t('moduleOverview.loadFailed'))
+      setError(err.message || t('error.loadFailed'))
     } finally {
       setLoading(false)
     }
@@ -459,7 +459,7 @@ export default function ModuleOverviewPage() {
       try {
         const gameRecord = await gameApi.getGame(auth.token, gameId)
         if (!gameRecord) {
-          throw new Error(t('moduleOverview.gameNotFound'))
+          throw new Error(t('error.gameNotFound'))
         }
 
         const [data, teamsData, membersData, details, explodingCards, pendingActions, reviewsPayload] = await Promise.all([
@@ -507,7 +507,7 @@ export default function ModuleOverviewPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('moduleOverview.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       } finally {
         if (!cancelled) {
@@ -1241,7 +1241,7 @@ export default function ModuleOverviewPage() {
       setNewTeamCode('')
       await loadAll()
     } catch (err) {
-      setError(err.message || t('moduleOverview.createTeamFailed', {}, 'Failed to create team'))
+      setError(err.message || t('error.createFailed', {}))
     }
   }
 
@@ -1250,7 +1250,7 @@ export default function ModuleOverviewPage() {
       await gameApi.deleteTeam(auth.token, gameId, teamId)
       await loadAll()
     } catch (err) {
-      setError(err.message || t('moduleOverview.deleteTeamFailed', {}, 'Failed to delete team'))
+      setError(err.message || t('error.deleteFailed', {}))
     }
   }
 
@@ -1260,7 +1260,7 @@ export default function ModuleOverviewPage() {
       await gameApi.sendTeamMessage(auth.token, gameId, teamMessageTeamId, teamMessageText)
       setTeamMessageText('')
     } catch (err) {
-      setError(err.message || t('moduleOverview.sendTeamMessageFailed', {}, 'Failed to send team message'))
+      setError(err.message || t('error.sendFailed', {}))
     }
   }
 
@@ -1275,7 +1275,7 @@ export default function ModuleOverviewPage() {
       setMemberEmail('')
       await loadAll()
     } catch (err) {
-      setError(err.message || t('moduleOverview.addMemberFailed', {}, 'Failed to add member'))
+      setError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1288,7 +1288,7 @@ export default function ModuleOverviewPage() {
       }
       await loadAll()
     } catch (err) {
-      setError(err.message || t('moduleOverview.removeMemberFailed', {}, 'Failed to remove member'))
+      setError(err.message || t('error.deleteFailed', {}))
     }
   }
 
@@ -1311,7 +1311,7 @@ export default function ModuleOverviewPage() {
       })
       await loadAll()
     } catch (err) {
-      setError(err.message || t('moduleOverview.judgeFailed', {}, 'Failed to judge submission'))
+      setError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1320,7 +1320,7 @@ export default function ModuleOverviewPage() {
       await moduleApi.unlockCrazy88Review(auth.token, gameId)
       window.location.assign(`/admin/games/${gameId}`)
     } catch (err) {
-      setError(err.message || t('crazy88.admin.unlock_failed', {}, 'Failed to unlock review'))
+      setError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1337,7 +1337,7 @@ export default function ModuleOverviewPage() {
         await moduleApi.removeRandomExplodingTeamHandCardByType(auth.token, gameId, teamId, cardType)
       }
     } catch (err) {
-      setError(err.message || t('moduleOverview.handAdjustFailed'))
+      setError(err.message || t('error.actionFailed'))
     }
   }
 
@@ -1345,7 +1345,7 @@ export default function ModuleOverviewPage() {
     try {
       await moduleApi.adjustExplodingTeamLives(auth.token, gameId, teamId, delta)
     } catch (err) {
-      setError(err.message || t('moduleOverview.livesAdjustFailed', {}, 'Failed to adjust lives'))
+      setError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1353,24 +1353,24 @@ export default function ModuleOverviewPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-            <p className="overview-kicker">{t('moduleOverview.liveOverviewTitle')}</p>
-            <h1>{t('moduleOverview.liveOverviewTitle')}</h1>
+            <p className="overview-kicker">{t('gamePage.liveOverview')}</p>
+            <h1>{t('gamePage.liveOverview')}</h1>
             <p className="overview-subtitle">{t('moduleOverview.liveOverviewSubtitle', { game: game?.name || '-' })}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('moduleOverview.backToGame')}
+            {t('common.back')}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <div className="overview-stack">
         {game?.game_type === 'blindhike' && moduleDetails?.kind === 'blindhike' ? (
           <section className="overview-panel">
-            <h2>{t('blindhike.admin.configure_title', {}, 'Blind Hike live state')}</h2>
+            <h2>{t('blindhike.admin.configure_title', {})}</h2>
             <BlindHikeAdminOverviewMap
               target={blindHikeTarget}
               markers={blindHikeMarkers}
@@ -1380,7 +1380,7 @@ export default function ModuleOverviewPage() {
             <table className="admin-table" style={{ marginTop: '1rem' }}>
               <tbody>
                 <tr>
-                  <th>{t('teamDashboard.markers', {}, 'Markers')}</th>
+                  <th>{t('teamDashboard.markers', {})}</th>
                   <td>{blindHikeMarkers.length}</td>
                 </tr>
               </tbody>
@@ -1390,7 +1390,7 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'birds_of_prey' && moduleDetails?.kind === 'birds_of_prey' ? (
           <section className="overview-panel">
-            <h2>{t('birds_of_prey.admin.liveMap', {}, 'Live map')}</h2>
+            <h2>{t('birds_of_prey.admin.liveMap', {})}</h2>
             <BirdsOfPreyAdminOverviewMap
               teams={(Array.isArray(overview?.teams) ? overview.teams : []).map((team) => ({
                 id: String(team?.team_id || team?.id || ''),
@@ -1406,11 +1406,11 @@ export default function ModuleOverviewPage() {
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('birds_of_prey.admin.teamCount', {}, 'Teams')}</th>
+                  <th>{t('birds_of_prey.admin.teamCount', {})}</th>
                   <td>{Array.isArray(overview?.teams) ? overview.teams.length : 0}</td>
                 </tr>
                 <tr>
-                  <th>{t('birds_of_prey.admin.eggCount', {}, 'Eggs')}</th>
+                  <th>{t('birds_of_prey.admin.eggCount', {})}</th>
                   <td>{Array.isArray(overview?.eggs) ? overview.eggs.length : 0}</td>
                 </tr>
               </tbody>
@@ -1421,7 +1421,7 @@ export default function ModuleOverviewPage() {
         {!hideOverviewDataForCrazy88 ? (
           <section className="overview-panel">
             <h2>{t('moduleOverview.overviewData')}</h2>
-            {sortedTeams.length === 0 ? <p>{t('gamePage.noTeams', {}, 'No teams')}</p> : null}
+            {sortedTeams.length === 0 ? <p>{t('status.noTeams', {})}</p> : null}
             {sortedTeams.length > 0 ? (
               <section className="overview-grid overview-grid-ek" id="overview-grid">
                 {sortedTeams.map((team) => {
@@ -1430,10 +1430,10 @@ export default function ModuleOverviewPage() {
                 const score = Number(team?.score ?? team?.geo_score ?? 0)
                 const metricValue = isBlindHike ? markers : (isExplodingKittens ? lives : score)
                 const metricLabel = isBlindHike
-                  ? t('teamDashboard.markers', {}, 'Markers')
+                  ? t('teamDashboard.markers', {})
                   : isExplodingKittens
-                    ? t('teamDashboard.lives', {}, 'Lives')
-                    : t('moduleOverview.score', {}, 'Score')
+                    ? t('teamDashboard.lives', {})
+                    : t('status.score', {})
                 return (
                   <article key={team.id} className="team-card" data-team-id={team.id}>
                     <div className="team-card-header">
@@ -1441,7 +1441,7 @@ export default function ModuleOverviewPage() {
                         {team.logo_path ? <img className="team-logo" src={toAssetUrl(team.logo_path)} alt={team.name} /> : null}
                         <div className="team-identity-meta">
                           <h2>{team.name}</h2>
-                          {isBlindHike && team?.blindhike_finished ? <p className="team-code">✅ {t('teamDashboard.blindhike.finished', {}, 'Finished')}</p> : null}
+                          {isBlindHike && team?.blindhike_finished ? <p className="team-code">✅ {t('teamDashboard.blindhike.finished', {})}</p> : null}
                           <p className="team-code">{team.code}</p>
                         </div>
                       </div>
@@ -1471,13 +1471,13 @@ export default function ModuleOverviewPage() {
 
                     {isExplodingKittens ? (
                       <div className="team-flags" data-team-flags>
-                        <span className={`tag tag-cool ${team?.pending_skip ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingSkip', {}, 'Pending skip')}>
+                        <span className={`tag tag-cool ${team?.pending_skip ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingSkip', {})}>
                           ⏭
                         </span>
-                        <span className={`tag tag-warm ${team?.pending_peek ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingPeek', {}, 'Pending peek')}>
+                        <span className={`tag tag-warm ${team?.pending_peek ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingPeek', {})}>
                           👁
                         </span>
-                        <span className={`tag tag-alert ${team?.pending_attack ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingAttack', {}, 'Pending attack')}>
+                        <span className={`tag tag-alert ${team?.pending_attack ? '' : 'is-inactive'}`} title={t('teamDashboard.pendingAttack', {})}>
                           ⚔
                         </span>
                       </div>
@@ -1486,9 +1486,9 @@ export default function ModuleOverviewPage() {
                     <div className="team-section">
                       {isExplodingKittens ? (
                         <>
-                          <h3>{t('teamDashboard.pendingActions', {}, 'Pending actions')}</h3>
+                          <h3>{t('teamDashboard.pendingActions', {})}</h3>
                           {(explodingPendingActionsByTeam[team.id] || []).length === 0 ? (
-                            <p className="muted">{t('teamDashboard.noActions', {}, 'No actions')}</p>
+                            <p className="muted">{t('teamDashboard.noActions', {})}</p>
                           ) : (
                             <ul className="team-hand-list">
                               {(explodingPendingActionsByTeam[team.id] || []).map((action) => (
@@ -1501,12 +1501,12 @@ export default function ModuleOverviewPage() {
                           )}
                           <h3>{t('moduleOverview.hand')}</h3>
                           {EK_HAND_CARD_TYPES.every((cardType) => handCountForTeam(team.id, cardType) === 0) ? (
-                            <p className="muted">{t('moduleOverview.noCards')}</p>
+                            <p className="muted">{t('status.noCards')}</p>
                           ) : null}
                           <ul className="team-hand-list">
                             {EK_HAND_CARD_TYPES.map((cardType) => (
                               <li key={`${team.id}-${cardType}`} className="team-hand-row">
-                                <span className="team-hand-label">{t(`explodingKittens.cardTypes.${cardType}`, {}, String(cardType || '').replaceAll('_', ' '))}</span>
+                                <span className="team-hand-label">{t(`explodingKittens.cardTypes.${cardType}`, {})}</span>
                                 <div className="team-hand-amount">
                                   <span>{handCountForTeam(team.id, cardType)}</span>
                                   <div className="team-hand-controls" data-team-hand-controls>
@@ -1542,25 +1542,25 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'geohunter' && moduleDetails?.kind === 'geohunter' ? (
           <section className="overview-panel">
-            <h2>{t('geoHunter.admin.points', {}, 'GeoHunter live state')}</h2>
+            <h2>{t('geoHunter.admin.points', {})}</h2>
             <GameLiveOverviewMap
               teams={liveOverviewTeams}
               entities={moduleDetails.pois}
               getEntityLabel={(poi) => poi?.title || '-'}
               getEntityRadius={(poi) => Number(poi?.radius_meters || 20)}
               getEntityColor={(poi) => poi?.marker_color || '#2563eb'}
-              ariaLabel={t('geohunter.admin.poi_map_label', {}, 'POI map')}
+              ariaLabel={t('geohunter.admin.poi_map_label', {})}
             />
           </section>
         ) : null}
 
         {game?.game_type === 'resource_run' && moduleDetails?.kind === 'resource_run' ? (
           <section className="overview-panel">
-            <h2>{t('resource_run.admin.nodes', {}, 'Resource Run live state')}</h2>
+            <h2>{t('resource_run.admin.nodes', {})}</h2>
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('resource_run.admin.nodes', {}, 'Nodes')}</th>
+                  <th>{t('resource_run.admin.nodes', {})}</th>
                   <td>{moduleDetails.nodes.length}</td>
                 </tr>
               </tbody>
@@ -1570,82 +1570,82 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'territory_control' && moduleDetails?.kind === 'territory_control' ? (
           <section className="overview-panel">
-            <h2>{t('territory_control.admin.zone_count', {}, 'Territory Control live state')}</h2>
+            <h2>{t('territory_control.admin.zone_count', {})}</h2>
             <GameLiveOverviewMap
               teams={liveOverviewTeams}
               entities={moduleDetails.zones}
               getEntityLabel={(zone) => zone?.title || '-'}
               getEntityRadius={(zone) => Number(zone?.radius_meters || 35)}
-              ariaLabel={t('territory_control.admin.map_label', {}, 'Territory Control zones map')}
+              ariaLabel={t('territory_control.admin.map_label', {})}
             />
           </section>
         ) : null}
 
         {game?.game_type === 'echo_hunt' && moduleDetails?.kind === 'echo_hunt' ? (
           <section className="overview-panel">
-            <h2>{t('echo_hunt.admin.beacons', {}, 'Echo Hunt live state')}</h2>
+            <h2>{t('echo_hunt.admin.beacons', {})}</h2>
             <GameLiveOverviewMap
               teams={liveOverviewTeams}
               entities={moduleDetails.beacons}
               getEntityLabel={(beacon) => beacon?.title || '-'}
               getEntityRadius={(beacon) => Number(beacon?.radius_meters || 25)}
               getEntityColor={(beacon) => beacon?.marker_color || '#7c3aed'}
-              ariaLabel={t('echo_hunt.admin.map_label', {}, 'Beacons map')}
+              ariaLabel={t('echo_hunt.admin.map_label', {})}
             />
           </section>
         ) : null}
 
         {game?.game_type === 'checkpoint_heist' && moduleDetails?.kind === 'checkpoint_heist' ? (
           <section className="overview-panel">
-            <h2>{t('checkpoint_heist.admin.checkpoints', {}, 'Checkpoint Heist live state')}</h2>
+            <h2>{t('checkpoint_heist.admin.checkpoints', {})}</h2>
             <GameLiveOverviewMap
               teams={liveOverviewTeams}
               entities={moduleDetails.checkpoints}
               getEntityLabel={(checkpoint) => checkpoint?.title || '-'}
               getEntityRadius={(checkpoint) => Number(checkpoint?.radius_meters || 25)}
               getEntityColor={(checkpoint) => checkpoint?.marker_color || '#dc2626'}
-              ariaLabel={t('checkpoint_heist.admin.map_label', {}, 'Checkpoints map')}
+              ariaLabel={t('checkpoint_heist.admin.map_label', {})}
             />
           </section>
         ) : null}
 
         {game?.game_type === 'courier_rush' && moduleDetails?.kind === 'courier_rush' ? (
           <section className="overview-panel">
-            <h2>{t('courier_rush.admin.settings_title', {}, 'Courier Rush live state')}</h2>
+            <h2>{t('status.settings', {})}</h2>
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('courier_rush.admin.pickups', {}, 'Pickups')}</th>
+                  <th>{t('courier_rush.admin.pickups', {})}</th>
                   <td>{moduleDetails.pickups.length}</td>
                 </tr>
                 <tr>
-                  <th>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</th>
+                  <th>{t('courier_rush.admin.dropoffs', {})}</th>
                   <td>{moduleDetails.dropoffs.length}</td>
                 </tr>
                 <tr>
-                  <th>{t('courier_rush.admin.pickup_mode', {}, 'Pickup mode')}</th>
+                  <th>{t('courier_rush.admin.pickup_mode', {})}</th>
                   <td>{moduleDetails.config?.pickup_mode || '-'}</td>
                 </tr>
                 <tr>
-                  <th>{t('courier_rush.admin.dropoff_mode', {}, 'Dropoff mode')}</th>
+                  <th>{t('courier_rush.admin.dropoff_mode', {})}</th>
                   <td>{moduleDetails.config?.dropoff_mode || '-'}</td>
                 </tr>
                 <tr>
-                  <th>{t('courier_rush.admin.max_active_pickups', {}, 'Max active pickups')}</th>
+                  <th>{t('courier_rush.admin.max_active_pickups', {})}</th>
                   <td>{moduleDetails.config?.max_active_pickups ?? '-'}</td>
                 </tr>
               </tbody>
             </table>
 
-            <h3 style={{ marginTop: '1rem' }}>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h3>
+            <h3 style={{ marginTop: '1rem' }}>{t('courier_rush.admin.pickups', {})}</h3>
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('courier_rush.admin.table_title', {}, 'Title')}</th>
-                  <th>{t('common.lat', {}, 'Lat')}</th>
-                  <th>{t('common.lon', {}, 'Lon')}</th>
-                  <th>{t('courier_rush.admin.table_radius', {}, 'Radius')}</th>
-                  <th>{t('courier_rush.admin.table_points', {}, 'Points')}</th>
+                  <th>{t('table.title', {})}</th>
+                  <th>{t('common.lat', {})}</th>
+                  <th>{t('common.lon', {})}</th>
+                  <th>{t('table.radius', {})}</th>
+                  <th>{t('table.points', {})}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1660,7 +1660,7 @@ export default function ModuleOverviewPage() {
                 ))}
                 {moduleDetails.pickups.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="muted">{t('courier_rush.admin.empty_pickups', {}, 'No pickups')}</td>
+                    <td colSpan={5} className="muted">{t('courier_rush.admin.empty_pickups', {})}</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -1670,38 +1670,38 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'pandemic_response' && moduleDetails?.kind === 'pandemic_response' ? (
           <section className="overview-panel">
-            <h2>{t('pandemic_response.admin.hotspots_subtitle', {}, 'Pandemic live state')}</h2>
+            <h2>{t('pandemic_response.admin.hotspots_subtitle', {})}</h2>
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('pandemic_response.admin.current_hotspots', {}, 'Current hotspots')}</th>
+                  <th>{t('pandemic_response.admin.current_hotspots', {})}</th>
                   <td>{moduleDetails.hotspots.length}</td>
                 </tr>
                 <tr>
-                  <th>{t('pandemic_response.admin.current_pickups', {}, 'Current pickup points')}</th>
+                  <th>{t('pandemic_response.admin.current_pickups', {})}</th>
                   <td>{moduleDetails.pickups.length}</td>
                 </tr>
                 <tr>
-                  <th>{t('pandemic_response.admin.target_active_hotspots', {}, 'Target active hotspots')}</th>
+                  <th>{t('pandemic_response.admin.target_active_hotspots', {})}</th>
                   <td>{moduleDetails.config?.target_active_hotspots ?? '-'}</td>
                 </tr>
                 <tr>
-                  <th>{t('pandemic_response.admin.penalty_percent', {}, 'Penalty percent')}</th>
+                  <th>{t('pandemic_response.admin.penalty_percent', {})}</th>
                   <td>{moduleDetails.config?.penalty_percent ?? '-'}</td>
                 </tr>
               </tbody>
             </table>
 
-            <h3 style={{ marginTop: '1rem' }}>{t('pandemic_response.admin.current_hotspots', {}, 'Current hotspots')}</h3>
+            <h3 style={{ marginTop: '1rem' }}>{t('pandemic_response.admin.current_hotspots', {})}</h3>
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('pandemic_response.admin.table_title', {}, 'Title')}</th>
-                  <th>{t('common.lat', {}, 'Lat')}</th>
-                  <th>{t('common.lon', {}, 'Lon')}</th>
-                  <th>{t('pandemic_response.admin.table_radius', {}, 'Radius')}</th>
-                  <th>{t('pandemic_response.admin.table_points', {}, 'Points')}</th>
-                  <th>{t('pandemic_response.admin.table_severity', {}, 'Severity')}</th>
+                  <th>{t('table.title', {})}</th>
+                  <th>{t('common.lat', {})}</th>
+                  <th>{t('common.lon', {})}</th>
+                  <th>{t('table.radius', {})}</th>
+                  <th>{t('table.points', {})}</th>
+                  <th>{t('pandemic_response.admin.table_severity', {})}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1717,7 +1717,7 @@ export default function ModuleOverviewPage() {
                 ))}
                 {moduleDetails.hotspots.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="muted">{t('pandemic_response.admin.empty_hotspots', {}, 'No hotspots')}</td>
+                    <td colSpan={6} className="muted">{t('pandemic_response.admin.empty_hotspots', {})}</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -1727,7 +1727,7 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'market_crash' && moduleDetails?.kind === 'market_crash' ? (
           <section className="overview-panel">
-            <h2>{t('market_crash.admin.overview_subtitle', {}, 'Market Crash live state')}</h2>
+            <h2>{t('market_crash.admin.overview_subtitle', {})}</h2>
             <MarketCrashAdminOverviewMap
               points={marketCrashOverviewPoints}
               teams={marketCrashOverviewTeams}
@@ -1736,24 +1736,24 @@ export default function ModuleOverviewPage() {
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('market_crash.admin.point_list', {}, 'Points')}</th>
+                  <th>{t('market_crash.admin.point_list', {})}</th>
                   <td>{moduleDetails.points.length}</td>
                 </tr>
                 <tr>
-                  <th>{t('market_crash.admin.team_list', {}, 'Teams')}</th>
+                  <th>{t('gamePage.teams', {})}</th>
                   <td>{marketCrashOverviewTeams.length}</td>
                 </tr>
               </tbody>
             </table>
 
-            <h3 style={{ marginTop: '1rem' }}>{t('market_crash.admin.teams_live', {}, 'Teams live')}</h3>
+            <h3 style={{ marginTop: '1rem' }}>{t('market_crash.admin.teams_live', {})}</h3>
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('moduleOverview.teamName', {}, 'Team')}</th>
-                  <th>{t('market_crash.team.cash', {}, 'Cash')}</th>
-                  <th>{t('moduleOverview.score', {}, 'Score')}</th>
-                  <th>{t('moduleOverview.updatedAt', {}, 'Updated')}</th>
+                  <th>{t('moduleOverview.teamName', {})}</th>
+                  <th>{t('market_crash.team.cash', {})}</th>
+                  <th>{t('status.score', {})}</th>
+                  <th>{t('moduleOverview.updatedAt', {})}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1767,7 +1767,7 @@ export default function ModuleOverviewPage() {
                 ))}
                 {marketCrashOverviewTeams.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="muted">{t('moduleOverview.noTeams', {}, 'No teams')}</td>
+                    <td colSpan={4} className="muted">{t('moduleOverview.noTeams', {})}</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -1777,9 +1777,9 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'crazy_88' && moduleDetails?.kind === 'crazy_88' ? (
           <section className="overview-panel">
-            <h2>{t('crazy88.admin.review_subtitle', { count: crazy88Reviews?.pending_count || 0 }, 'Pending reviews')}</h2>
+            <h2>{t('crazy88.admin.review_subtitle', { count: crazy88Reviews?.pending_count || 0 })}</h2>
             {!crazy88Reviews?.has_assigned_submission ? (
-              <p className="muted">{t('crazy88.admin.review_empty', {}, 'No submission assigned right now')}</p>
+              <p className="muted">{t('crazy88.admin.review_empty', {})}</p>
             ) : null}
             {crazy88Reviews?.has_assigned_submission ? (
               <button
@@ -1787,14 +1787,14 @@ export default function ModuleOverviewPage() {
                 type="button"
                 onClick={handleUnlockCrazy88Review}
               >
-                {t('crazy88.admin.unlock_review_assignment', {}, 'Unlock review assignment')}
+                {t('crazy88.admin.unlock_review_assignment', {})}
               </button>
             ) : null}
             <div className="geo-layout" style={{ marginTop: '1rem' }}>
               {(Array.isArray(crazy88Reviews?.threads) ? crazy88Reviews.threads : []).map((thread) => (
                 <section key={`${thread.task_id}:${thread.team_id}`} className="overview-panel">
                   <h3>{thread.task_title} · {thread.team_name}</h3>
-                  <p className="muted">{t('crazy88.admin.task_points', { points: thread.task_points || 0 }, `Points: ${thread.task_points || 0}`)}</p>
+                  <p className="muted">{t('crazy88.admin.task_points', { points: thread.task_points || 0 })}</p>
 
                   {(() => {
                     const orderedSubmissions = [...(Array.isArray(thread.submissions) ? thread.submissions : [])].sort((left, right) => {
@@ -1829,7 +1829,7 @@ export default function ModuleOverviewPage() {
 
                               <article className="ml-auto max-w-[95%] rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
                                 <p className="text-xs text-gray-500 dark:text-slate-400">{submission.reviewed_at || '-'}</p>
-                                <p><strong>{t(`crazy88.team.status_${submission.status || 'pending'}`, {}, submission.status || 'pending')}</strong></p>
+                                <p><strong>{t(`crazy88.team.status_${submission.status || 'pending'}`, {})}</strong></p>
                                 {submission.judge_message ? <p>{submission.judge_message}</p> : null}
                               </article>
                             </div>
@@ -1839,7 +1839,7 @@ export default function ModuleOverviewPage() {
                         {pendingSubmission ? (
                           <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                             <label className="block text-sm font-medium text-navy-900 dark:text-slate-100">
-                              <span>{t('crazy88.admin.judge_message_label', {}, 'Message to team (optional)')}</span>
+                              <span>{t('crazy88.admin.judge_message_label', {})}</span>
                               <textarea
                                 className="input mt-1 w-full"
                                 rows={2}
@@ -1851,7 +1851,7 @@ export default function ModuleOverviewPage() {
                                     [pendingSubmissionKey]: nextValue,
                                   }))
                                 }}
-                                placeholder={t('crazy88.admin.judge_message_placeholder', {}, 'Explain why this was accepted or rejected…')}
+                                placeholder={t('crazy88.admin.judge_message_placeholder', {})}
                               />
                             </label>
                             <div className="table-actions-inline">
@@ -1860,10 +1860,10 @@ export default function ModuleOverviewPage() {
                                 type="button"
                                 onClick={() => handleJudgeCrazy88Submission(thread.team_id, pendingSubmission.id, true, judgeMessageDraft)}
                               >
-                                {t('crazy88.admin.accept', {}, 'Accept')}
+                                {t('crazy88.admin.accept', {})}
                               </button>
                               <button className="btn btn-remove btn-small" type="button" onClick={() => handleJudgeCrazy88Submission(thread.team_id, pendingSubmission.id, false, judgeMessageDraft)}>
-                                {t('crazy88.admin.reject', {}, 'Reject')}
+                                {t('crazy88.admin.reject', {})}
                               </button>
                             </div>
                           </div>
@@ -1879,11 +1879,11 @@ export default function ModuleOverviewPage() {
 
         {game?.game_type === 'code_conspiracy' && moduleDetails?.kind === 'code_conspiracy' ? (
           <section className="overview-panel">
-            <h2>{t('code_conspiracy.admin.config', {}, 'Code Conspiracy live state')}</h2>
+            <h2>{t('code_conspiracy.admin.config', {})}</h2>
             <table className="admin-table">
               <tbody>
                 <tr>
-                  <th>{t('moduleOverview.teamCount', {}, 'Teams')}</th>
+                  <th>{t('moduleOverview.teamCount', {})}</th>
                   <td>{liveOverviewTeams.length}</td>
                 </tr>
               </tbody>

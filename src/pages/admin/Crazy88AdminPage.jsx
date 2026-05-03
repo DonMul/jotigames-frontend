@@ -42,7 +42,7 @@ export default function Crazy88AdminPage() {
       setTasks(Array.isArray(tasksPayload?.tasks) ? tasksPayload.tasks : [])
       setConfig(configPayload?.config || { visibility_mode: 'all_visible' })
     } catch (err) {
-      setError(err.message || t('crazy88.admin.load_failed', {}, 'Failed to load Crazy88 admin data'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -51,15 +51,15 @@ export default function Crazy88AdminPage() {
   useEffect(() => { loadAll() }, [auth.token, gameId])
 
   async function deleteTask(task) {
-    if (!window.confirm(t('crazy88.admin.task_delete_confirm', { title: task?.title || '' }, 'Delete task?'))) return
+    if (!window.confirm(t('crazy88.admin.task_delete_confirm', { title: task?.title || '' }))) return
     setError('')
     setSuccess('')
     try {
       await moduleApi.deleteCrazy88Task(auth.token, gameId, task.id)
       await loadAll()
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) {
-      setError(err.message || t('crazy88.admin.task_delete_failed', {}, 'Failed to delete task'))
+      setError(err.message || t('error.deleteFailed', {}))
     }
   }
 
@@ -88,9 +88,9 @@ export default function Crazy88AdminPage() {
       const used = new Set(reordered.map((task) => String(task.id || '')))
       const tail = tasks.filter((task) => !used.has(String(task.id || '')))
       setTasks([...reordered, ...tail])
-      setSuccess(t('button.save', {}, 'Saved'))
+      setSuccess(t('button.label.save', {}))
     } catch (err) {
-      setError(err.message || t('crazy88.admin.reorder_failed', {}, 'Failed to reorder tasks'))
+      setError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -98,29 +98,29 @@ export default function Crazy88AdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('crazy88.admin.kicker', {}, 'Crazy 88')}</p>
-          <h1>{t('crazy88.admin.tasks_heading', { game: game?.name || '' }, `Tasks · ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('gamePage.manageTasks', {}, 'Manage tasks')}</p>
+          <p className="overview-kicker">{t('crazy88.admin.kicker', {})}</p>
+          <h1>{t('crazy88.admin.tasks_heading', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('gamePage.manageTasks', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('crazy88.admin.back', {}, 'Back')}</Link>
-          <Link className="btn btn-primary" to={'/admin/crazy88/' + gameId + '/tasks/new'}>{t('crazy88.admin.task_add', {}, 'Add task')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
+          <Link className="btn btn-primary" to={'/admin/crazy88/' + gameId + '/tasks/new'}>{t('crazy88.admin.task_add', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('crazy88.admin.task_list', {}, 'Task list')}</h2>
+        <h2>{t('crazy88.admin.task_list', {})}</h2>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>{t('crazy88.admin.table_title', {}, 'Title')}</th>
-              <th>{t('crazy88.admin.table_points', {}, 'Points')}</th>
-              <th>{t('crazy88.admin.table_location', {}, 'Location')}</th>
-              <th>{t('crazy88.admin.table_actions', {}, 'Actions')}</th>
+              <th>{t('table.title', {})}</th>
+              <th>{t('table.points', {})}</th>
+              <th>{t('table.location', {})}</th>
+              <th>{t('table.actions', {})}</th>
             </tr>
           </thead>
           <tbody>
@@ -134,10 +134,10 @@ export default function Crazy88AdminPage() {
                 <td>{task.points}</td>
                 <td>
                   {config.visibility_mode === 'all_visible'
-                    ? t('crazy88.visibility.all_visible', {}, 'All visible')
+                    ? t('crazy88.visibility.all_visible', {})
                     : task.latitude !== null && task.longitude !== null
                       ? `${task.latitude}, ${task.longitude} · ${task.radius_meters}m`
-                      : <span className="muted">{t('crazy88.admin.location_not_set', {}, 'Not set')}</span>}
+                      : <span className="muted">{t('crazy88.admin.location_not_set', {})}</span>}
                 </td>
                 <td className="table-actions-inline">
                   <button
@@ -157,16 +157,16 @@ export default function Crazy88AdminPage() {
                     ↓
                   </button>
                   <Link className="btn btn-edit btn-small" to={'/admin/crazy88/' + gameId + '/tasks/' + task.id + '/edit'}>
-                    {t('button.edit', {}, 'Edit')}
+                    {t('button.label.edit', {})}
                   </Link>
                   <button className="btn btn-remove btn-small" type="button" onClick={() => deleteTask(task)}>
-                    {t('button.delete', {}, 'Delete')}
+                    {t('button.label.delete', {})}
                   </button>
                 </td>
               </tr>
             ))}
             {sortedTasks.length === 0 ? (
-              <tr><td colSpan={4} className="muted">{t('crazy88.admin.task_empty', {}, 'No tasks yet')}</td></tr>
+              <tr><td colSpan={4} className="muted">{t('crazy88.admin.task_empty', {})}</td></tr>
             ) : null}
           </tbody>
         </table>

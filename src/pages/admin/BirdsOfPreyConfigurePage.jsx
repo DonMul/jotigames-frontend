@@ -41,7 +41,7 @@ export default function BirdsOfPreyConfigurePage() {
         auto_drop_seconds: String(Number(config?.auto_drop_seconds || 300)),
       })
     } catch (err) {
-      setError(err.message || t('birds_of_prey.load_failed', {}, 'Failed to load Birds of Prey config'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -65,9 +65,9 @@ export default function BirdsOfPreyConfigurePage() {
     try {
       await moduleApi.updateBirdsOfPreyConfig(auth.token, gameId, payload)
       await loadAll()
-      setSuccess(t('birds_of_prey.saved', {}, 'Saved'))
+      setSuccess(t('status.saved', {}))
     } catch (err) {
-      setError(err.message || t('birds_of_prey.save_failed', {}, 'Failed to save Birds of Prey config'))
+      setError(err.message || t('error.saveFailed', {}))
     }
   }
 
@@ -75,25 +75,25 @@ export default function BirdsOfPreyConfigurePage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <p className="overview-kicker">{t('gameCatalog.birds_of_prey.name', {}, 'Birds of Prey')}</p>
+          <p className="overview-kicker">{t('gameCatalog.birds_of_prey.name', {})}</p>
           <h1>{game?.name || '-'}</h1>
-          <p className="overview-subtitle">{t('birds_of_prey.configure', {}, 'Configure Birds of Prey')}</p>
+          <p className="overview-subtitle">{t('birds_of_prey.configure', {})}</p>
         </div>
         <div className="overview-actions">
             <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('birds_of_prey.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </section>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
         <form onSubmit={handleSubmit} className="stack">
           <div className="form-row">
-            <label htmlFor="bop-visibility-radius">{t('birds_of_prey.admin.visibility_radius', {}, 'Visibility radius (m)')}</label>
+            <label htmlFor="bop-visibility-radius">{t('birds_of_prey.admin.visibility_radius', {})}</label>
             <input
               id="bop-visibility-radius"
               type="number"
@@ -106,7 +106,7 @@ export default function BirdsOfPreyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="bop-protection-radius">{t('birds_of_prey.admin.protection_radius', {}, 'Protection radius (m)')}</label>
+            <label htmlFor="bop-protection-radius">{t('birds_of_prey.admin.protection_radius', {})}</label>
             <input
               id="bop-protection-radius"
               type="number"
@@ -119,7 +119,7 @@ export default function BirdsOfPreyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="bop-auto-drop">{t('birds_of_prey.admin.auto_drop_seconds', {}, 'Auto drop interval (seconds)')}</label>
+            <label htmlFor="bop-auto-drop">{t('birds_of_prey.admin.auto_drop_seconds', {})}</label>
             <input
               id="bop-auto-drop"
               type="number"
@@ -131,7 +131,7 @@ export default function BirdsOfPreyConfigurePage() {
             />
           </div>
 
-          <button className="btn btn-primary" type="submit">{t('birds_of_prey.save', {}, 'Save')}</button>
+          <button className="btn btn-primary" type="submit">{t('button.label.save', {})}</button>
         </form>
       </section>
     </main>

@@ -10,6 +10,7 @@ const expectedRoutes = [
   '/pricing',
   '/faq',
   '/register',
+  '/activate-account',
   '/login',
   '/team-login',
   '/info/games/:slug',

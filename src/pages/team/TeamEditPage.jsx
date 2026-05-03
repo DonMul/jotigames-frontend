@@ -34,7 +34,7 @@ export default function TeamEditPage() {
         const resolvedGameId = String(dashboard?.game_id || '')
         const resolvedTeamId = String(dashboard?.team_id || '')
         if (!resolvedGameId || !resolvedTeamId) {
-          throw new Error(t('teamDashboard.noGame', {}, 'Could not resolve active team game'))
+          throw new Error(t('teamScan.noGame', {}))
         }
 
         const team = await gameApi.getTeam(auth.token, resolvedGameId, resolvedTeamId)
@@ -48,7 +48,7 @@ export default function TeamEditPage() {
         setLogoPath(String(team?.logo_path || dashboard?.team_logo_path || ''))
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('teamForm.loadFailed', {}, 'Could not load team'))
+          setError(err.message || t('error.loadFailed', {}))
         }
       } finally {
         if (!cancelled) {
@@ -73,11 +73,11 @@ export default function TeamEditPage() {
 
     const trimmedName = teamName.trim()
     if (!trimmedName) {
-      setError(t('teamForm.nameRequired', {}, 'Name is required'))
+      setError(t('teamForm.nameRequired', {}))
       return
     }
     if (!gameId || !teamId) {
-      setError(t('teamDashboard.noGame', {}, 'Could not resolve active team game'))
+      setError(t('teamScan.noGame', {}))
       return
     }
 
@@ -89,7 +89,7 @@ export default function TeamEditPage() {
       })
       navigate('/team')
     } catch (err) {
-      setError(err.message || t('teamForm.saveFailed', {}, 'Could not save team'))
+      setError(err.message || t('error.saveFailed', {}))
     } finally {
       setSaving(false)
     }
@@ -99,22 +99,22 @@ export default function TeamEditPage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <h1>{t('teamForm.editTitle', {}, 'Edit team')}</h1>
+          <h1>{t('teamForm.editTitle', {})}</h1>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to="/team">
-            {t('teamForm.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </section>
 
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
         <form onSubmit={handleSubmit} className="admin-panel">
           <div className="form-row">
-            <label htmlFor="team-name">{t('teamForm.name', {}, 'Name')}</label>
+            <label htmlFor="team-name">{t('object.team.name', {})}</label>
             <input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} required />
           </div>
 
@@ -122,7 +122,7 @@ export default function TeamEditPage() {
 
           <div className="modal-actions">
             <button className="btn btn-primary" type="submit" disabled={saving}>
-              {saving ? t('teamForm.saving', {}, 'Saving…') : t('teamForm.save', {}, 'Save')}
+              {saving ? t('button.state.saving', {}) : t('button.label.save', {})}
             </button>
           </div>
         </form>

@@ -29,19 +29,19 @@ export default function TerritoryControlAdminPage() {
       setGame(gameRecord)
       setZones(Array.isArray(zonesPayload?.zones) ? zonesPayload.zones : [])
     } catch (err) {
-      setError(err.message || t('territory_control.admin.load_failed', {}, 'Failed to load zones'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally { setLoading(false) }
   }
 
   useEffect(() => { loadAll() }, [auth.token, gameId])
 
   async function handleDeleteZone(zone) {
-    if (!window.confirm(t('territory_control.admin.zone_delete_confirm', { name: zone?.title || '' }, `Delete ${zone?.title || 'zone'}?`))) return
+    if (!window.confirm(t('territory_control.admin.zone_delete_confirm', { name: zone?.title || '' }))) return
     setError(''); setSuccess('')
     try {
       await moduleApi.deleteTerritoryZone(auth.token, gameId, zone.id)
       await loadAll()
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) { setError(err.message || 'Failed to delete zone') }
   }
 
@@ -49,41 +49,41 @@ export default function TerritoryControlAdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('territory_control.admin.kicker', {}, 'Territory Control')}</p>
-          <h1>{t('territory_control.admin.zones_heading', { game: game?.name || '' }, `Zones \u00b7 ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('territory_control.admin.zones_subtitle', {}, 'Configure zones')}</p>
+          <p className="overview-kicker">{t('territory_control.admin.kicker', {})}</p>
+          <h1>{t('territory_control.admin.zones_heading', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('territory_control.admin.zones_subtitle', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('territory_control.admin.back', {}, 'Back')}</Link>
-          <Link className="btn btn-primary" to={'/admin/territory-control/' + gameId + '/zones/new'}>{t('territory_control.admin.zone_add', {}, 'Add zone')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
+          <Link className="btn btn-primary" to={'/admin/territory-control/' + gameId + '/zones/new'}>{t('territory_control.admin.zone_add', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="overview-panel">
-        <h2>{t('common.map', {}, 'Map')}</h2>
+        <h2>{t('common.map', {})}</h2>
         <AdminOverviewMap
           entities={zones}
           getLabel={(zone) => zone.title || '-'}
           getRadius={(zone) => Number(zone.radius_meters || 35)}
-          ariaLabel={t('territory_control.admin.map_label', {}, 'Territory Control zones map')}
+          ariaLabel={t('territory_control.admin.map_label', {})}
         />
       </section>
 
       <section className="overview-panel">
-          <h2>{t('territory_control.admin.zone_list', {}, 'Zone list')}</h2>
-          {zones.length === 0 ? <p className="muted">{t('territory_control.admin.zone_empty', {}, 'No zones yet')}</p> : null}
+          <h2>{t('territory_control.admin.zone_list', {})}</h2>
+          {zones.length === 0 ? <p className="muted">{t('territory_control.admin.zone_empty', {})}</p> : null}
           {zones.length > 0 ? (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('territory_control.admin.zone_table_name', {}, 'Name')}</th>
-                  <th>{t('territory_control.admin.zone_table_radius', {}, 'Radius')}</th>
-                  <th>{t('territory_control.admin.zone_table_points', {}, 'Points')}</th>
-                  <th className="text-right">{t('territory_control.admin.zone_table_actions', {}, 'Actions')}</th>
+                  <th>{t('table.name', {})}</th>
+                  <th>{t('table.radius', {})}</th>
+                  <th>{t('table.points', {})}</th>
+                  <th className="text-right">{t('table.actions', {})}</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,8 +93,8 @@ export default function TerritoryControlAdminPage() {
                     <td>{zone.radius_meters} m</td>
                     <td>{zone.capture_points}</td>
                     <td className="text-right table-actions-inline">
-                      <Link className="btn btn-edit btn-small" to={'/admin/territory-control/' + gameId + '/zones/' + zone.id + '/edit'}>{t('button.edit', {}, 'Edit')}</Link>
-                      <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteZone(zone)}>{t('button.delete', {}, 'Delete')}</button>
+                      <Link className="btn btn-edit btn-small" to={'/admin/territory-control/' + gameId + '/zones/' + zone.id + '/edit'}>{t('button.label.edit', {})}</Link>
+                      <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteZone(zone)}>{t('button.label.delete', {})}</button>
                     </td>
                   </tr>
                 ))}

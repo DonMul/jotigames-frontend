@@ -193,8 +193,8 @@ export default function GeoHunterTeamPanel({
       const latLng = [p.latitude, p.longitude]
       bounds.push(latLng)
       const isAnswered = answeredIds.has(p.id)
-      const pointsLabel = t('geohunter.team.points_short', {}, 'pts')
-      const answeredLabel = isAnswered ? t('geohunter.team.map_answered_suffix', {}, '✅') : ''
+      const pointsLabel = t('geohunter.team.points_short', {})
+      const answeredLabel = isAnswered ? t('geohunter.team.map_answered_suffix', {}) : ''
       L.circle(latLng, { radius: p.radius_meters, color: isAnswered ? '#16a34a' : p.marker_color, fillColor: isAnswered ? '#16a34a' : p.marker_color, fillOpacity: 0.15, weight: 2 }).addTo(rangeCirclesLayerRef.current)
       L.circleMarker(latLng, { radius: 8, color: isAnswered ? '#16a34a' : p.marker_color, fillColor: isAnswered ? '#16a34a' : p.marker_color, fillOpacity: 0.9, weight: 2 })
         .bindPopup(`<strong>${p.title}</strong><br/>${p.points} ${pointsLabel}${answeredLabel ? ` ${answeredLabel}` : ''}`)
@@ -249,8 +249,8 @@ export default function GeoHunterTeamPanel({
 
     const feedback = await onAnswerQuestion(activePoi.id, answerValue)
     const defaultMessage = feedback?.correct
-      ? t('geohunter.answer.correct', {}, 'Correct answer!')
-      : t('geohunter.answer.incorrect', {}, 'Incorrect answer')
+      ? t('geohunter.answer.correct', {})
+      : t('geohunter.answer.incorrect', {})
     const message = String(feedback?.message || defaultMessage)
     const isCorrect = Boolean(feedback?.correct)
 
@@ -332,14 +332,14 @@ export default function GeoHunterTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('geohunter.team.title', {}, 'GeoHunter')}</h2>
-        <p><strong>{t('geohunter.team.score', {}, 'Score')}:</strong> {score}</p>
-        <p className="muted">{currentPosition ? t('geohunter.team.gps_active', {}, 'GPS active') : t('geohunter.team.location_required', {}, 'Waiting for location…')}</p>
+        <h2>{t('geohunter.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
+        <p className="muted">{currentPosition ? t('status.gpsActive', {}) : t('status.waitingForLocation', {})}</p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('geohunter.team.objective', {}, 'Points of interest')}</h2>
+        <h2>{t('geohunter.team.objective', {})}</h2>
         {answerFeedback ? (
           <p className={answerFeedback.type === 'success' ? 'text-emerald-700' : 'text-red-700'} style={{ marginBottom: '0.75rem' }}>
             {answerFeedback.message}
@@ -352,17 +352,17 @@ export default function GeoHunterTeamPanel({
                 <div className="flex items-start justify-between gap-3">
                   <strong>{p.title}</strong>
                   <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-                    {t('geohunter.team.points_label', { points: p.points }, `${p.points} punten`)}
+                    {t('geohunter.team.points_label', { points: p.points })}
                   </span>
                 </div>
                 {correctlyAnsweredIds.has(p.id) ? (
                   <p className="text-emerald-700" style={{ margin: '0.25rem 0' }}>
-                    {t('geohunter.answer.correct', {}, 'Correct answer!')}
+                    {t('geohunter.answer.correct', {})}
                   </p>
                 ) : null}
                 {Number(retryLockedPoiSeconds[p.id] || 0) > 0 ? (
                   <p className="text-red-700" style={{ margin: '0.25rem 0' }}>
-                    {t('geohunter.answer.retry_in_seconds', { seconds: retryLockedPoiSeconds[p.id] }, `You can answer this question again in ${retryLockedPoiSeconds[p.id]} seconds.`)}
+                    {t('geohunter.answer.retry_in_seconds', { seconds: retryLockedPoiSeconds[p.id] })}
                   </p>
                 ) : null}
                 <button
@@ -371,13 +371,13 @@ export default function GeoHunterTeamPanel({
                   disabled={answering || Number(retryLockedPoiSeconds[p.id] || 0) > 0 || correctlyAnsweredIds.has(p.id)}
                   onClick={() => handleOpenQuestion(p)}
                 >
-                  {t('geohunter.team.answer_question', {}, 'Answer question')}
+                  {t('geohunter.team.answer_question', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('geohunter.team.move_into_range', {}, 'Move closer to a POI.') : t('geohunter.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('geohunter.team.move_into_range', {}) : t('status.waitingForLocation', {})}</p>
         )}
       </div>
 
@@ -425,7 +425,7 @@ export default function GeoHunterTeamPanel({
                   className="input"
                   value={openAnswer}
                   onChange={(e) => setOpenAnswer(e.target.value)}
-                  placeholder={t('geohunter.team.answer_placeholder', {}, 'Your answer…')}
+                  placeholder={t('geohunter.team.answer_placeholder', {})}
                   required
                   autoFocus
                 />
@@ -433,10 +433,10 @@ export default function GeoHunterTeamPanel({
                 <p>{activePoi.content || activePoi.question_text}</p>
               )}
               <div className="modal-actions" style={{ marginTop: '1rem' }}>
-                <button className="btn btn-ghost" type="button" onClick={() => setActivePoi(null)}>{t('teamDashboard.popupClose', {}, 'Cancel')}</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setActivePoi(null)}>{t('button.label.close', {})}</button>
                 {activePoi.question_type !== 'text' ? (
                   <button className="btn btn-primary" type="submit" disabled={answering || Number(retryLockedPoiSeconds[String(activePoi.id || '')] || 0) > 0 || (activePoi.question_type === 'multiple_choice' ? !selectedChoice : !openAnswer.trim())}>
-                    {answering ? t('geohunter.team.submitting', {}, 'Submitting…') : t('geohunter.team.submit_answer', {}, 'Submit')}
+                    {answering ? t('geohunter.team.submitting', {}) : t('geohunter.team.submit_answer', {})}
                   </button>
                 ) : null}
               </div>
@@ -447,7 +447,7 @@ export default function GeoHunterTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

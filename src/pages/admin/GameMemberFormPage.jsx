@@ -60,7 +60,7 @@ export default function GameMemberFormPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('memberForm.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       } finally {
         if (!cancelled) {
@@ -119,20 +119,22 @@ export default function GameMemberFormPage() {
 
       navigate(backPath)
     } catch (err) {
-      setError(err.message || t('memberForm.saveFailed'))
+      setError(err.message || t('error.saveFailed'))
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
+    <main className="page-shell">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{isEdit ? t('memberForm.editTitle') : t('memberForm.newTitle')}</h1>
-        <Link className="btn btn-ghost" to={backPath}>
-          {t('memberForm.back')}
-        </Link>
+      <div className="geo-header">
+        <h1>{isEdit ? t('memberForm.editTitle') : t('memberForm.newTitle')}</h1>
+        <div className="overview-actions">
+          <Link className="btn btn-ghost" to={backPath}>
+            {t('common.back')}
+          </Link>
+        </div>
       </div>
 
       {loading ? (
@@ -143,9 +145,9 @@ export default function GameMemberFormPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6 dark:border-slate-700 dark:bg-slate-900">
+        <form onSubmit={handleSubmit} className="admin-block space-y-6">
           <div className="space-y-1.5">
-            <label htmlFor="member-email" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('memberForm.email')}</label>
+            <label htmlFor="member-email" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.user.email')}</label>
             <input
               id="member-email"
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors read-only:bg-gray-50 read-only:text-gray-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:read-only:bg-slate-800 dark:read-only:text-slate-400"
@@ -166,8 +168,8 @@ export default function GameMemberFormPage() {
               onChange={(event) => setRole(event.target.value)}
               required
             >
-              <option value={ROLE_ADMIN}>{t('memberForm.roleAdmin')}</option>
-              <option value={ROLE_GAME_MASTER}>{t('memberForm.roleGameMaster')}</option>
+              <option value={ROLE_ADMIN}>{t('gamePage.role.admin')}</option>
+              <option value={ROLE_GAME_MASTER}>{t('gamePage.role.game_master')}</option>
             </select>
           </div>
 
@@ -177,7 +179,7 @@ export default function GameMemberFormPage() {
               type="submit"
               disabled={saving}
             >
-              {saving ? t('memberForm.saving') : t('memberForm.save')}
+              {saving ? t('button.state.saving') : t('button.label.save')}
             </button>
           </div>
         </form>

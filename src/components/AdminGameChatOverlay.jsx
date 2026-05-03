@@ -109,7 +109,7 @@ export default function AdminGameChatOverlay() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('gamePage.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       }
     }
@@ -164,7 +164,7 @@ export default function AdminGameChatOverlay() {
       setMessageInput('')
       setError('')
     } catch (err) {
-      setError(err.message || t('gamePage.sendFailed'))
+      setError(err.message || t('error.sendFailed'))
     }
   }
 
@@ -178,7 +178,7 @@ export default function AdminGameChatOverlay() {
         type="button"
         className="btn btn-primary game-chat-launcher"
         aria-expanded={isOpen ? 'true' : 'false'}
-        aria-label={isOpen ? t('gamePage.closeChat') : t('gamePage.chat')}
+        aria-label={isOpen ? t('button.label.close') : t('gamePage.chat')}
         onClick={() => setIsOpen((current) => !current)}
       >
         {t('gamePage.chat')}
@@ -189,7 +189,7 @@ export default function AdminGameChatOverlay() {
         <div className="game-chat-head">
           <h2>{t('gamePage.chat')}</h2>
           <button type="button" className="btn btn-ghost btn-small" onClick={() => setIsOpen(false)}>
-            {t('gamePage.closeChat')}
+            {t('button.label.close')}
           </button>
         </div>
 
@@ -217,7 +217,7 @@ export default function AdminGameChatOverlay() {
                 <div className="game-chat-bubble-wrap">
                   <div className="game-chat-name-row">
                     <p className="game-chat-name">{authorLabel}</p>
-                    {isAdmin ? <span className="game-chat-admin-badge">{t('gamePage.adminLabel')}</span> : null}
+                    {isAdmin ? <span className="game-chat-admin-badge">{t('gamePage.role.admin')}</span> : null}
                   </div>
                   <div className="game-chat-bubble">{String(message.message || '')}</div>
                   <p className="game-chat-meta">{formatTime(message.sent_at)}</p>

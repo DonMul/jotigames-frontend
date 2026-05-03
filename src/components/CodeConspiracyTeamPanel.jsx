@@ -61,38 +61,38 @@ export default function CodeConspiracyTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('code_conspiracy.team.title', {}, 'Code Conspiracy')}</h2>
-        <p><strong>{t('code_conspiracy.team.score', {}, 'Score')}:</strong> {score}</p>
+        <h2>{t('code_conspiracy.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
         <p className="muted">
-          {t('code_conspiracy.team.description', {}, 'Crack the codes of other teams by submitting guesses.')}
+          {t('code_conspiracy.team.description', {})}
         </p>
         <div className="team-flags" style={{ marginTop: '0.5rem' }}>
-          <span className="tag tag-cool">{t('code_conspiracy.team.rounds', {}, 'Rounds')}: {config.rounds}</span>
-          <span className="tag tag-cool">{t('code_conspiracy.team.code_length', {}, 'Code length')}: {config.code_length}</span>
-          <span className="tag tag-cool">{t('code_conspiracy.team.max_attempts', {}, 'Max attempts')}: {config.max_attempts}</span>
+          <span className="tag tag-cool">{t('code_conspiracy.team.rounds', {})}: {config.rounds}</span>
+          <span className="tag tag-cool">{t('code_conspiracy.team.code_length', {})}: {config.code_length}</span>
+          <span className="tag tag-cool">{t('code_conspiracy.team.max_attempts', {})}: {config.max_attempts}</span>
         </div>
       </div>
 
       <div className="team-panel">
-        <h2>{t('code_conspiracy.team.submit_heading', {}, 'Submit a code')}</h2>
+        <h2>{t('code_conspiracy.team.submit_heading', {})}</h2>
         <form onSubmit={handleSubmit}>
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-            {t('code_conspiracy.team.target_team', {}, 'Target team')}
+            {t('code_conspiracy.team.target_team', {})}
             <select className="input" value={targetTeamId} onChange={(e) => setTargetTeamId(e.target.value)} required style={{ marginTop: '0.25rem', display: 'block', width: '100%' }}>
-              <option value="">{t('code_conspiracy.team.choose_team', {}, '-- Select a team --')}</option>
+              <option value="">{t('code_conspiracy.team.choose_team', {})}</option>
               {targetTeams.map((team) => (
                 <option key={team.teamId} value={team.teamId}>{team.name}</option>
               ))}
             </select>
           </label>
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-            {t('code_conspiracy.team.code_input', {}, 'Code')}
+            {t('code_conspiracy.team.code_input', {})}
             <input
               type="text"
               className="input"
               value={codeValue}
               onChange={(e) => setCodeValue(e.target.value)}
-              placeholder={t('code_conspiracy.team.code_placeholder', {}, 'Enter code…')}
+              placeholder={t('code_conspiracy.team.code_placeholder', {})}
               maxLength={20}
               required
               autoFocus
@@ -100,20 +100,20 @@ export default function CodeConspiracyTeamPanel({
             />
           </label>
           <button className="btn btn-primary" type="submit" disabled={submitting || !targetTeamId || !codeValue.trim()}>
-            {submitting ? t('code_conspiracy.team.submitting', {}, 'Submitting…') : t('code_conspiracy.team.submit_code', {}, 'Submit code')}
+            {submitting ? t('code_conspiracy.team.submitting', {}) : t('code_conspiracy.team.submit_code', {})}
           </button>
         </form>
       </div>
 
       {submissionHistory.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('code_conspiracy.team.history_heading', {}, 'Submission history')}</h2>
+          <h2>{t('code_conspiracy.team.history_heading', {})}</h2>
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('code_conspiracy.team.history_target', {}, 'Target')}</th>
-                <th>{t('code_conspiracy.team.history_points', {}, 'Points')}</th>
-                <th>{t('code_conspiracy.team.history_time', {}, 'Time')}</th>
+                <th>{t('code_conspiracy.team.history_target', {})}</th>
+                <th>{t('code_conspiracy.team.history_points', {})}</th>
+                <th>{t('code_conspiracy.team.history_time', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +131,7 @@ export default function CodeConspiracyTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

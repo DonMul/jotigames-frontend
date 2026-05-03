@@ -121,14 +121,14 @@ export default function ResourceRunTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('resource_run.team.title', {}, 'Resource Run')}</h2>
-        <p><strong>{t('resource_run.team.score', {}, 'Score')}:</strong> {score}</p>
-        <p className="muted">{currentPosition ? t('resource_run.team.gps_active', {}, 'GPS active') : t('resource_run.team.location_required', {}, 'Waiting for location…')}</p>
+        <h2>{t('resource_run.team.title', {})}</h2>
+        <p><strong>{t('resource_run.team.score', {})}:</strong> {score}</p>
+        <p className="muted">{currentPosition ? t('status.gpsActive', {}) : t('status.waitingForLocation', {})}</p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('resource_run.team.objective', {}, 'Resource nodes')}</h2>
+        <h2>{t('resource_run.team.objective', {})}</h2>
         {nearbyNodes.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyNodes.map((n) => (
@@ -136,19 +136,19 @@ export default function ResourceRunTeamPanel({
                 <strong>{n.title}</strong> — {n.points} pts
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={claiming} onClick={() => onClaimResource(n.id)}>
-                  {claiming ? t('resource_run.team.claiming', {}, 'Claiming…') : t('resource_run.team.claim_resource', {}, 'Claim resource')}
+                  {claiming ? t('resource_run.team.claiming', {}) : t('resource_run.team.claim_resource', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('resource_run.team.move_into_range', {}, 'Move closer to a resource node.') : t('resource_run.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('resource_run.team.move_into_range', {}) : t('status.waitingForLocation', {})}</p>
         )}
 
-        <h3 style={{ marginTop: '1.5rem' }}>{t('resource_run.team.all_nodes', {}, 'All nodes')}</h3>
+        <h3 style={{ marginTop: '1.5rem' }}>{t('resource_run.team.all_nodes', {})}</h3>
         {nodes.length === 0 ? <p className="muted">-</p> : (
           <table className="admin-table">
-            <thead><tr><th>{t('resource_run.admin.table_title', {}, 'Title')}</th><th>{t('resource_run.admin.table_points', {}, 'Points')}</th><th>{t('resource_run.admin.table_status', {}, 'Status')}</th></tr></thead>
+            <thead><tr><th>{t('table.title', {})}</th><th>{t('table.points', {})}</th><th>{t('resource_run.admin.table_status', {})}</th></tr></thead>
             <tbody>
               {nodes.filter((n) => n.is_active).map((n) => (
                 <tr key={n.id}><td>{n.title}</td><td>{n.points}</td><td>{claimedIds.has(n.id) ? '✅' : '—'}</td></tr>
@@ -160,7 +160,7 @@ export default function ResourceRunTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

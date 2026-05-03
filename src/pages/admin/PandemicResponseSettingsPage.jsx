@@ -73,7 +73,7 @@ export default function PandemicResponseSettingsPage() {
         pickup_point_count: String(Number(config?.pickup_point_count || 4)),
       })
     } catch (err) {
-      setError(err.message || t('pandemic_response.admin.load_failed', {}, 'Failed to load settings'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally { setLoading(false) }
   }
 
@@ -91,13 +91,13 @@ export default function PandemicResponseSettingsPage() {
       pickup_point_count: Number(form.pickup_point_count),
     }
     if (!payload.spawn_area_geojson) {
-      setError(t('pandemic_response.admin.spawn_area_required', {}, 'Spawn area polygon is required'))
+      setError(t('pandemic_response.admin.spawn_area_required', {}))
       return
     }
 
     const center = extractCenterFromPolygon(payload.spawn_area_geojson)
     if (!center) {
-      setError(t('pandemic_response.admin.spawn_area_required', {}, 'Spawn area polygon is required'))
+      setError(t('pandemic_response.admin.spawn_area_required', {}))
       return
     }
 
@@ -108,9 +108,9 @@ export default function PandemicResponseSettingsPage() {
         center_lon: center.center_lon,
       })
       await loadAll()
-      setSuccess(t('button.save', {}, 'Saved'))
+      setSuccess(t('button.label.save', {}))
     } catch (err) {
-      setError(err.message || t('pandemic_response.admin.save_failed', {}, 'Failed to save config'))
+      setError(err.message || t('error.saveFailed', {}))
     }
   }
 
@@ -118,36 +118,36 @@ export default function PandemicResponseSettingsPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('pandemic_response.admin.kicker', {}, 'Pandemic Response')}</p>
-          <h1>{t('pandemic_response.admin.settings_heading', { game: game?.name || '' }, 'Settings')}</h1>
-          <p className="overview-subtitle">{t('pandemic_response.admin.settings_subtitle', {}, 'Configure outbreak parameters')}</p>
+          <p className="overview-kicker">{t('pandemic_response.admin.kicker', {})}</p>
+          <h1>{t('status.settings', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('status.settingsSubtitle', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('pandemic_response.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('pandemic_response.admin.config', {}, 'Auto outbreak configuration')}</h2>
+        <h2>{t('pandemic_response.admin.config', {})}</h2>
         <form onSubmit={submitConfig} className="form-grid">
           <div className="form-row">
-            <label>{t('pandemic_response.admin.spawn_area', {}, 'Spawn area (GeoJSON Polygon)')}</label>
-            <p className="muted">{t('pandemic_response.admin.spawn_area_help', {}, 'Klik op de kaart om hoekpunten te plaatsen voor het spawngebied.')}</p>
+            <label>{t('pandemic_response.admin.spawn_area', {})}</label>
+            <p className="muted">{t('pandemic_response.admin.spawn_area_help', {})}</p>
             <GeoPolygonDrawMap
               value={form.spawn_area_geojson}
               onChange={(value) => setForm((c) => ({ ...c, spawn_area_geojson: value }))}
-              ariaLabel={t('pandemic_response.admin.spawn_area', {}, 'Spawn area (GeoJSON Polygon)')}
+              ariaLabel={t('pandemic_response.admin.spawn_area', {})}
             />
           </div>
-          <div className="form-row"><label htmlFor="pandemic-upgrade-seconds">{t('pandemic_response.admin.severity_upgrade', {}, 'Severity upgrade interval (seconds)')}</label><input id="pandemic-upgrade-seconds" type="number" min="30" value={form.severity_upgrade_seconds} onChange={(e) => setForm((c) => ({ ...c, severity_upgrade_seconds: e.target.value }))} required /></div>
-          <div className="form-row"><label htmlFor="pandemic-penalty">{t('pandemic_response.admin.penalty_percent', {}, 'Penalty percent')}</label><input id="pandemic-penalty" type="number" min="1" max="90" value={form.penalty_percent} onChange={(e) => setForm((c) => ({ ...c, penalty_percent: e.target.value }))} required /></div>
-          <div className="form-row"><label htmlFor="pandemic-target">{t('pandemic_response.admin.target_active_hotspots', {}, 'Target active hotspots')}</label><input id="pandemic-target" type="number" min="1" max="200" value={form.target_active_hotspots} onChange={(e) => setForm((c) => ({ ...c, target_active_hotspots: e.target.value }))} required /></div>
-          <div className="form-row"><label htmlFor="pandemic-pickup-count">{t('pandemic_response.admin.pickup_point_count', {}, 'Pickup points')}</label><input id="pandemic-pickup-count" type="number" min="1" max="30" value={form.pickup_point_count} onChange={(e) => setForm((c) => ({ ...c, pickup_point_count: e.target.value }))} required /></div>
-          <div className="overview-actions"><button className="btn btn-primary" type="submit">{t('button.save', {}, 'Save')}</button></div>
+          <div className="form-row"><label htmlFor="pandemic-upgrade-seconds">{t('pandemic_response.admin.severity_upgrade', {})}</label><input id="pandemic-upgrade-seconds" type="number" min="30" value={form.severity_upgrade_seconds} onChange={(e) => setForm((c) => ({ ...c, severity_upgrade_seconds: e.target.value }))} required /></div>
+          <div className="form-row"><label htmlFor="pandemic-penalty">{t('pandemic_response.admin.penalty_percent', {})}</label><input id="pandemic-penalty" type="number" min="1" max="90" value={form.penalty_percent} onChange={(e) => setForm((c) => ({ ...c, penalty_percent: e.target.value }))} required /></div>
+          <div className="form-row"><label htmlFor="pandemic-target">{t('pandemic_response.admin.target_active_hotspots', {})}</label><input id="pandemic-target" type="number" min="1" max="200" value={form.target_active_hotspots} onChange={(e) => setForm((c) => ({ ...c, target_active_hotspots: e.target.value }))} required /></div>
+          <div className="form-row"><label htmlFor="pandemic-pickup-count">{t('pandemic_response.admin.pickup_point_count', {})}</label><input id="pandemic-pickup-count" type="number" min="1" max="30" value={form.pickup_point_count} onChange={(e) => setForm((c) => ({ ...c, pickup_point_count: e.target.value }))} required /></div>
+          <div className="overview-actions"><button className="btn btn-primary" type="submit">{t('button.label.save', {})}</button></div>
         </form>
       </section>
     </main>

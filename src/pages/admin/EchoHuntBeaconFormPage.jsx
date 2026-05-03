@@ -72,7 +72,7 @@ export default function EchoHuntBeaconFormPage() {
         })
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('echo_hunt.admin.load_failed', {}, 'Failed to load beacon'))
+          setError(err.message || t('error.loadFailed', {}))
         }
       } finally {
         if (!cancelled) {
@@ -105,7 +105,7 @@ export default function EchoHuntBeaconFormPage() {
     }
 
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('echo_hunt.admin.location_required', {}, 'Location is required'))
+      setError(t('validation.locationRequired', {}))
       return
     }
 
@@ -120,11 +120,11 @@ export default function EchoHuntBeaconFormPage() {
       navigate(`/admin/echo-hunt/${gameId}/beacons`, {
         replace: true,
         state: {
-          flashSuccess: t('echo_hunt.admin.beacon_saved', {}, 'Beacon has been saved'),
+          flashSuccess: t('status.saved', {}),
         },
       })
     } catch (err) {
-      setError(err.message || t('echo_hunt.admin.save_failed', {}, 'Failed to save beacon'))
+      setError(err.message || t('error.saveFailed', {}))
     } finally {
       setSaving(false)
     }
@@ -134,25 +134,25 @@ export default function EchoHuntBeaconFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('echo_hunt.admin.kicker', {}, 'Echo Hunt')}</p>
-          <h1>{isEdit ? t('echo_hunt.admin.edit_beacon', {}, 'Edit beacon') : t('echo_hunt.admin.create_beacon', {}, 'Create beacon')}</h1>
+          <p className="overview-kicker">{t('echo_hunt.admin.kicker', {})}</p>
+          <h1>{isEdit ? t('echo_hunt.admin.edit_beacon', {}) : t('echo_hunt.admin.create_beacon', {})}</h1>
           <p className="overview-subtitle">{game?.name || '-'}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/echo-hunt/${gameId}/beacons`}>
-            {t('echo_hunt.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={handleSubmit} className="form-grid">
             <div className="form-row">
-              <label htmlFor="beacon-title">{t('echo_hunt.admin.table_title', {}, 'Title')}</label>
+              <label htmlFor="beacon-title">{t('table.title', {})}</label>
               <input
                 id="beacon-title"
                 value={form.title}
@@ -161,7 +161,7 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <div className="form-row">
-              <label htmlFor="beacon-hint">{t('echo_hunt.admin.table_hint', {}, 'Hint')}</label>
+              <label htmlFor="beacon-hint">{t('echo_hunt.admin.table_hint', {})}</label>
               <input
                 id="beacon-hint"
                 value={form.hint}
@@ -169,17 +169,17 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <div className="form-row">
-              <label>{t('echo_hunt.admin.location', {}, 'Location')}</label>
+              <label>{t('table.location', {})}</label>
               <GeoLocationPicker
                 latitude={form.latitude}
                 longitude={form.longitude}
                 onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
-                ariaLabel={t('echo_hunt.admin.map_label', {}, 'Beacon map')}
+                ariaLabel={t('echo_hunt.admin.map_label', {})}
               />
-              <p className="muted" style={{ marginTop: '0.5rem' }}>{t('common.map_select_hint', {}, 'Click on the map to set the location.')}</p>
+              <p className="muted" style={{ marginTop: '0.5rem' }}>{t('common.map_select_hint', {})}</p>
             </div>
             <div className="form-row">
-              <label htmlFor="beacon-radius">{t('echo_hunt.admin.table_radius', {}, 'Radius')}</label>
+              <label htmlFor="beacon-radius">{t('table.radius', {})}</label>
               <input
                 id="beacon-radius"
                 type="number"
@@ -190,7 +190,7 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <div className="form-row">
-              <label htmlFor="beacon-signal-radius">{t('echo_hunt.admin.signal_radius', {}, 'Signal radius')}</label>
+              <label htmlFor="beacon-signal-radius">{t('echo_hunt.admin.signal_radius', {})}</label>
               <input
                 id="beacon-signal-radius"
                 type="number"
@@ -200,7 +200,7 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <div className="form-row">
-              <label htmlFor="beacon-points">{t('echo_hunt.admin.table_points', {}, 'Points')}</label>
+              <label htmlFor="beacon-points">{t('table.points', {})}</label>
               <input
                 id="beacon-points"
                 type="number"
@@ -211,7 +211,7 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <div className="form-row">
-              <label htmlFor="beacon-color">{t('common.color', {}, 'Color')}</label>
+              <label htmlFor="beacon-color">{t('table.color', {})}</label>
               <input
                 id="beacon-color"
                 type="color"
@@ -221,7 +221,7 @@ export default function EchoHuntBeaconFormPage() {
               />
             </div>
             <label className="blindhike-toggle-row" htmlFor="beacon-active">
-              <span className="font-medium">{t('echo_hunt.admin.active', {}, 'Active')}</span>
+              <span className="font-medium">{t('status.active', {})}</span>
               <button
                 id="beacon-active"
                 type="button"
@@ -235,10 +235,10 @@ export default function EchoHuntBeaconFormPage() {
             </label>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>
-                {saving ? t('button.saving', {}, 'Saving…') : t('button.save', {}, 'Save')}
+                {saving ? t('button.state.saving', {}) : t('button.label.save', {})}
               </button>
               <Link className="btn btn-ghost" to={`/admin/echo-hunt/${gameId}/beacons`}>
-                {t('button.cancel', {}, 'Cancel')}
+                {t('button.label.cancel', {})}
               </Link>
             </div>
           </form>

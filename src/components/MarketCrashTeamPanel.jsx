@@ -280,14 +280,14 @@ export default function MarketCrashTeamPanel({
     <section className="team-dashboard-blindhike-layout">
       <div className="team-dashboard-birds-top-row">
         <div className="team-panel team-dashboard-blindhike-map-panel">
-          <h2>{t('market_crash.team.map_title', {}, 'Market map')}</h2>
-          <p className="muted">{t('market_crash.team.map_hint', {}, 'All trade points are visible. In-range points are highlighted.')}</p>
-          <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('market_crash.team.map_title', {}, 'Market map')} />
+          <h2>{t('market_crash.team.map_title', {})}</h2>
+          <p className="muted">{t('market_crash.team.map_hint', {})}</p>
+          <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('market_crash.team.map_title', {})} />
         </div>
 
         <div className="team-panel team-dashboard-birds-enemy-panel">
-          <h2>{t('market_crash.team.nearby_points', {}, 'Nearby points')}</h2>
-          {nearbyPoints.length === 0 ? <p className="muted">{t('market_crash.team.no_nearby_points', {}, 'No points in range')}</p> : null}
+          <h2>{t('market_crash.team.nearby_points', {})}</h2>
+          {nearbyPoints.length === 0 ? <p className="muted">{t('market_crash.team.no_nearby_points', {})}</p> : null}
           <div className="market-crash-team-nearby-list">
             {nearbyPoints.map((point) => {
               const pointId = String(point?.id || '')
@@ -296,7 +296,7 @@ export default function MarketCrashTeamPanel({
               return (
                 <article key={pointId} className="geo-card">
                   <strong>{String(point?.title || '-')}</strong>
-                  {resourceSettings.length === 0 ? <p className="muted">{t('market_crash.team.no_resources_here', {}, 'No resources configured')}</p> : null}
+                  {resourceSettings.length === 0 ? <p className="muted">{t('market_crash.team.no_resources_here', {})}</p> : null}
                   {resourceSettings.map((setting) => {
                     const resourceId = String(setting?.resource_id || '')
                     const buyPrice = formatPrice(setting?.buy_price)
@@ -332,8 +332,8 @@ export default function MarketCrashTeamPanel({
                           onClick={() => onExecuteTrade({ pointId, resourceId, side: 'buy', quantity })}
                         >
                           {executingTradeKey === buyActionKey
-                            ? t('market_crash.team.trading', {}, 'Trading…')
-                            : t('market_crash.team.buy', {}, 'Buy')}
+                            ? t('market_crash.team.trading', {})
+                            : t('market_crash.team.buy', {})}
                         </button>
                         <button
                           className="btn btn-remove btn-small"
@@ -342,8 +342,8 @@ export default function MarketCrashTeamPanel({
                           onClick={() => onExecuteTrade({ pointId, resourceId, side: 'sell', quantity })}
                         >
                           {executingTradeKey === sellActionKey
-                            ? t('market_crash.team.trading', {}, 'Trading…')
-                            : t('market_crash.team.sell', {}, 'Sell')}
+                            ? t('market_crash.team.trading', {})
+                            : t('market_crash.team.sell', {})}
                         </button>
                       </div>
                     )
@@ -356,9 +356,9 @@ export default function MarketCrashTeamPanel({
       </div>
 
       <div className="team-panel">
-        <h2>{t('market_crash.team.wallet', {}, 'Wallet & Inventory')}</h2>
+        <h2>{t('market_crash.team.wallet', {})}</h2>
         <p>
-          <strong>{t('market_crash.team.cash', {}, 'Cash')}:</strong>{' '}
+          <strong>{t('market_crash.team.cash', {})}:</strong>{' '}
           {Number(state?.cash || 0)}
         </p>
         <ul className="team-hand-list">
@@ -368,13 +368,13 @@ export default function MarketCrashTeamPanel({
               <span className="chip-meta">{entry.quantity}</span>
             </li>
           ))}
-          {inventoryEntries.length === 0 ? <li className="muted">{t('market_crash.team.empty_inventory', {}, 'No inventory yet')}</li> : null}
+          {inventoryEntries.length === 0 ? <li className="muted">{t('market_crash.team.empty_inventory', {})}</li> : null}
         </ul>
       </div>
 
       <div className="team-panel">
-        <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
-        {leaderboard.length === 0 ? <p>{t('teamDashboard.noTeams', {}, 'No teams')}</p> : null}
+        <h2>{t('teamDashboard.highscore', {})}</h2>
+        {leaderboard.length === 0 ? <p>{t('status.noTeams', {})}</p> : null}
         {leaderboard.length > 0 ? (
           <ol className="team-leaderboard-list">
             {leaderboard.map((team) => (

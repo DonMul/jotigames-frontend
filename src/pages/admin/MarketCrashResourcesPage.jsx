@@ -53,7 +53,7 @@ export default function MarketCrashResourcesPage() {
   }, [location?.state])
 
   async function deleteResource(resource) {
-    if (!window.confirm(t('market_crash.admin.resource_delete_confirm', { name: resource?.name || '' }, 'Delete resource?'))) {
+    if (!window.confirm(t('market_crash.admin.resource_delete_confirm', { name: resource?.name || '' }))) {
       return
     }
 
@@ -62,7 +62,7 @@ export default function MarketCrashResourcesPage() {
     try {
       const adminData = await moduleApi.deleteMarketCrashResource(auth.token, gameId, resource.id)
       applyAdminData(adminData)
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) {
       setError(err.message || 'Failed to delete resource')
     }
@@ -72,36 +72,36 @@ export default function MarketCrashResourcesPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('market_crash.admin.kicker', {}, 'Market Crash')}</p>
-          <h1>{t('market_crash.admin.resources_heading', { game: game?.name || '' }, `Resource management · ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('market_crash.admin.resources_subtitle', {}, 'Manage resources and default prices')}</p>
+          <p className="overview-kicker">{t('market_crash.admin.kicker', {})}</p>
+          <h1>{t('market_crash.admin.resources_heading', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('market_crash.admin.resources_subtitle', {})}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('market_crash.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       {!loading ? (
         <section className="overview-panel">
           <div className="overview-actions" style={{ marginBottom: '0.75rem' }}>
-            <h2>{t('market_crash.admin.resource_list', {}, 'Resources')}</h2>
+            <h2>{t('market_crash.admin.resource_list', {})}</h2>
             <Link className="btn btn-primary btn-small" to={`/admin/market-crash/${gameId}/resources/new`}>
-              {t('market_crash.admin.resource_add', {}, 'Add resource')}
+              {t('market_crash.admin.resource_add', {})}
             </Link>
           </div>
 
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('market_crash.admin.resource_table_name', {}, 'Name')}</th>
-                <th>{t('market_crash.admin.resource_table_default_price', {}, 'Default price')}</th>
-                <th>{t('market_crash.admin.resource_table_actions', {}, 'Actions')}</th>
+                <th>{t('table.name', {})}</th>
+                <th>{t('market_crash.admin.resource_table_default_price', {})}</th>
+                <th>{t('table.actions', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -111,17 +111,17 @@ export default function MarketCrashResourcesPage() {
                   <td>{resource.default_price}</td>
                   <td className="table-actions-inline">
                     <Link className="btn btn-edit btn-small" to={`/admin/market-crash/${gameId}/resources/${resource.id}/edit`}>
-                      {t('button.edit', {}, 'Edit')}
+                      {t('button.label.edit', {})}
                     </Link>
                     <button className="btn btn-remove btn-small" type="button" onClick={() => deleteResource(resource)}>
-                      {t('button.delete', {}, 'Delete')}
+                      {t('button.label.delete', {})}
                     </button>
                   </td>
                 </tr>
               ))}
               {resources.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="muted">{t('market_crash.admin.resource_empty', {}, 'No resources yet')}</td>
+                  <td colSpan={3} className="muted">{t('market_crash.admin.resource_empty', {})}</td>
                 </tr>
               ) : null}
             </tbody>

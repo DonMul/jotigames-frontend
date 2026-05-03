@@ -57,6 +57,7 @@ export async function apiRequest(path, { method = 'GET', token, body, headers } 
 export const authApi = {
   loginUser: (email, password) => apiRequest('/api/auth/user', { method: 'POST', body: { email, password } }),
   loginTeam: (game_code, team_code) => apiRequest('/api/auth/team', { method: 'POST', body: { game_code, team_code } }),
+  verifyEmail: (token) => apiRequest('/api/auth/verify', { method: 'POST', body: { token } }),
 }
 
 export const gameApi = {

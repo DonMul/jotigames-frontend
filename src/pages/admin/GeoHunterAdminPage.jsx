@@ -29,7 +29,7 @@ export default function GeoHunterAdminPage() {
       setGame(gameRecord)
       setPois(Array.isArray(poisPayload?.pois) ? poisPayload.pois : [])
     } catch (err) {
-      setError(err.message || t('moduleOverview.loadFailed', {}, 'Failed to load GeoHunter POIs'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -47,7 +47,7 @@ export default function GeoHunterAdminPage() {
   }, [location?.state])
 
   async function handleDeletePoi(poi) {
-    if (!window.confirm(t('geohunter.admin.poi_delete_confirm', { title: poi?.title || '' }, 'Delete this POI?'))) {
+    if (!window.confirm(t('geohunter.admin.poi_delete_confirm', { title: poi?.title || '' }))) {
       return
     }
     setError('')
@@ -55,7 +55,7 @@ export default function GeoHunterAdminPage() {
     try {
       await moduleApi.deleteGeoHunterPoi(auth.token, gameId, poi.id)
       await loadAll()
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) {
       setError(err.message || 'Failed to delete POI')
     }
@@ -65,60 +65,59 @@ export default function GeoHunterAdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('geohunter.admin.kicker', {}, 'GeoHunter')}</p>
-          <h1>{t('geohunter.admin.poi_heading', { game: game?.name || '' }, 'POIs')}</h1>
-          <p className="overview-subtitle">{t('geohunter.admin.poi_subtitle_list', {}, 'Manage points of interest')}</p>
+          <p className="overview-kicker">{t('gameCatalog.geohunter.name', {})} - {game?.name}</p>
+          <h1>{t('geohunter.admin.poi_heading')}</h1>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>
-            {t('geohunter.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
           <Link className="btn btn-primary" to={'/admin/geohunter/' + gameId + '/pois/new'}>
-            {t('geohunter.admin.poi_add', {}, 'Add POI')}
+            {t('geohunter.admin.poi_add', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <div className="geo-layout">
         <section className="overview-panel">
-          <h2>{t('common.map', {}, 'Map')}</h2>
+          <h2>{t('common.map', {})}</h2>
           <AdminOverviewMap
             entities={pois}
             getLabel={(poi) => poi.title || '-'}
             getRadius={(poi) => Number(poi.radius_meters || 20)}
-            ariaLabel={t('geohunter.admin.map_label', {}, 'GeoHunter POIs map')}
+            ariaLabel={t('geohunter.admin.map_label', {})}
           />
         </section>
 
         <section className="overview-panel">
-          <h2>{t('geohunter.admin.poi_list', {}, 'POI list')}</h2>
-          {pois.length === 0 ? <p className="muted">{t('geohunter.admin.poi_empty', {}, 'No POIs yet')}</p> : null}
+          <h2>{t('geohunter.admin.poi_list', {})}</h2>
+          {pois.length === 0 ? <p className="muted">{t('geohunter.admin.poi_empty', {})}</p> : null}
           {pois.length > 0 ? (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('geohunter.admin.poi_table_title', {}, 'Title')}</th>
-                  <th>{t('geohunter.admin.poi_table_type', {}, 'Type')}</th>
-                  <th>{t('geohunter.admin.poi_table_radius', {}, 'Radius')}</th>
-                  <th className="text-right">{t('geohunter.admin.poi_table_actions', {}, 'Actions')}</th>
+                  <th>{t('object.poi.title', {})}</th>
+                  <th>{t('object.poi.type', {})}</th>
+                  <th>{t('object.poi.radius', {})}</th>
+                  <th className="text-right">{t('table.actions', {})}</th>
                 </tr>
               </thead>
               <tbody>
                 {pois.map((poi) => (
                   <tr key={poi.id}>
                     <td>{poi.title}</td>
-                    <td>{t(poi.type_label_key || '', {}, poi.type)}</td>
+                    <td>{t(poi.type_label_key || '', {})}</td>
                     <td>{poi.radius_meters} m</td>
                     <td className="text-right table-actions-inline">
                       <Link className="btn btn-edit btn-small" to={'/admin/geohunter/' + gameId + '/pois/' + poi.id + '/edit'}>
-                        {t('button.edit', {}, 'Edit')}
+                        {t('button.label.edit', {})}
                       </Link>
                       <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeletePoi(poi)}>
-                        {t('button.delete', {}, 'Delete')}
+                        {t('button.label.delete', {})}
                       </button>
                     </td>
                   </tr>

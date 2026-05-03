@@ -83,14 +83,14 @@ export default function CodeConspiracyConfigurePage() {
     try {
       await moduleApi.updateCodeConspiracyConfig(auth.token, gameId, payload)
       await loadAll()
-      setSuccess(t('button.save', {}, 'Saved'))
+      setSuccess(t('button.label.save', {}))
     } catch (err) {
       setError(err.message || 'Failed to save settings')
     }
   }
 
   async function handleEndGame() {
-    if (!window.confirm(t('code_conspiracy.admin.end_confirm', {}, 'End this game now?'))) {
+    if (!window.confirm(t('code_conspiracy.admin.end_confirm', {}))) {
       return
     }
 
@@ -99,7 +99,7 @@ export default function CodeConspiracyConfigurePage() {
     try {
       await moduleApi.endCodeConspiracyGame(auth.token, gameId)
       await loadAll()
-      setSuccess(t('code_conspiracy.admin.game_ended', {}, 'Game ended'))
+      setSuccess(t('code_conspiracy.admin.game_ended', {}))
     } catch (err) {
       setError(err.message || 'Failed to end game')
     }
@@ -109,28 +109,28 @@ export default function CodeConspiracyConfigurePage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <p className="overview-kicker">{t('game.type.code_conspiracy', {}, 'Code Conspiracy')}</p>
+          <p className="overview-kicker">{t('game.type.code_conspiracy', {})}</p>
           <h1>{game?.name || '-'}</h1>
-          <p className="overview-subtitle">{t('code_conspiracy.admin.config', {}, 'Configuration')}</p>
+          <p className="overview-subtitle">{t('code_conspiracy.admin.config', {})}</p>
         </div>
         <div className="overview-actions">
             <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('games.show.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
           <button className="btn btn-remove" type="button" onClick={handleEndGame}>
-            {t('code_conspiracy.admin.end_game', {}, 'End game')}
+            {t('code_conspiracy.admin.end_game', {})}
           </button>
         </div>
       </section>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
         <form onSubmit={handleSubmit} className="stack">
           <div className="form-row">
-            <label htmlFor="cc-code-length">{t('code_conspiracy.admin.code_length', {}, 'Code length')}</label>
+            <label htmlFor="cc-code-length">{t('code_conspiracy.admin.code_length', {})}</label>
             <input
               id="cc-code-length"
               type="number"
@@ -143,20 +143,20 @@ export default function CodeConspiracyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="cc-character-set">{t('code_conspiracy.admin.character_set', {}, 'Character set')}</label>
+            <label htmlFor="cc-character-set">{t('code_conspiracy.admin.character_set', {})}</label>
             <select
               id="cc-character-set"
               value={form.character_set}
               onChange={(event) => setForm((current) => ({ ...current, character_set: event.target.value }))}
             >
-              <option value="alphanumeric">{t('code_conspiracy.admin.character_set_alphanumeric', {}, 'Alphanumeric')}</option>
-              <option value="letters">{t('code_conspiracy.admin.character_set_letters', {}, 'Letters')}</option>
-              <option value="numbers">{t('code_conspiracy.admin.character_set_numbers', {}, 'Numbers')}</option>
+              <option value="alphanumeric">{t('code_conspiracy.admin.character_set_alphanumeric', {})}</option>
+              <option value="letters">{t('code_conspiracy.admin.character_set_letters', {})}</option>
+              <option value="numbers">{t('code_conspiracy.admin.character_set_numbers', {})}</option>
             </select>
           </div>
 
           <div className="form-row">
-            <label htmlFor="cc-cooldown">{t('code_conspiracy.admin.cooldown_seconds', {}, 'Cooldown seconds')}</label>
+            <label htmlFor="cc-cooldown">{t('code_conspiracy.admin.cooldown_seconds', {})}</label>
             <input
               id="cc-cooldown"
               type="number"
@@ -169,7 +169,7 @@ export default function CodeConspiracyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="cc-correct-points">{t('code_conspiracy.admin.correct_points', {}, 'Correct points')}</label>
+            <label htmlFor="cc-correct-points">{t('code_conspiracy.admin.correct_points', {})}</label>
             <input
               id="cc-correct-points"
               type="number"
@@ -182,7 +182,7 @@ export default function CodeConspiracyConfigurePage() {
           </div>
 
           <label className="blindhike-toggle-row" htmlFor="code-conspiracy-penalty-enabled">
-            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.penalty_enabled', {}, 'Enable penalty')}</span>
+            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.penalty_enabled', {})}</span>
             <span className="game-type-switch">
               <input
                 id="code-conspiracy-penalty-enabled"
@@ -195,7 +195,7 @@ export default function CodeConspiracyConfigurePage() {
           </label>
 
           <div className="form-row">
-            <label htmlFor="cc-penalty-value">{t('code_conspiracy.admin.penalty_value', {}, 'Penalty value')}</label>
+            <label htmlFor="cc-penalty-value">{t('code_conspiracy.admin.penalty_value', {})}</label>
             <input
               id="cc-penalty-value"
               type="number"
@@ -208,7 +208,7 @@ export default function CodeConspiracyConfigurePage() {
           </div>
 
           <label className="blindhike-toggle-row" htmlFor="code-conspiracy-first-bonus-enabled">
-            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.first_bonus_enabled', {}, 'Enable first correct bonus')}</span>
+            <span className="blindhike-toggle-label">{t('code_conspiracy.admin.first_bonus_enabled', {})}</span>
             <span className="game-type-switch">
               <input
                 id="code-conspiracy-first-bonus-enabled"
@@ -221,7 +221,7 @@ export default function CodeConspiracyConfigurePage() {
           </label>
 
           <div className="form-row">
-            <label htmlFor="cc-first-bonus-points">{t('code_conspiracy.admin.first_bonus_points', {}, 'First bonus points')}</label>
+            <label htmlFor="cc-first-bonus-points">{t('code_conspiracy.admin.first_bonus_points', {})}</label>
             <input
               id="cc-first-bonus-points"
               type="number"
@@ -234,18 +234,18 @@ export default function CodeConspiracyConfigurePage() {
           </div>
 
           <div className="form-row">
-            <label htmlFor="cc-win-condition">{t('code_conspiracy.admin.win_condition', {}, 'Win condition')}</label>
+            <label htmlFor="cc-win-condition">{t('code_conspiracy.admin.win_condition', {})}</label>
             <select
               id="cc-win-condition"
               value={form.win_condition_mode}
               onChange={(event) => setForm((current) => ({ ...current, win_condition_mode: event.target.value }))}
             >
-              <option value="first_to_complete">{t('code_conspiracy.admin.win_condition_first', {}, 'First to complete')}</option>
-              <option value="highest_score_time_limit">{t('code_conspiracy.admin.win_condition_score', {}, 'Highest score at time limit')}</option>
+              <option value="first_to_complete">{t('code_conspiracy.admin.win_condition_first', {})}</option>
+              <option value="highest_score_time_limit">{t('code_conspiracy.admin.win_condition_score', {})}</option>
             </select>
           </div>
 
-          <button className="btn btn-primary" type="submit">{t('button.save', {}, 'Save')}</button>
+          <button className="btn btn-primary" type="submit">{t('button.label.save', {})}</button>
         </form>
       </section>
     </main>

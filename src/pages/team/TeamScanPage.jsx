@@ -10,10 +10,10 @@ import { useI18n } from '../../lib/i18n'
 function getCardTypeLabel(type, t) {
   const raw = String(type || '').trim()
   if (!raw) {
-    return t('teamScan.card', {}, 'Card')
+    return t('teamScan.card', {})
   }
   const normalized = raw.startsWith('card.type.') ? raw.replace('card.type.', '') : raw
-  return t(`explodingKittens.cardTypes.${normalized}`, {}, normalized.replaceAll('_', ' '))
+  return t(`explodingKittens.cardTypes.${normalized}`, {})
 }
 
 function getCardTitle(card, t) {
@@ -64,7 +64,7 @@ export default function TeamScanPage() {
       }
       setScanResult(result)
     } catch (err) {
-      setError(err.message || t('teamScan.scanFailed', {}, 'Could not process scan'))
+      setError(err.message || t('error.actionFailed', {}))
     } finally {
       setSubmitting(false)
     }
@@ -93,7 +93,7 @@ export default function TeamScanPage() {
       }
       setScanResult(result)
     } catch (err) {
-      setError(err.message || t('teamScan.scanFailed', {}, 'Could not process scan'))
+      setError(err.message || t('error.actionFailed', {}))
     } finally {
       setSubmitting(false)
     }
@@ -114,10 +114,10 @@ export default function TeamScanPage() {
 
         const payload = await gameApi.getTeamDashboard(auth.token)
         if (!payload?.game_id || !payload?.team_id) {
-          throw new Error(t('teamScan.noGame', {}, 'Could not resolve active team game'))
+          throw new Error(t('teamScan.noGame', {}))
         }
         if (String(payload?.game_type || '') !== 'exploding_kittens') {
-          throw new Error(t('teamScan.invalidGameType', {}, 'Scan is only available for Exploding Kittens'))
+          throw new Error(t('teamScan.invalidGameType', {}))
         }
 
         if (cancelled) {
@@ -141,7 +141,7 @@ export default function TeamScanPage() {
         setScanResult(result)
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('teamScan.scanFailed', {}, 'Could not process scan'))
+          setError(err.message || t('error.actionFailed', {}))
         }
       } finally {
         if (!cancelled) {
@@ -165,7 +165,7 @@ export default function TeamScanPage() {
   const pendingState = String(scanResult?.pending_state || '').trim()
   const currentCard = scanResult?.card && typeof scanResult.card === 'object' ? scanResult.card : scanCard
   const messageRaw = String(scanResult?.message_key || '').trim()
-  const message = messageRaw ? t(messageRaw, {}, messageRaw) : ''
+  const message = messageRaw ? t(messageRaw, {}) : ''
 
   const showPreview = status === 'pending_state' && pendingState === 'see_the_future'
   const showTarget = status === 'pending_state' && pendingState === 'attack'
@@ -174,39 +174,39 @@ export default function TeamScanPage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <h1>{t('teamScan.title', {}, 'Card scan')}</h1>
+          <h1>{t('teamScan.title', {})}</h1>
           <p className="overview-subtitle">{dashboard?.game_name || '-'}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to="/team">
-            {t('teamScan.backToDashboard', {}, 'Back to dashboard')}
+            {t('common.back', {})}
           </Link>
         </div>
       </section>
 
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading && !error && scanResult ? (
         <section className="team-panel">
           {showPreview ? (
             <>
-              <h2>{t('teamScan.previewTitle', {}, 'Card preview')}</h2>
-              <p>{t('teamScan.previewText', {}, 'This scan is in preview mode. Confirm to apply.')}</p>
+              <h2>{t('teamScan.previewTitle', {})}</h2>
+              <p>{t('teamScan.previewText', {})}</p>
             </>
           ) : null}
 
           {showTarget ? (
             <>
-              <h2>{t('teamScan.targetTitle', {}, 'Choose target')}</h2>
-              <p>{t('teamScan.targetText', {}, 'Select the target team for this attack scan.')}</p>
+              <h2>{t('teamScan.targetTitle', {})}</h2>
+              <p>{t('teamScan.targetText', {})}</p>
             </>
           ) : null}
 
           {!showPreview && !showTarget ? (
             <>
-              <h2>{t('teamScan.resultTitle', {}, 'Scan result')}</h2>
-              <p>{message || t('teamScan.completed', {}, 'Scan processed')}</p>
+              <h2>{t('teamScan.resultTitle', {})}</h2>
+              <p>{message || t('teamScan.completed', {})}</p>
             </>
           ) : null}
 
@@ -225,10 +225,10 @@ export default function TeamScanPage() {
             {showPreview ? (
               <>
                 <button className="btn btn-primary" type="button" onClick={() => runResolveState({ confirmPeek: true })} disabled={submitting}>
-                  {t('teamScan.confirm', {}, 'Confirm')}
+                  {t('teamScan.confirm', {})}
                 </button>
                 <button className="btn btn-ghost" type="button" onClick={() => runResolveState({ rejectPeek: true })} disabled={submitting}>
-                  {t('teamScan.reject', {}, 'Reject')}
+                  {t('teamScan.reject', {})}
                 </button>
               </>
             ) : null}
@@ -237,7 +237,7 @@ export default function TeamScanPage() {
               <>
                 <div className="scan-target-field">
                   <label className="scan-target-label" htmlFor="scan-target-team-select">
-                    {t('teamScan.targetChoose', {}, 'Choose target team')}
+                    {t('teamScan.targetChoose', {})}
                   </label>
                   <select
                     id="scan-target-team-select"
@@ -245,7 +245,7 @@ export default function TeamScanPage() {
                     value={targetTeamId}
                     onChange={(event) => setTargetTeamId(event.target.value)}
                   >
-                    <option value="">{t('teamScan.targetChoose', {}, 'Choose target team')}</option>
+                    <option value="">{t('teamScan.targetChoose', {})}</option>
                     {teams.map((team) => (
                       <option key={team.id} value={team.id}>{team.name}</option>
                     ))}
@@ -257,14 +257,14 @@ export default function TeamScanPage() {
                   disabled={submitting || !String(targetTeamId || '').trim()}
                   onClick={() => runResolveState({ targetTeamId })}
                 >
-                  {t('teamScan.targetSubmit', {}, 'Confirm target')}
+                  {t('teamScan.targetSubmit', {})}
                 </button>
               </>
             ) : null}
 
             {!showPreview && !showTarget ? (
               <Link className="btn btn-primary" to="/team">
-                {t('teamScan.resultBack', {}, 'Back to dashboard')}
+                {t('common.back', {})}
               </Link>
             ) : null}
           </div>

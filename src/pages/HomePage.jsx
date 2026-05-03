@@ -87,7 +87,7 @@ export default function HomePage() {
                       {t('home.ctaRegister')}
                     </Link>
                     <Link to="/login" className="inline-flex items-center rounded-full border-2 border-navy-200 px-6 py-3 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all dark:border-slate-600 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300">
-                      {t('home.ctaLogin')}
+                      {t('auth.login')}
                     </Link>
                   </>
                 )}
@@ -121,17 +121,17 @@ export default function HomePage() {
                 <form onSubmit={submitTeamLogin} className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label htmlFor="homeGameCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('home.gameCode')}</label>
+                      <label htmlFor="homeGameCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.game.code')}</label>
                       <input id="homeGameCode" value={gameCode} onChange={(e) => setGameCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                     </div>
                     <div>
-                      <label htmlFor="homeTeamCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('home.teamCode')}</label>
+                      <label htmlFor="homeTeamCode" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.team.code')}</label>
                       <input id="homeTeamCode" value={teamCode} onChange={(e) => setTeamCode(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
                     </div>
                   </div>
                   {error ? <div className="flash flash-error">{error}</div> : null}
                   <button type="submit" className="w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 transition-all">
-                    {t('home.joinTeamGame')}
+                    {t('button.label.submit')}
                   </button>
                 </form>
                 <p className="text-xs text-navy-400 mt-4 text-center dark:text-slate-500">{t('home.panelFooter')}</p>
@@ -219,7 +219,7 @@ export default function HomePage() {
           <p className="mt-4 text-lg text-navy-500 max-w-2xl mx-auto dark:text-slate-400">{t('home.ctaBottomText')}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
-              {t('home.ctaBottomRegister')}
+              {t('auth.createAccount')}
             </Link>
             <Link to="/about" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3.5 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all dark:border-slate-600 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300">
               {t('home.ctaBottomLearnMore')}

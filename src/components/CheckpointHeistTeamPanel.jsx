@@ -178,18 +178,18 @@ export default function CheckpointHeistTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('checkpoint_heist.team.title', {}, 'Checkpoint Heist')}</h2>
-        <p><strong>{t('checkpoint_heist.team.score', {}, 'Score')}:</strong> {score}</p>
+        <h2>{t('checkpoint_heist.team.title', {})}</h2>
+        <p><strong>{t('status.score', {})}:</strong> {score}</p>
         <p className="muted">
           {currentPosition
-            ? t('checkpoint_heist.team.gps_active', {}, 'GPS active')
-            : t('checkpoint_heist.team.location_required', {}, 'Waiting for location…')}
+            ? t('status.gpsActive', {})
+            : t('status.waitingForLocation', {})}
         </p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('checkpoint_heist.team.objective', {}, 'Checkpoints')}</h2>
+        <h2>{t('checkpoint_heist.team.objective', {})}</h2>
         {nearbyCheckpoints.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyCheckpoints.map((cp) => (
@@ -203,8 +203,8 @@ export default function CheckpointHeistTeamPanel({
                   onClick={() => onCaptureCheckpoint(cp.id)}
                 >
                   {capturing
-                    ? t('checkpoint_heist.team.capturing', {}, 'Capturing…')
-                    : t('checkpoint_heist.team.capture_checkpoint', {}, 'Capture')}
+                    ? t('checkpoint_heist.team.capturing', {})
+                    : t('checkpoint_heist.team.capture_checkpoint', {})}
                 </button>
               </li>
             ))}
@@ -212,19 +212,19 @@ export default function CheckpointHeistTeamPanel({
         ) : (
           <p className="muted">
             {currentPosition
-              ? t('checkpoint_heist.team.move_into_range', {}, 'Move closer to a checkpoint to capture it.')
-              : t('checkpoint_heist.team.location_required', {}, 'Waiting for location…')}
+              ? t('checkpoint_heist.team.move_into_range', {})
+              : t('status.waitingForLocation', {})}
           </p>
         )}
 
-        <h3 style={{ marginTop: '1.5rem' }}>{t('checkpoint_heist.team.all_checkpoints', {}, 'All checkpoints')}</h3>
+        <h3 style={{ marginTop: '1.5rem' }}>{t('checkpoint_heist.team.all_checkpoints', {})}</h3>
         {checkpoints.length === 0 ? <p className="muted">-</p> : (
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('checkpoint_heist.admin.table_title', {}, 'Title')}</th>
-                <th>{t('checkpoint_heist.admin.table_points', {}, 'Points')}</th>
-                <th>{t('checkpoint_heist.admin.table_status', {}, 'Status')}</th>
+                <th>{t('table.title', {})}</th>
+                <th>{t('table.points', {})}</th>
+                <th>{t('checkpoint_heist.admin.table_status', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -242,7 +242,7 @@ export default function CheckpointHeistTeamPanel({
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

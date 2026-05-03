@@ -43,7 +43,7 @@ export default function CourierRushSettingsPage() {
         pickup_spawn_area_geojson: String(config?.pickup_spawn_area_geojson || ''),
       })
     } catch (err) {
-      setError(err.message || t('courier_rush.admin.load_failed', {}, 'Failed to load settings'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -62,15 +62,15 @@ export default function CourierRushSettingsPage() {
       pickup_spawn_area_geojson: String(configForm.pickup_spawn_area_geojson || '').trim() || null,
     }
     if (!Number.isFinite(payload.max_active_pickups) || payload.max_active_pickups < 1 || payload.max_active_pickups > 25) {
-      setError(t('courier_rush.admin.max_pickups_range', {}, 'Max active pickups must be between 1 and 25'))
+      setError(t('courier_rush.admin.max_pickups_range', {}))
       return
     }
     try {
       await moduleApi.updateCourierRushConfig(auth.token, gameId, payload)
       await loadAll()
-      setSuccess(t('courier_rush.admin.settings_saved', {}, 'Settings saved'))
+      setSuccess(t('status.saved', {}))
     } catch (err) {
-      setError(err.message || t('courier_rush.admin.save_failed', {}, 'Failed to save settings'))
+      setError(err.message || t('error.saveFailed', {}))
     }
   }
 
@@ -78,51 +78,51 @@ export default function CourierRushSettingsPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('courier_rush.admin.kicker', {}, 'Courier Rush')}</p>
-          <h1>{t('courier_rush.admin.settings_heading', { game: game?.name || '' }, 'Settings')}</h1>
-          <p className="overview-subtitle">{t('courier_rush.admin.settings_subtitle', {}, 'Configure game-level settings')}</p>
+          <p className="overview-kicker">{t('courier_rush.admin.kicker', {})}</p>
+          <h1>{t('status.settings', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('status.settingsSubtitle', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('courier_rush.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('courier_rush.admin.settings_title', {}, 'Settings')}</h2>
+        <h2>{t('status.settings', {})}</h2>
         <form onSubmit={submitConfig} className="form-grid">
           <div className="form-row">
-            <label htmlFor="courier-pickup-mode">{t('courier_rush.admin.pickup_mode', {}, 'Pickup mode')}</label>
+            <label htmlFor="courier-pickup-mode">{t('courier_rush.admin.pickup_mode', {})}</label>
             <select id="courier-pickup-mode" value={configForm.pickup_mode} onChange={(e) => setConfigForm((c) => ({ ...c, pickup_mode: e.target.value }))}>
-              <option value="predefined">{t('courier_rush.admin.pickup_mode_predefined', {}, 'Predefined')}</option>
-              <option value="random">{t('courier_rush.admin.pickup_mode_random', {}, 'Random')}</option>
+              <option value="predefined">{t('courier_rush.admin.pickup_mode_predefined', {})}</option>
+              <option value="random">{t('courier_rush.admin.pickup_mode_random', {})}</option>
             </select>
           </div>
           <div className="form-row">
-            <label htmlFor="courier-dropoff-mode">{t('courier_rush.admin.dropoff_mode', {}, 'Dropoff mode')}</label>
+            <label htmlFor="courier-dropoff-mode">{t('courier_rush.admin.dropoff_mode', {})}</label>
             <select id="courier-dropoff-mode" value={configForm.dropoff_mode} onChange={(e) => setConfigForm((c) => ({ ...c, dropoff_mode: e.target.value }))}>
-              <option value="random">{t('courier_rush.admin.dropoff_mode_random', {}, 'Random')}</option>
-              <option value="fixed">{t('courier_rush.admin.dropoff_mode_fixed', {}, 'Fixed')}</option>
+              <option value="random">{t('courier_rush.admin.dropoff_mode_random', {})}</option>
+              <option value="fixed">{t('courier_rush.admin.dropoff_mode_fixed', {})}</option>
             </select>
           </div>
           <div className="form-row">
-            <label htmlFor="courier-max-pickups">{t('courier_rush.admin.max_active_pickups', {}, 'Max active pickups')}</label>
+            <label htmlFor="courier-max-pickups">{t('courier_rush.admin.max_active_pickups', {})}</label>
             <input id="courier-max-pickups" type="number" min="1" max="25" value={configForm.max_active_pickups} onChange={(e) => setConfigForm((c) => ({ ...c, max_active_pickups: e.target.value }))} required />
           </div>
           <div className="form-row">
-            <label>{t('courier_rush.admin.pickup_spawn_area', {}, 'Pickup spawn area (GeoJSON Polygon)')}</label>
-            <p className="muted">{t('courier_rush.admin.pickup_spawn_area_help', {}, 'Klik op de kaart om hoekpunten te plaatsen voor het spawngebied.')}</p>
+            <label>{t('courier_rush.admin.pickup_spawn_area', {})}</label>
+            <p className="muted">{t('courier_rush.admin.pickup_spawn_area_help', {})}</p>
             <GeoPolygonDrawMap
               value={configForm.pickup_spawn_area_geojson}
               onChange={(value) => setConfigForm((c) => ({ ...c, pickup_spawn_area_geojson: value }))}
-              ariaLabel={t('courier_rush.admin.pickup_spawn_area', {}, 'Pickup spawn area (GeoJSON Polygon)')}
+              ariaLabel={t('courier_rush.admin.pickup_spawn_area', {})}
             />
           </div>
           <div className="overview-actions">
-            <button className="btn btn-primary" type="submit">{t('courier_rush.admin.save_settings', {}, 'Save settings')}</button>
+            <button className="btn btn-primary" type="submit">{t('button.label.save', {})}</button>
           </div>
         </form>
       </section>

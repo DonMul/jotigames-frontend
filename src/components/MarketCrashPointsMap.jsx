@@ -127,5 +127,5 @@ export default function MarketCrashPointsMap({ points, t }) {
     }
   }, [pointRows])
 
-  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('market_crash.admin.points_map', {}, 'Market Crash points map')} />
+  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('market_crash.admin.points_map', {})} />
 }

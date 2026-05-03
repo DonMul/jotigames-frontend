@@ -54,7 +54,7 @@ export default function GamePage() {
         setMembers(Array.isArray(membersResponse) ? membersResponse : [])
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('gamePage.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       }
     }
@@ -70,18 +70,18 @@ export default function GamePage() {
     if (!game?.game_type) {
       return '-'
     }
-    return t(`gameCatalog.${game.game_type}.name`, {}, gameMeta?.name || game.game_type)
+    return t(`gameCatalog.${game.game_type}.name`, {})
   }, [game?.game_type, gameMeta?.name, t])
   const gameTypeActionLabel = useMemo(() => {
     const map = {
-      exploding_kittens: t('gamePage.manageCards'),
+      exploding_kittens: t('gameCardsPage.title'),
       geohunter: t('gamePage.managePois'),
       blindhike: t('gamePage.configure'),
       resource_run: t('gamePage.manageNodes'),
       territory_control: t('gamePage.manageZones'),
       market_crash: t('gamePage.managePoints'),
       crazy_88: t('gamePage.manageTasks'),
-      courier_rush: t('gamePage.manageCourierPoints', {}, 'Drop off and Pick Up points'),
+      courier_rush: t('gamePage.manageCourierPoints', {}),
       echo_hunt: t('gamePage.manageBeacons'),
       checkpoint_heist: t('gamePage.manageCheckpoints'),
       pandemic_response: t('gamePage.manageHotspots'),
@@ -126,7 +126,7 @@ export default function GamePage() {
   }, [game?.game_type, gameId])
 
   async function handleDeleteGame() {
-    if (!window.confirm(t('gamePage.confirmDeleteGame', {}, 'Delete this game?'))) {
+    if (!window.confirm(t('gamePage.confirmDeleteGame', {}))) {
       return
     }
 
@@ -134,7 +134,7 @@ export default function GamePage() {
       await gameApi.deleteGame(auth.token, gameId)
       navigate('/admin/games')
     } catch (err) {
-      setError(err.message || t('gamePage.deleteFailed', {}, 'Could not delete game'))
+      setError(err.message || t('error.deleteFailed', {}))
     }
   }
 
@@ -146,12 +146,12 @@ export default function GamePage() {
     try {
       await gameApi.resetGame(auth.token, gameId)
     } catch (err) {
-      setError(err.message || t('gamePage.resetFailed'))
+      setError(err.message || t('error.actionFailed'))
     }
   }
 
   async function handleDeleteTeam(teamId, teamName) {
-    if (!window.confirm(t('gamePage.confirmDeleteTeam', { team: teamName }, `Delete team ${teamName}?`))) {
+    if (!window.confirm(t('gamePage.confirmDeleteTeam', { team: teamName }))) {
       return
     }
 
@@ -160,7 +160,7 @@ export default function GamePage() {
       const updatedTeams = await gameApi.listTeams(auth.token, gameId)
       setTeams(Array.isArray(updatedTeams) ? updatedTeams : [])
     } catch (err) {
-      setError(err.message || t('gamePage.deleteTeamFailed', {}, 'Could not delete team'))
+      setError(err.message || t('error.deleteFailed', {}))
     }
   }
 
@@ -173,7 +173,7 @@ export default function GamePage() {
       return
     }
 
-    if (!window.confirm(t('gamePage.confirmRemoveMember', { email: memberEmail }, `Remove ${memberEmail} from this game?`))) {
+    if (!window.confirm(t('gamePage.confirmRemoveMember', { email: memberEmail }))) {
       return
     }
 
@@ -188,7 +188,7 @@ export default function GamePage() {
       const updatedMembers = await gameApi.listMembers(auth.token, gameId)
       setMembers(Array.isArray(updatedMembers) ? updatedMembers : [])
     } catch (err) {
-      setError(err.message || t('gamePage.removeMemberFailed'))
+      setError(err.message || t('error.deleteFailed'))
     }
   }
 
@@ -210,26 +210,26 @@ export default function GamePage() {
           <p className="text-sm text-gray-500 dark:text-slate-400">{localizedGameTypeName}</p>
         </div>
         <Link className="btn btn-ghost" to="/admin/games">
-          {t('gamePage.backToGames')}
+          {t('common.back')}
         </Link>
       </div>
 
       {/* ── Stat cards ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.type')}</span>
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('object.game.type')}</span>
           <span className="text-base font-semibold text-navy-900 dark:text-white">{localizedGameTypeName}</span>
         </article>
         <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.code')}</span>
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('object.game.code')}</span>
           <span className="text-base font-semibold text-navy-900 font-mono tracking-wide dark:text-white">{game?.code || '-'}</span>
         </article>
         <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.starts')}</span>
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('object.game.starts')}</span>
           <span className="text-base font-semibold text-navy-900 dark:text-white">{formatDate(game?.start_at)}</span>
         </article>
         <article className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-1 dark:border-slate-700 dark:bg-slate-900">
-          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('gamePage.ends')}</span>
+          <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('object.game.ends')}</span>
           <span className="text-base font-semibold text-navy-900 dark:text-white">{formatDate(game?.end_at)}</span>
         </article>
       </div>
@@ -246,23 +246,18 @@ export default function GamePage() {
           ) : null}
           {gameTypeSettingsPath ? (
             <Link className="btn btn-ghost btn-small" to={gameTypeSettingsPath}>
-              {t('gamePage.settings', {}, 'Settings')}
+              {t('status.settings', {})}
             </Link>
           ) : null}
           {game?.game_type === 'market_crash' ? (
             <Link className="btn btn-ghost btn-small" to={`/admin/market-crash/${gameId}/resources`}>
-              {t('gamePage.manageResources', {}, 'Manage resources')}
+              {t('gamePage.manageResources', {})}
             </Link>
           ) : null}
           <Link className="inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-navy-800 transition-colors" to={`/admin/games/${gameId}/live-overview`}>
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" /></svg>
             {t('gamePage.liveOverview')}
           </Link>
-          {gameMeta?.slug ? (
-            <Link className="btn btn-ghost btn-small" to={`/info/games/${gameMeta.slug}`}>
-              {t('gamePage.howToPlay')}
-            </Link>
-          ) : null}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100 dark:border-slate-700">
           <div className="flex items-center gap-2">
@@ -303,9 +298,9 @@ export default function GamePage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>{t('gamePage.memberEmail')}</th>
+                  <th>{t('object.user.email')}</th>
                   <th>{t('gamePage.memberRoles')}</th>
-                  <th className="text-right">{t('gamesPage.actions')}</th>
+                  <th className="text-right">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,7 +317,7 @@ export default function GamePage() {
                                 key={`${member.user_id}-${role}`}
                                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium mr-1 ${role === 'owner' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}
                               >
-                                {t(`gamePage.role.${role}`, {}, role)}
+                                {t(`gamePage.role.${role}`, {})}
                               </span>
                             ))
                           : '—'}
@@ -332,10 +327,10 @@ export default function GamePage() {
                           {canModify ? (
                             <>
                               <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/members/${member.user_id}/edit`}>
-                                {t('gamePage.editMember')}
+                                {t('button.label.edit')}
                               </Link>
                               <button className="btn btn-remove btn-small" type="button" onClick={() => handleRemoveMember(member)}>
-                                {t('gamePage.removeMember')}
+                                {t('button.label.delete')}
                               </button>
                             </>
                           ) : (
@@ -363,14 +358,14 @@ export default function GamePage() {
               {t('gamePage.addTeam')}
             </Link>
           </div>
-          {teams.length === 0 ? <p className="text-sm text-gray-400 dark:text-slate-500">{t('gamePage.noTeams')}</p> : null}
+          {teams.length === 0 ? <p className="text-sm text-gray-400 dark:text-slate-500">{t('status.noTeams')}</p> : null}
           {teams.length > 0 ? (
             <table className="admin-table">
               <thead>
                 <tr>
                   <th>{t('gamePage.teamName')}</th>
                   <th>{t('gamePage.teamCode')}</th>
-                  <th className="text-right">{t('gamesPage.actions')}</th>
+                  <th className="text-right">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -383,10 +378,10 @@ export default function GamePage() {
                     <td className="text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Link className="btn btn-edit btn-small" to={`/admin/games/${gameId}/teams/${team.id}/edit`}>
-                          {t('gamePage.editTeam')}
+                          {t('button.label.edit')}
                         </Link>
                         <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteTeam(team.id, team.name)}>
-                          {t('gamePage.deleteTeam')}
+                          {t('button.label.delete')}
                         </button>
                       </div>
                     </td>

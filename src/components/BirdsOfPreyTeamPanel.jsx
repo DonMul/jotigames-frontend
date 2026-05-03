@@ -286,25 +286,25 @@ export default function BirdsOfPreyTeamPanel({
     <section className="team-dashboard-blindhike-layout">
       <div className="team-dashboard-birds-top-row">
         <div className="team-panel team-dashboard-blindhike-map-panel">
-          <h2>{t('teamDashboard.birdsOfPrey.mapTitle', {}, 'Map')}</h2>
-          <p className="muted">{t('teamDashboard.birdsOfPrey.mapHint', {}, 'Your location, your eggs, and visible enemy eggs are shown on the map.')}</p>
+          <h2>{t('teamDashboard.birdsOfPrey.mapTitle', {})}</h2>
+          <p className="muted">{t('teamDashboard.birdsOfPrey.mapHint', {})}</p>
           <button className="btn btn-primary" type="button" onClick={onDropEgg} disabled={droppingEgg}>
             {droppingEgg
-              ? t('teamDashboard.birdsOfPrey.dropping', {}, 'Dropping egg…')
-              : t('teamDashboard.birdsOfPrey.dropEgg', {}, 'Drop egg')}
+              ? t('teamDashboard.birdsOfPrey.dropping', {})
+              : t('teamDashboard.birdsOfPrey.dropEgg', {})}
           </button>
-          <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('teamDashboard.birdsOfPrey.mapTitle', {}, 'Map')} />
+          <div ref={mapContainerRef} className="game-map team-dashboard-blindhike-map" aria-label={t('teamDashboard.birdsOfPrey.mapTitle', {})} />
         </div>
 
         <div className="team-panel team-dashboard-birds-enemy-panel">
-          <h2>{t('teamDashboard.birdsOfPrey.visibleEnemyEggs', {}, 'Visible enemy eggs')}</h2>
+          <h2>{t('teamDashboard.birdsOfPrey.visibleEnemyEggs', {})}</h2>
           <ul className="team-hand-list">
             {visibleEnemyEggs.map((egg) => {
               const eggId = String(egg?.id || '')
               const canDestroy = Boolean(egg?.can_destroy)
               return (
                 <li key={`enemy-egg-${eggId}`} className="team-hand-row">
-                  <span className="team-hand-label">{String(egg?.owner_team_name || t('teamDashboard.unknownTeam', {}, 'Unknown team'))}</span>
+                  <span className="team-hand-label">{String(egg?.owner_team_name || t('teamDashboard.unknownTeam', {}))}</span>
                   {canDestroy ? (
                     <button
                       className="btn btn-remove btn-small"
@@ -313,23 +313,23 @@ export default function BirdsOfPreyTeamPanel({
                       disabled={destroyingEggId === eggId}
                     >
                       {destroyingEggId === eggId
-                        ? t('teamDashboard.birdsOfPrey.destroying', {}, 'Destroying…')
-                        : t('teamDashboard.birdsOfPrey.destroyEgg', {}, 'Destroy')}
+                        ? t('teamDashboard.birdsOfPrey.destroying', {})
+                        : t('teamDashboard.birdsOfPrey.destroyEgg', {})}
                     </button>
                   ) : (
-                    <span className="chip-meta">{t('teamDashboard.birdsOfPrey.protected', {}, 'Protected')}</span>
+                    <span className="chip-meta">{t('teamDashboard.birdsOfPrey.protected', {})}</span>
                   )}
                 </li>
               )
             })}
-            {visibleEnemyEggs.length === 0 ? <li className="muted">{t('teamDashboard.birdsOfPrey.noVisibleEnemyEggs', {}, 'No enemy eggs in range')}</li> : null}
+            {visibleEnemyEggs.length === 0 ? <li className="muted">{t('teamDashboard.birdsOfPrey.noVisibleEnemyEggs', {})}</li> : null}
           </ul>
         </div>
       </div>
 
       <div className="team-panel">
-        <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
-        {leaderboard.length === 0 ? <p>{t('teamDashboard.noTeams', {}, 'No teams')}</p> : null}
+        <h2>{t('teamDashboard.highscore', {})}</h2>
+        {leaderboard.length === 0 ? <p>{t('status.noTeams', {})}</p> : null}
         {leaderboard.length > 0 ? (
           <ol className="team-leaderboard-list">
             {leaderboard.map((team) => (

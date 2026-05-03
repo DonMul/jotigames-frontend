@@ -126,7 +126,7 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
           })
 
       marker
-        .bindPopup(`${teamName}<br>${t('market_crash.team.cash', {}, 'Cash')}: ${Number(team?.cash || 0)}<br>${t('moduleOverview.score', {}, 'Score')}: ${Number(team?.score || 0)}`)
+        .bindPopup(`${teamName}<br>${t('market_crash.team.cash', {})}: ${Number(team?.cash || 0)}<br>${t('status.score', {})}: ${Number(team?.score || 0)}`)
         .addTo(teamLayerRef.current)
 
       bounds.push([lat, lon])
@@ -154,5 +154,5 @@ export default function MarketCrashAdminOverviewMap({ points, teams, t }) {
     }
   }, [pointRows, t, teamRows])
 
-  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('market_crash.admin.overview_map', {}, 'Market Crash live map')} />
+  return <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('market_crash.admin.overview_map', {})} />
 }

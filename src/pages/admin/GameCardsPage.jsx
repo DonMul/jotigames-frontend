@@ -57,14 +57,14 @@ export default function GameCardsPage() {
       ])
 
       if (!gameRecord) {
-        throw new Error(t('gameCardsPage.gameNotFound'))
+        throw new Error(t('error.gameNotFound'))
       }
 
       setGame(gameRecord)
       setTeams(Array.isArray(teamRows) ? teamRows : [])
       setCards(Array.isArray(cardRows) ? cardRows : [])
     } catch (err) {
-      setError(err.message || t('gameCardsPage.loadFailed'))
+      setError(err.message || t('error.loadFailed'))
     } finally {
       setLoading(false)
     }
@@ -79,7 +79,7 @@ export default function GameCardsPage() {
     if (!normalized) {
       return '-'
     }
-    return t(`explodingKittens.cardTypes.${normalized}`, {}, normalized.replaceAll('_', ' '))
+    return t(`explodingKittens.cardTypes.${normalized}`, {})
   }
 
   function cardTitle(card) {
@@ -125,7 +125,7 @@ export default function GameCardsPage() {
       setSuccess(t('gameCardsPage.removeSuccess'))
       await loadAll()
     } catch (err) {
-      setError(err.message || t('gameCardsPage.removeFailed'))
+      setError(err.message || t('error.deleteFailed'))
     }
   }
 
@@ -141,7 +141,7 @@ export default function GameCardsPage() {
             {t('gameCardsPage.exportPdf')}
           </Link>
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('gameCardsPage.back')}
+            {t('common.back')}
           </Link>
         </div>
       </section>
@@ -159,7 +159,7 @@ export default function GameCardsPage() {
             </option>
           ))}
         </select>
-        <label htmlFor="bulk-card-quantity">{t('gameCardsPage.addQuantity')}</label>
+        <label htmlFor="bulk-card-quantity">{t('bulkTools.amount')}</label>
         <input
           id="bulk-card-quantity"
           type="number"
@@ -177,17 +177,17 @@ export default function GameCardsPage() {
         <thead>
           <tr>
             <th>{t('gameCardsPage.tableImage')}</th>
-            <th>{t('gameCardsPage.tableType')}</th>
+            <th>{t('table.type')}</th>
             <th>{t('gameCardsPage.tableTitle')}</th>
             <th>{t('gameCardsPage.tableToken')}</th>
             <th>{t('gameCardsPage.tableHolder')}</th>
-            <th className="text-right">{t('gamesPage.actions')}</th>
+            <th className="text-right">{t('table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {cards.length === 0 ? (
             <tr>
-              <td colSpan={6}>{t('gameCardsPage.noCards')}</td>
+              <td colSpan={6}>{t('status.noCards')}</td>
             </tr>
           ) : (
             cards.map((card) => {
@@ -212,7 +212,7 @@ export default function GameCardsPage() {
                   <td>{holderName}</td>
                   <td className="text-right table-actions-inline">
                     <button className="btn btn-remove btn-small" type="button" onClick={() => handleDeleteCard(card)}>
-                      {t('gameCardsPage.remove')}
+                      {t('button.label.delete')}
                     </button>
                   </td>
                 </tr>

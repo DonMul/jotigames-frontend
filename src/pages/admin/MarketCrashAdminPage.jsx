@@ -65,7 +65,7 @@ export default function MarketCrashAdminPage() {
   }, [location?.state])
 
   async function deletePoint(point) {
-    if (!window.confirm(t('market_crash.admin.point_delete_confirm', { title: point?.title || '' }, 'Delete point?'))) {
+    if (!window.confirm(t('market_crash.admin.point_delete_confirm', { title: point?.title || '' }))) {
       return
     }
 
@@ -74,7 +74,7 @@ export default function MarketCrashAdminPage() {
     try {
       const adminData = await moduleApi.deleteMarketCrashPoint(auth.token, gameId, point.id)
       applyAdminData(adminData)
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) {
       setError(err.message || 'Failed to delete point')
     }
@@ -84,39 +84,39 @@ export default function MarketCrashAdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('market_crash.admin.kicker', {}, 'Market Crash')}</p>
-          <h1>{t('market_crash.admin.points_heading', { game: game?.name || '' }, `Points management · ${game?.name || '-'}`)}</h1>
-          <p className="overview-subtitle">{t('market_crash.admin.points_subtitle', {}, 'Manage trade points')}</p>
+          <p className="overview-kicker">{t('market_crash.admin.kicker', {})}</p>
+          <h1>{t('market_crash.admin.points_heading', { game: game?.name || '' })}</h1>
+          <p className="overview-subtitle">{t('market_crash.admin.points_subtitle', {})}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('market_crash.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="overview-panel">
-        <h2>{t('common.map', {}, 'Map')}</h2>
+        <h2>{t('common.map', {})}</h2>
         <div className="overview-actions" style={{ marginBottom: '0.75rem' }}>
           <Link className="btn btn-primary btn-small" to={`/admin/market-crash/${gameId}/points/new`}>
-            {t('market_crash.admin.add_marker', {}, 'Add marker')}
+            {t('market_crash.admin.add_marker', {})}
           </Link>
         </div>
         <MarketCrashPointsMap points={points} t={t} />
       </section>
 
       <section className="overview-panel">
-        <h2>{t('market_crash.admin.point_list', {}, 'Points')}</h2>
+        <h2>{t('market_crash.admin.point_list', {})}</h2>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>{t('market_crash.admin.point_table_title', {}, 'Title')}</th>
-              <th>{t('market_crash.admin.point_table_resource_config', {}, 'Resource config')}</th>
-              <th>{t('market_crash.admin.point_table_actions', {}, 'Actions')}</th>
+              <th>{t('table.title', {})}</th>
+              <th>{t('market_crash.admin.point_table_resource_config', {})}</th>
+              <th>{t('table.actions', {})}</th>
             </tr>
           </thead>
           <tbody>
@@ -134,17 +134,17 @@ export default function MarketCrashAdminPage() {
                 </td>
                 <td className="table-actions-inline">
                   <Link className="btn btn-edit btn-small" to={`/admin/market-crash/${gameId}/points/${point.id}/edit`}>
-                    {t('button.edit', {}, 'Edit')}
+                    {t('button.label.edit', {})}
                   </Link>
                   <button className="btn btn-remove btn-small" type="button" onClick={() => deletePoint(point)}>
-                    {t('button.delete', {}, 'Delete')}
+                    {t('button.label.delete', {})}
                   </button>
                 </td>
               </tr>
             ))}
             {points.length === 0 ? (
               <tr>
-                <td colSpan={3} className="muted">{t('market_crash.admin.point_empty', {}, 'No points yet')}</td>
+                <td colSpan={3} className="muted">{t('market_crash.admin.point_empty', {})}</td>
               </tr>
             ) : null}
           </tbody>

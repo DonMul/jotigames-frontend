@@ -20,70 +20,15 @@ function formatCents(cents, currency = 'EUR') {
   }
 }
 
-function formatPlanSlug(slug) {
-  if (!slug) return ''
-  return String(slug)
-    .replace(/[_-]+/g, ' ')
-    .split(' ')
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
-
-function formatPaymentDescription(description, t) {
-  if (!description) return ''
-
-  const text = String(description).trim()
-
-  if (text.startsWith('subscription.pending:')) {
-    const payload = text.slice('subscription.pending:'.length)
-    const parts = payload.split(';').map((part) => part.trim()).filter(Boolean)
-    const parsed = {}
-
-    for (const part of parts) {
-      const [key, ...valueParts] = part.split('=')
-      if (!key || valueParts.length === 0) continue
-      parsed[key.trim()] = valueParts.join('=').trim()
-    }
-
-    const action = parsed.action
-    const previousPlan = formatPlanSlug(parsed.previous_plan_slug)
-    const newPlan = formatPlanSlug(parsed.new_plan_slug)
-    const unknownPlan = t('subscription.paymentDescUnknownPlan')
-
-    if (action === 'change_plan') {
-      if (previousPlan && newPlan) {
-        return t('subscription.paymentDescChangePlan', {
-          from: previousPlan,
-          to: newPlan,
-        })
-      }
-      if (newPlan) {
-        return t('subscription.paymentDescChangePlanTo', { to: newPlan })
-      }
-      return t('subscription.paymentDescActionChangePlan')
-    }
-
-    if (action === 'subscribe') {
-      return t('subscription.paymentDescSubscribe', {
-        plan: newPlan || previousPlan || unknownPlan,
-      })
-    }
-
-    return t('subscription.paymentDescActionGeneric', {
-      action: action || t('subscription.paymentDescUnknownAction'),
-    })
+function formatDate(value) {
+  if (!value) return '—'
+  if (typeof value === 'string') {
+    const directMatch = value.match(/^(\d{4}-\d{2}-\d{2})/)
+    if (directMatch) return directMatch[1]
   }
-
-  if (text.includes(';')) {
-    return text
-      .split(';')
-      .map((part) => part.trim())
-      .filter(Boolean)
-      .join(' • ')
-  }
-
-  return text
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return '—'
+  return parsed.toISOString().slice(0, 10)
 }
 
 /* ── small presentational components ────────────────────────────────── */
@@ -112,34 +57,6 @@ function MinuteBar({ used, total, t }) {
         })}
       </p>
     </div>
-  )
-}
-
-function PaymentStatusBadge({ status, t }) {
-  const variants = {
-    succeeded: {
-      cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      label: t('subscription.paymentSucceeded'),
-    },
-    failed: {
-      cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      label: t('subscription.paymentFailed'),
-    },
-    pending: {
-      cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      label: t('subscription.paymentPending'),
-    },
-  }
-  const v = variants[status] || {
-    cls: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
-    label: status,
-  }
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${v.cls}`}
-    >
-      {v.label}
-    </span>
   )
 }
 
@@ -287,165 +204,6 @@ function PaymentModal({
   )
 }
 
-/* ── Payment history section ────────────────────────────────────────── */
-
-function PaymentHistorySection({ token, t }) {
-  const [payments, setPayments] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState(false)
-
-  const fetchPayments = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await gameApi.getMyPayments(token, { limit: 20 })
-      setPayments(res?.payments || [])
-    } catch {
-      /* ignore */
-    }
-    setLoading(false)
-  }, [token])
-
-  useEffect(() => {
-    fetchPayments()
-  }, [fetchPayments])
-
-  if (loading) {
-    return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm">
-        <div className="animate-pulse space-y-3">
-          <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-1/3" />
-          <div className="h-16 bg-gray-200 dark:bg-slate-700 rounded" />
-        </div>
-      </div>
-    )
-  }
-
-  if (payments.length === 0) return null
-
-  return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-slate-750 transition-colors"
-      >
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {t('subscription.paymentHistory')}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-            {t('subscription.paymentHistoryDesc')}
-          </p>
-        </div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {expanded && (
-        <div className="border-t border-gray-200 dark:border-slate-700 divide-y divide-gray-100 dark:divide-slate-700">
-          {payments.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center justify-between px-6 py-4"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                    p.status === 'succeeded'
-                      ? 'bg-emerald-100 dark:bg-emerald-900/30'
-                      : p.status === 'failed'
-                        ? 'bg-red-100 dark:bg-red-900/30'
-                        : 'bg-amber-100 dark:bg-amber-900/30'
-                  }`}
-                >
-                  {p.status === 'succeeded' ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : p.status === 'failed' ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-red-600 dark:text-red-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-amber-600 dark:text-amber-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-700 dark:text-slate-300 break-words leading-relaxed">
-                    {formatPaymentDescription(p.description, t) ||
-                      (p.type === 'subscription'
-                        ? t('subscription.paymentSubscription')
-                        : t('subscription.paymentTopup'))}
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500">
-                    {p.created_at
-                      ? new Date(p.created_at).toLocaleDateString(undefined, {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                      : '\u2014'}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right shrink-0 ml-3">
-                <p
-                  className={`text-sm font-semibold ${
-                    p.status === 'failed'
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  {formatCents(p.amount_cents, p.currency)}
-                </p>
-                <PaymentStatusBadge status={p.status} t={t} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 /* ── Main page ──────────────────────────────────────────────────────── */
 
 export default function SubscriptionPage() {
@@ -487,7 +245,7 @@ export default function SubscriptionPage() {
       setPlans(planRes?.plans || [])
       setTopupPackages(pkgRes?.packages || [])
     } catch (err) {
-      setErrorMsg(err.message || t('subscription.loadFailed'))
+      setErrorMsg(err.message || t('error.loadFailed'))
     }
     setLoading(false)
   }, [auth.token, t])
@@ -516,7 +274,7 @@ export default function SubscriptionPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setErrorMsg(err.message || t('subscription.loadFailed'))
+          setErrorMsg(err.message || t('error.loadFailed'))
         }
       }
     }
@@ -678,7 +436,7 @@ export default function SubscriptionPage() {
           to="/admin/games"
           className="mt-4 inline-block text-sm text-blue-600 hover:underline"
         >
-          &larr; {t('subscription.backToGames')}
+          &larr; {t('common.back')}
         </Link>
       </div>
     )
@@ -687,6 +445,9 @@ export default function SubscriptionPage() {
   const currentPlan = summary?.plan
   const balance = summary?.balance || {}
   const topupMinutes = summary?.topup_minutes_remaining || 0
+  const topupExpiryBreakdown = Array.isArray(summary?.topup_expiry_breakdown)
+    ? summary.topup_expiry_breakdown
+    : []
   const sub = summary?.subscription
   const isUnlimited = currentPlan && currentPlan.monthly_minutes === null
   const pendingCancel = sub?.cancel_at_period_end
@@ -701,7 +462,7 @@ export default function SubscriptionPage() {
           to="/admin/games"
           className="text-sm text-blue-600 hover:underline"
         >
-          &larr; {t('subscription.backToGames')}
+          &larr; {t('common.back')}
         </Link>
       </div>
 
@@ -715,7 +476,7 @@ export default function SubscriptionPage() {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3 text-red-800 dark:text-red-300 text-sm">
           {errorMsg}
           <button onClick={() => setErrorMsg('')} className="ml-2 underline">
-            {t('subscription.dismiss')}
+            {t('button.label.close')}
           </button>
         </div>
       )}
@@ -760,11 +521,33 @@ export default function SubscriptionPage() {
             )}
 
             {topupMinutes > 0 && (
-              <p className="text-sm text-gray-600 dark:text-slate-400">
-                {t('subscription.topupRemaining', {
-                  count: topupMinutes.toLocaleString(),
-                })}
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600 dark:text-slate-400">
+                  {t('subscription.topupRemaining', {
+                    count: topupMinutes.toLocaleString(),
+                  })}
+                </p>
+                {topupExpiryBreakdown.length > 0 && (
+                  <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/40 p-3">
+                    <p className="text-xs font-medium text-gray-700 dark:text-slate-300">
+                      {t('subscription.topupExpirySplitTitle')}
+                    </p>
+                    <ul className="mt-1 space-y-1">
+                      {topupExpiryBreakdown.map((entry) => (
+                        <li
+                          key={`${entry.expires_on}-${entry.minutes_remaining}`}
+                          className="text-xs text-gray-600 dark:text-slate-400"
+                        >
+                          {t('subscription.topupExpiresOn', {
+                            count: Number(entry.minutes_remaining || 0).toLocaleString(),
+                            date: formatDate(entry.expires_on),
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Actions */}
@@ -821,7 +604,7 @@ export default function SubscriptionPage() {
                 </h3>
                 <p className="text-2xl font-extrabold mt-2 text-gray-900 dark:text-white">
                   {plan.price_cents === 0
-                    ? t('subscription.free')
+                    ? t('monetisation.free')
                     : formatCents(plan.price_cents, plan.currency)}
                 </p>
                 {plan.price_cents > 0 && (
@@ -905,9 +688,6 @@ export default function SubscriptionPage() {
           </div>
         </div>
       )}
-
-      {/* Payment History */}
-      <PaymentHistorySection token={auth.token} t={t} />
 
       {/* Payment Modal */}
       <PaymentModal

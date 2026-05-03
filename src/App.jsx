@@ -20,6 +20,7 @@ const MonetisationPage = lazy(() => import('./pages/MonetisationPage'))
 const GameInfoPage = lazy(() => import('./pages/GameInfoPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const ActivateAccountPage = lazy(() => import('./pages/ActivateAccountPage'))
 const TeamLoginPage = lazy(() => import('./pages/team/TeamLoginPage'))
 
 // Account
@@ -205,6 +206,7 @@ function AppRoutes() {
         />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/activate-account" element={<ActivateAccountPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/team-login" element={<TeamLoginPage />} />
         <Route path="/info/games/:slug" element={<GameInfoPage />} />

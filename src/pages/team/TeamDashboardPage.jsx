@@ -22,7 +22,7 @@ import { useI18n } from '../../lib/i18n'
 function getCardLabel(card, t) {
   const raw = String(card?.title || card?.type || '').trim()
   if (!raw) {
-    return t('teamDashboard.card', {}, 'Card')
+    return t('teamDashboard.card', {})
   }
   if (raw.startsWith('card.type.')) {
     return getCardTypeLabel(raw, t)
@@ -36,11 +36,11 @@ function getCardLabel(card, t) {
 function getCardTypeLabel(type, t) {
   const raw = String(type || '').trim()
   if (!raw) {
-    return t('teamDashboard.card', {}, 'Card')
+    return t('teamDashboard.card', {})
   }
 
   const normalized = raw.startsWith('card.type.') ? raw.replace('card.type.', '') : raw
-  return t(`explodingKittens.cardTypes.${normalized}`, {}, normalized.replaceAll('_', ' '))
+  return t(`explodingKittens.cardTypes.${normalized}`, {})
 }
 
 const EK_PLAYABLE_CARD_TYPES = new Set(['attack', 'favor', 'see_the_future', 'shuffle', 'skip'])
@@ -71,13 +71,13 @@ const EK_STATE_TO_FLAG = {
 function getCardPendingMessage(cardType, state, t) {
   const type = String(cardType || '').trim()
   if (type === 'attack' && Boolean(state?.pending_attack)) {
-    return t('teamDashboard.attackAlreadyPending', {}, 'Attack is already pending')
+    return t('teamDashboard.attackAlreadyPending', {})
   }
   if (type === 'see_the_future' && Boolean(state?.pending_peek)) {
-    return t('teamDashboard.peekAlreadyPending', {}, 'See the Future is already pending')
+    return t('teamDashboard.peekAlreadyPending', {})
   }
   if (type === 'skip' && Boolean(state?.pending_skip)) {
-    return t('teamDashboard.skipAlreadyPending', {}, 'Skip is already pending')
+    return t('teamDashboard.skipAlreadyPending', {})
   }
   return ''
 }
@@ -122,31 +122,29 @@ function parseActionContext(action) {
 function getActionTypeLabel(actionType, t) {
   const normalized = String(actionType || '').trim()
   if (normalized === 'favor') {
-    return t('teamDashboard.actionTypeFavor', {}, 'Favor')
+    return t('explodingKittens.cardTypes.favor', {})
   }
   if (normalized === 'attack') {
-    return t('teamDashboard.actionTypeAttack', {}, 'Attack')
+    return t('explodingKittens.cardTypes.attack', {})
   }
   if (normalized === 'combo_two_same') {
-    return t('teamDashboard.actionTypeComboTwo', {}, 'Combo 2')
+    return t('teamDashboard.actionTypeComboTwo', {})
   }
   if (normalized === 'combo_three_same') {
-    return t('teamDashboard.actionTypeComboThree', {}, 'Combo 3')
+    return t('teamDashboard.actionTypeComboThree', {})
   }
-  return normalized || t('teamDashboard.pendingActions', {}, 'Pending actions')
+  return normalized || t('teamDashboard.pendingActions', {})
 }
 
 function getActionDescription(action, teams, t) {
   const sourceTeamId = String(action?.source_team_id || action?.sourceTeamId || '').trim()
-  const sourceTeamName = teams.find((team) => String(team?.id || '') === sourceTeamId)?.name || sourceTeamId || t('teamDashboard.unknownTeam', {}, 'Unknown team')
+  const sourceTeamName = teams.find((team) => String(team?.id || '') === sourceTeamId)?.name || sourceTeamId || t('teamDashboard.unknownTeam', {})
   const actionType = String(action?.action_type || action?.actionType || '').trim()
   const actionTypeLabel = getActionTypeLabel(actionType, t)
 
   let description = t(
     'teamDashboard.actionTargeted',
-    { team: sourceTeamName, event: actionTypeLabel },
-    `${sourceTeamName} targeted you with ${actionTypeLabel}`,
-  )
+    { team: sourceTeamName, event: actionTypeLabel })
 
   const context = parseActionContext(action)
   const requestedCardType = String(
@@ -158,7 +156,7 @@ function getActionDescription(action, teams, t) {
   ).trim()
   if (requestedCardType) {
     const requestedLabel = getCardTypeLabel(requestedCardType, t)
-    description += ` · ${t('teamDashboard.actionRequestedType', { cardType: requestedLabel }, 'requested: {{cardType}}')}`
+    description += ` · ${t('teamDashboard.actionRequestedType', { cardType: requestedLabel })}`
   }
 
   return description
@@ -193,7 +191,7 @@ function formatPopupBody(payload, t) {
   const base = t(messageKey, {
     ...params,
     event: eventLabel || params.event,
-  }, '')
+  })
   const resolvedBase = String(base || '').trim() || fallback || messageKey
 
   const cardsLost = formatCardTypeList(params.cardsLost, t)
@@ -203,7 +201,7 @@ function formatPopupBody(payload, t) {
 
   if (messageKey === 'teamDashboard.popup.actionTargeted') {
     if (requestedCardLabel) {
-      const requestedTypeText = t('teamDashboard.actionRequestedType', { cardType: requestedCardLabel }, '')
+      const requestedTypeText = t('teamDashboard.actionRequestedType', { cardType: requestedCardLabel })
       return requestedTypeText ? `${resolvedBase} · ${requestedTypeText}` : resolvedBase
     }
     return resolvedBase
@@ -212,31 +210,31 @@ function formatPopupBody(payload, t) {
   if (messageKey === 'teamDashboard.popup.actionResolvedTarget' || messageKey === 'teamDashboard.popup.actionResolvedSource') {
     const details = []
     if (!Number.isNaN(livesDelta) && livesDelta !== 0) {
-      const value = t('teamDashboard.popup.effectLives', { delta: livesDelta > 0 ? `+${livesDelta}` : `${livesDelta}` }, '')
+      const value = t('teamDashboard.popup.effectLives', { delta: livesDelta > 0 ? `+${livesDelta}` : `${livesDelta}` })
       if (value) {
         details.push(value)
       }
     }
     if (!Number.isNaN(targetLivesDelta) && targetLivesDelta !== 0) {
-      const value = t('teamDashboard.popup.effectTargetLives', { delta: targetLivesDelta > 0 ? `+${targetLivesDelta}` : `${targetLivesDelta}` }, '')
+      const value = t('teamDashboard.popup.effectTargetLives', { delta: targetLivesDelta > 0 ? `+${targetLivesDelta}` : `${targetLivesDelta}` })
       if (value) {
         details.push(value)
       }
     }
     if (cardsLost) {
-      const value = t('teamDashboard.popup.effectCardsLost', { cards: cardsLost }, '')
+      const value = t('teamDashboard.popup.effectCardsLost', { cards: cardsLost })
       if (value) {
         details.push(value)
       }
     }
     if (cardsGained) {
-      const value = t('teamDashboard.popup.effectCardsGained', { cards: cardsGained }, '')
+      const value = t('teamDashboard.popup.effectCardsGained', { cards: cardsGained })
       if (value) {
         details.push(value)
       }
     }
     if (details.length === 0) {
-      const value = t('teamDashboard.popup.effectNoDirect', {}, '')
+      const value = t('teamDashboard.popup.effectNoDirect', {})
       if (value) {
         details.push(value)
       }
@@ -291,7 +289,7 @@ function getActionCountdownSeconds(action, nowMs) {
 
 function formatActionCountdownLabel(remainingSeconds, t) {
   const safeSeconds = Math.max(0, Number(remainingSeconds || 0))
-  return t('teamDashboard.actionCountdown', { seconds: safeSeconds }, `${safeSeconds}s`)
+  return t('teamDashboard.actionCountdown', { seconds: safeSeconds })
 }
 
 export default function TeamDashboardPage() {
@@ -442,13 +440,13 @@ export default function TeamDashboardPage() {
       const gameType = String(payload?.game_type || '')
 
       if (!resolvedGameId || !resolvedTeamId) {
-        throw new Error(t('teamDashboard.noGame', {}, 'Could not resolve active team game'))
+        throw new Error(t('teamScan.noGame', {}))
       }
 
       const ekState = await moduleApi.getBootstrap(auth.token, gameType, resolvedGameId, resolvedTeamId)
       setState(ekState)
     } catch (err) {
-      setError(err.message || t('teamDashboard.loadFailed', {}, 'Could not load team dashboard'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -1367,7 +1365,7 @@ export default function TeamDashboardPage() {
     const latitude = Number(position.latitude)
     const longitude = Number(position.longitude)
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      setActionError(t('teamDashboard.blindhike.waitingLocation', {}, 'Waiting for location…'))
+      setActionError(t('status.waitingForLocation', {}))
       return
     }
 
@@ -1383,11 +1381,11 @@ export default function TeamDashboardPage() {
       const successKey = String(result?.message_key || '').trim()
       setActionSuccess(
         successKey
-          ? t(successKey, {}, t('teamDashboard.blindhike.markerAdded', {}, 'Marker added'))
-          : t('teamDashboard.blindhike.markerAdded', {}, 'Marker added'),
+          ? t(successKey, {})
+          : t('teamDashboard.blindhike.markerAdded', {}),
       )
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.blindhike.placeFailed', {}, 'Could not place marker'))
+      setActionError(err.message || t('error.actionFailed', {}))
     } finally {
       setPlacingBlindHikeMarker(false)
     }
@@ -1403,7 +1401,7 @@ export default function TeamDashboardPage() {
       })
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.cardPlayFailed', {}, 'Could not play card'))
+      setActionError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1417,9 +1415,9 @@ export default function TeamDashboardPage() {
     try {
       const result = await moduleApi.dropBirdsOfPreyEgg(auth.token, gameId, teamId, {})
       const successKey = String(result?.message_key || '').trim()
-      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.dropped', {}, 'Egg dropped'))
+      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.dropped', {}))
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.birdsOfPrey.dropFailed', {}, 'Could not drop egg'))
+      setActionError(err.message || t('error.actionFailed', {}))
     } finally {
       setDroppingBirdEgg(false)
     }
@@ -1436,9 +1434,9 @@ export default function TeamDashboardPage() {
     try {
       const result = await moduleApi.destroyBirdsOfPreyEgg(auth.token, gameId, teamId, { egg_id: normalizedEggId })
       const successKey = String(result?.message_key || '').trim()
-      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.destroyed', {}, 'Egg destroyed'))
+      setActionSuccess(successKey || t('teamDashboard.birdsOfPrey.destroyed', {}))
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.birdsOfPrey.destroyFailed', {}, 'Could not destroy egg'))
+      setActionError(err.message || t('error.actionFailed', {}))
     } finally {
       setDestroyingBirdEggId('')
     }
@@ -1634,8 +1632,8 @@ export default function TeamDashboardPage() {
       const successKey = String(result?.message_key || '').trim()
       setActionSuccess(
         successKey
-          ? t(successKey, {}, t('market_crash.team.trade_success', {}, 'Trade executed'))
-          : t('market_crash.team.trade_success', {}, 'Trade executed'),
+          ? t(successKey, {})
+          : t('market_crash.team.trade_success', {}),
       )
 
       const nearbyPoints = Array.isArray(result?.nearby_points) ? result.nearby_points : []
@@ -1681,7 +1679,7 @@ export default function TeamDashboardPage() {
         }
       })
     } catch (err) {
-      setActionError(err.message || t('market_crash.team.trade_failed', {}, 'Could not execute trade'))
+      setActionError(err.message || t('error.actionFailed', {}))
     } finally {
       setExecutingMarketCrashTradeKey('')
     }
@@ -1694,10 +1692,10 @@ export default function TeamDashboardPage() {
     setCapturingCheckpoint(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'checkpoint_heist', gameId, teamId, { checkpoint_id: checkpointId })
-      setActionSuccess(String(result?.message_key || t('checkpoint_heist.capture.recorded', {}, 'Checkpoint captured')))
+      setActionSuccess(String(result?.message_key || t('checkpoint_heist.capture.recorded', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('checkpoint_heist.capture.failed', {}, 'Could not capture checkpoint'))
+      setActionError(err.message || t('checkpoint_heist.capture.failed', {}))
     } finally {
       setCapturingCheckpoint(false)
     }
@@ -1710,10 +1708,10 @@ export default function TeamDashboardPage() {
     setSubmittingCode(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'code_conspiracy', gameId, teamId, { target_team_id: targetTeamId, code_value: codeValue })
-      setActionSuccess(String(result?.message_key || t('code_conspiracy.code.submitted', {}, 'Code submitted')))
+      setActionSuccess(String(result?.message_key || t('code_conspiracy.code.submitted', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('code_conspiracy.code.failed', {}, 'Could not submit code'))
+      setActionError(err.message || t('code_conspiracy.code.failed', {}))
     } finally {
       setSubmittingCode(false)
     }
@@ -1726,10 +1724,10 @@ export default function TeamDashboardPage() {
     setConfirmingPickup(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { pickup_id: pickupId })
-      setActionSuccess(String(result?.message_key || t('courier_rush.pickup.confirmed', {}, 'Pickup confirmed')))
+      setActionSuccess(String(result?.message_key || t('courier_rush.pickup.confirmed', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('courier_rush.pickup.failed', {}, 'Could not confirm pickup'))
+      setActionError(err.message || t('courier_rush.pickup.failed', {}))
     } finally {
       setConfirmingPickup(false)
     }
@@ -1742,10 +1740,10 @@ export default function TeamDashboardPage() {
     setConfirmingDropoff(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'courier_rush', gameId, teamId, { dropoff_id: dropoffId }, 'dropoff/confirm')
-      setActionSuccess(String(result?.message_key || t('courier_rush.dropoff.confirmed', {}, 'Drop-off confirmed')))
+      setActionSuccess(String(result?.message_key || t('courier_rush.dropoff.confirmed', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('courier_rush.dropoff.failed', {}, 'Could not confirm drop-off'))
+      setActionError(err.message || t('courier_rush.dropoff.failed', {}))
     } finally {
       setConfirmingDropoff(false)
     }
@@ -1763,10 +1761,10 @@ export default function TeamDashboardPage() {
         proof_text: String(payload?.proof_text || '').trim() || undefined,
         proof_file: payload?.proof_file instanceof File ? payload.proof_file : undefined,
       })
-      setActionSuccess(String(result?.message_key || t('crazy88.task.submitted', {}, 'Task submitted')))
+      setActionSuccess(String(result?.message_key || t('crazy88.task.submitted', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('crazy88.task.failed', {}, 'Could not submit task'))
+      setActionError(err.message || t('crazy88.task.failed', {}))
     } finally {
       setSubmittingTask(false)
     }
@@ -1779,10 +1777,10 @@ export default function TeamDashboardPage() {
     setClaimingBeacon(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'echo_hunt', gameId, teamId, { beacon_id: beaconId })
-      setActionSuccess(String(result?.message_key || t('echo_hunt.beacon.claimed', {}, 'Beacon claimed')))
+      setActionSuccess(String(result?.message_key || t('echo_hunt.beacon.claimed', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('echo_hunt.beacon.failed', {}, 'Could not claim beacon'))
+      setActionError(err.message || t('echo_hunt.beacon.failed', {}))
     } finally {
       setClaimingBeacon(false)
     }
@@ -1792,7 +1790,7 @@ export default function TeamDashboardPage() {
     if (!isGeoHunter || !gameId || !teamId) {
       return {
         correct: false,
-        message: t('geohunter.answer.failed', {}, 'Could not submit answer'),
+        message: t('error.actionFailed', {}),
         retryAvailableInSeconds: 0,
         score: Number(state?.score || 0),
       }
@@ -1810,7 +1808,7 @@ export default function TeamDashboardPage() {
 
       let message = ''
       if (isCorrect) {
-        message = t('geohunter.answer.correct', {}, 'Correct answer!')
+        message = t('geohunter.answer.correct', {})
         setActionSuccess(message)
       } else if (retryAvailableInSeconds > 0) {
         if (lockActive) {
@@ -1818,21 +1816,17 @@ export default function TeamDashboardPage() {
             result?.message_key
             || t(
               'geohunter.answer.retry_in_seconds',
-              { seconds: retryAvailableInSeconds },
-              `You can answer this question again in ${retryAvailableInSeconds} seconds.`,
-            ),
+              { seconds: retryAvailableInSeconds }),
           )
         } else {
           const retryMessage = t(
             'geohunter.answer.retry_in_seconds',
-            { seconds: retryAvailableInSeconds },
-            `You can answer this question again in ${retryAvailableInSeconds} seconds.`,
-          )
-          message = `${t('geohunter.answer.incorrect', {}, 'Incorrect answer')} ${retryMessage}`.trim()
+            { seconds: retryAvailableInSeconds })
+          message = `${t('geohunter.answer.incorrect', {})} ${retryMessage}`.trim()
         }
         setActionError(message)
       } else {
-        message = String(result?.message_key || t('geohunter.answer.incorrect', {}, 'Incorrect answer'))
+        message = String(result?.message_key || t('geohunter.answer.incorrect', {}))
         setActionError(message)
       }
 
@@ -1852,7 +1846,7 @@ export default function TeamDashboardPage() {
         score: Number.isFinite(score) ? score : Number(state?.score || 0),
       }
     } catch (err) {
-      const message = err.message || t('geohunter.answer.failed', {}, 'Could not submit answer')
+      const message = err.message || t('error.actionFailed', {})
       setActionError(message)
       return {
         correct: false,
@@ -1872,10 +1866,10 @@ export default function TeamDashboardPage() {
     setCollectingPickup(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { pickup_id: pickupId })
-      setActionSuccess(String(result?.message_key || t('pandemic_response.pickup.collected', {}, 'Supply collected')))
+      setActionSuccess(String(result?.message_key || t('pandemic_response.pickup.collected', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('pandemic_response.pickup.failed', {}, 'Could not collect supply'))
+      setActionError(err.message || t('pandemic_response.pickup.failed', {}))
     } finally {
       setCollectingPickup(false)
     }
@@ -1888,10 +1882,10 @@ export default function TeamDashboardPage() {
     setResolvingHotspot(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'pandemic_response', gameId, teamId, { hotspot_id: hotspotId }, 'hotspot/resolve')
-      setActionSuccess(String(result?.message_key || t('pandemic_response.hotspot.resolved', {}, 'Hotspot resolved')))
+      setActionSuccess(String(result?.message_key || t('pandemic_response.hotspot.resolved', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('pandemic_response.hotspot.failed', {}, 'Could not resolve hotspot'))
+      setActionError(err.message || t('pandemic_response.hotspot.failed', {}))
     } finally {
       setResolvingHotspot(false)
     }
@@ -1904,10 +1898,10 @@ export default function TeamDashboardPage() {
     setClaimingResource(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'resource_run', gameId, teamId, { node_id: nodeId })
-      setActionSuccess(String(result?.message_key || t('resource_run.claim.recorded', {}, 'Resource claimed')))
+      setActionSuccess(String(result?.message_key || t('resource_run.claim.recorded', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('resource_run.claim.failed', {}, 'Could not claim resource'))
+      setActionError(err.message || t('resource_run.claim.failed', {}))
     } finally {
       setClaimingResource(false)
     }
@@ -1920,10 +1914,10 @@ export default function TeamDashboardPage() {
     setClaimingZone(true)
     try {
       const result = await moduleApi.submitAction(auth.token, 'territory_control', gameId, teamId, { zone_id: zoneId })
-      setActionSuccess(String(result?.message_key || t('territory_control.claim.recorded', {}, 'Zone claimed')))
+      setActionSuccess(String(result?.message_key || t('territory_control.claim.recorded', {})))
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('territory_control.claim.failed', {}, 'Could not claim zone'))
+      setActionError(err.message || t('territory_control.claim.failed', {}))
     } finally {
       setClaimingZone(false)
     }
@@ -1938,7 +1932,7 @@ export default function TeamDashboardPage() {
       })
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.resolveActionFailed', {}, 'Could not resolve action'))
+      setActionError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -1947,16 +1941,16 @@ export default function TeamDashboardPage() {
     setActionError('')
     try {
       if (!comboModeEnabled || !comboSelection.isValid) {
-        throw new Error(t('teamDashboard.comboNeedValid', {}, 'Select exactly 2, 3, or 5 cards'))
+        throw new Error(t('teamDashboard.comboNeedValid', {}))
       }
 
       const targetTeam = String(comboTargetTeam || '').trim()
       const requestedType = String(comboRequestedType || '').trim()
       if (comboSelection.needsTarget && !targetTeam) {
-        throw new Error(t('teamDashboard.comboNeedTarget', {}, 'Choose a target team'))
+        throw new Error(t('teamDashboard.comboNeedTarget', {}))
       }
       if (comboSelection.needsRequestedType && !requestedType) {
-        throw new Error(t('teamDashboard.comboNeedType', {}, 'Choose a requested card type'))
+        throw new Error(t('teamDashboard.comboNeedType', {}))
       }
 
       await moduleApi.useExplodingCombo(auth.token, gameId, teamId, {
@@ -1971,7 +1965,7 @@ export default function TeamDashboardPage() {
       setComboModeEnabled(false)
       await refreshState()
     } catch (err) {
-      setActionError(err.message || t('teamDashboard.comboFailed', {}, 'Could not play combo'))
+      setActionError(err.message || t('error.actionFailed', {}))
     }
   }
 
@@ -2033,18 +2027,18 @@ export default function TeamDashboardPage() {
     const gameType = String(bootstrap?.game_type || '')
     if (gameType === 'exploding_kittens') {
       return {
-        label: t('teamDashboard.lives', {}, 'Lives'),
+        label: t('teamDashboard.lives', {}),
         value: Number(state?.lives ?? bootstrap?.lives ?? 0),
       }
     }
     if (gameType === 'blindhike') {
       return {
-        label: t('teamDashboard.markers', {}, 'Markers'),
+        label: t('teamDashboard.markers', {}),
         value: Number(state?.actions || 0),
       }
     }
     return {
-      label: t('moduleOverview.score', {}, 'Score'),
+      label: t('status.score', {}),
       value: Number(state?.score || state?.geo_score || 0),
     }
   }, [bootstrap?.game_type, bootstrap?.lives, state?.actions, state?.geo_score, state?.lives, state?.score, t])
@@ -2107,11 +2101,11 @@ export default function TeamDashboardPage() {
           <div className="team-identity">
             {bootstrap?.team_logo_path ? <img className="team-logo" src={toAssetUrl(bootstrap.team_logo_path)} alt={bootstrap?.team_name || 'Team'} /> : null}
             <div>
-              <h1>{bootstrap?.team_name || t('teamDashboard.heading', {}, 'Team dashboard')}</h1>
+              <h1>{bootstrap?.team_name || t('nav.teamDashboard', {})}</h1>
               <p className="overview-subtitle">{bootstrap?.game_name || '-'}</p>
               <div className="overview-actions">
                 <Link className="btn btn-primary" to="/team/edit">
-                  {t('teamDashboard.editTeam', {}, 'Edit team')}
+                  {t('teamDashboard.editTeam', {})}
                 </Link>
               </div>
             </div>
@@ -2125,7 +2119,7 @@ export default function TeamDashboardPage() {
         </div>
       </section>
 
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {error ? <div className="flash flash-error">{error}</div> : null}
       {actionError ? <div className="flash flash-error">{actionError}</div> : null}
       {actionSuccess ? <div className="flash flash-success">{actionSuccess}</div> : null}
@@ -2152,7 +2146,7 @@ export default function TeamDashboardPage() {
           className="modal is-open"
           role="dialog"
           aria-modal="true"
-          aria-label={String(activePopup?.payload?.title || '').trim() || t('teamDashboard.popupTitle', {}, 'Message')}
+          aria-label={String(activePopup?.payload?.title || '').trim() || t('teamDashboard.popupTitle', {})}
         >
           <div className="modal-backdrop" onClick={dismissPopup} />
           <div className="modal-card">
@@ -2160,15 +2154,13 @@ export default function TeamDashboardPage() {
               {String(activePopup?.payload?.title_key || activePopup?.payload?.titleKey || '').trim()
                 ? t(
                   String(activePopup?.payload?.title_key || activePopup?.payload?.titleKey || '').trim(),
-                  {},
-                  String(activePopup?.payload?.title || '').trim() || t('teamDashboard.popupTitle', {}, 'Message'),
-                )
-                : String(activePopup?.payload?.title || '').trim() || t('teamDashboard.popupTitle', {}, 'Message')}
+                  {})
+                : String(activePopup?.payload?.title || '').trim() || t('teamDashboard.popupTitle', {})}
             </h2>
             <p>{formatPopupBody(activePopup?.payload || {}, t)}</p>
             <div className="modal-actions">
               <button className="btn btn-primary" type="button" onClick={dismissPopup}>
-                {t('teamDashboard.popupClose', {}, 'Close')}
+                {t('button.label.close', {})}
               </button>
             </div>
           </div>
@@ -2180,8 +2172,8 @@ export default function TeamDashboardPage() {
           {isExplodingKittens ? (
             <>
               <div id="team-actions" className={`team-panel ${pendingActions.length > 0 ? 'team-actions-has-pending' : ''}`}>
-                <h2>{t('teamDashboard.pendingActions', {}, 'Pending actions')}</h2>
-                {pendingActions.length === 0 ? <p>{t('teamDashboard.noActions', {}, 'No actions')}</p> : null}
+                <h2>{t('teamDashboard.pendingActions', {})}</h2>
+                {pendingActions.length === 0 ? <p>{t('teamDashboard.noActions', {})}</p> : null}
                 {pendingActions.length > 0 ? (
                   <ul>
                     {pendingActions.map((action) => (
@@ -2200,11 +2192,11 @@ export default function TeamDashboardPage() {
                               type="button"
                               onClick={() => handleResolveAction(action.id, true)}
                             >
-                              {t('teamDashboard.nope', {}, 'Nope')}
+                              {t('explodingKittens.cardTypes.nope', {})}
                             </button>
                           ) : null}
                           <button className="btn btn-primary btn-small team-action-btn team-action-form-accept" type="button" onClick={() => handleResolveAction(action.id, false)}>
-                            {t('teamDashboard.accept', {}, 'Accept')}
+                            {t('crazy88.admin.accept', {})}
                           </button>
                         </div>
                       </li>
@@ -2215,39 +2207,39 @@ export default function TeamDashboardPage() {
 
               <div id="team-active-states" className="team-panel">
                 <div className="team-flags" data-team-flags>
-                  <span className={`tag tag-cool ${state?.pending_skip ? '' : 'is-inactive'}`}>⏭ {t('teamDashboard.pendingSkip', {}, 'Pending skip')}</span>
-                  <span className={`tag tag-warm ${state?.pending_peek ? '' : 'is-inactive'}`}>👁 {t('teamDashboard.pendingPeek', {}, 'Pending peek')}</span>
-                  <span className={`tag tag-alert ${state?.pending_attack ? '' : 'is-inactive'}`}>⚔ {t('teamDashboard.pendingAttack', {}, 'Pending attack')}</span>
+                  <span className={`tag tag-cool ${state?.pending_skip ? '' : 'is-inactive'}`}>⏭ {t('teamDashboard.pendingSkip', {})}</span>
+                  <span className={`tag tag-warm ${state?.pending_peek ? '' : 'is-inactive'}`}>👁 {t('teamDashboard.pendingPeek', {})}</span>
+                  <span className={`tag tag-alert ${state?.pending_attack ? '' : 'is-inactive'}`}>⚔ {t('teamDashboard.pendingAttack', {})}</span>
                 </div>
               </div>
 
               <div id="team-hand" className={`team-panel ${comboModeEnabled ? 'combo-mode-active' : ''} ${comboCanSubmit ? 'combo-submit-visible' : ''}`}>
-                <h2>{t('teamDashboard.hand', {}, 'Hand')}</h2>
+                <h2>{t('teamDashboard.hand', {})}</h2>
                 <form className="team-combo-form admin-inline-form" onSubmit={handleUseCombo}>
                   <div className="overview-actions">
                     <button className={`btn btn-small ${comboModeEnabled ? 'btn-remove' : 'btn-add'}`} type="button" onClick={handleToggleComboMode}>
                       {comboModeEnabled
-                        ? `${t('teamDashboard.cancel', {}, 'Cancel')} ${t('teamDashboard.playCombo', {}, 'Play combo')}`
-                        : t('teamDashboard.playComboCard', {}, 'Play combo card')}
+                        ? `${t('button.label.cancel', {})} ${t('teamDashboard.playComboCard', {})}`
+                        : t('teamDashboard.playComboCard', {})}
                     </button>
                   </div>
                   <div className="team-combo-rules">
-                    <p>{t('teamDashboard.comboRuleTwo', {}, '2 same cards: choose target team')}</p>
-                    <p>{t('teamDashboard.comboRuleThree', {}, '3 same cards: choose target team + card type')}</p>
-                    <p>{t('teamDashboard.comboRuleFive', {}, '5 different cards: choose card type')}</p>
+                    <p>{t('teamDashboard.comboRuleTwo', {})}</p>
+                    <p>{t('teamDashboard.comboRuleThree', {})}</p>
+                    <p>{t('teamDashboard.comboRuleFive', {})}</p>
                     <p>
                       {comboSelection.mode === 'two'
-                        ? t('teamDashboard.comboSelectedTwo', {}, '2 same selected')
+                        ? t('teamDashboard.comboSelectedTwo', {})
                         : comboSelection.mode === 'three'
-                          ? t('teamDashboard.comboSelectedThree', {}, '3 same selected')
+                          ? t('teamDashboard.comboSelectedThree', {})
                           : comboSelection.mode === 'five'
-                            ? t('teamDashboard.comboSelectedFive', {}, '5 different selected')
-                            : t('teamDashboard.comboSelectedNone', {}, 'Select 2 same, 3 same, or 5 different cards')}
+                            ? t('teamDashboard.comboSelectedFive', {})
+                            : t('teamDashboard.comboSelectedNone', {})}
                     </p>
                   </div>
                   {comboSelection.needsTarget ? (
                     <select value={comboTargetTeam} onChange={(event) => setComboTargetTeam(event.target.value)} required>
-                      <option value="">{t('teamDashboard.chooseTarget', {}, 'Choose target')}</option>
+                      <option value="">{t('teamDashboard.chooseTarget', {})}</option>
                       {otherTeams.map((team) => (
                         <option key={team.id} value={team.id}>
                           {team.name}
@@ -2261,7 +2253,7 @@ export default function TeamDashboardPage() {
                       onChange={(event) => setComboRequestedType(event.target.value)}
                       required
                     >
-                      <option value="">{t('teamDashboard.chooseCardType', {}, 'Choose card type')}</option>
+                      <option value="">{t('teamDashboard.chooseCardType', {})}</option>
                       {EK_HOLDABLE_CARD_TYPES.map((cardType) => (
                         <option key={cardType} value={cardType}>
                           {getCardTypeLabel(cardType, t)}
@@ -2270,11 +2262,11 @@ export default function TeamDashboardPage() {
                     </select>
                   ) : null}
                   <button id="combo-form-submit-button" className="btn btn-primary btn-small" type="submit" disabled={!comboCanSubmit}>
-                    {t('teamDashboard.playComboSubmit', {}, 'Submit combo')}
+                    {t('teamDashboard.playComboSubmit', {})}
                   </button>
                 </form>
 
-                {hand.length === 0 ? <p>{t('teamDashboard.noCards', {}, 'No cards')}</p> : null}
+                {hand.length === 0 ? <p>{t('status.noCards', {})}</p> : null}
                 {hand.length > 0 ? (
                   <ul className="hand-grid">
                     {hand.map((card) => (
@@ -2312,7 +2304,7 @@ export default function TeamDashboardPage() {
                             <>
                               {EK_TARGETED_CARD_TYPES.has(String(card?.type || '')) ? (
                                 <label className="hand-card-target-field">
-                                  <span className="hand-card-target-label">{t('teamDashboard.favorTarget', {}, 'Favor target')}</span>
+                                  <span className="hand-card-target-label">{t('teamDashboard.favorTarget', {})}</span>
                                   <select
                                     className="hand-card-target-select"
                                     value={targetTeamByCard[card.id] || ''}
@@ -2323,7 +2315,7 @@ export default function TeamDashboardPage() {
                                       }))
                                     }
                                   >
-                                    <option value="">{t('teamDashboard.chooseTarget', {}, 'Choose target')}</option>
+                                    <option value="">{t('teamDashboard.chooseTarget', {})}</option>
                                     {otherTeams.map((team) => (
                                       <option key={team.id} value={team.id}>
                                         {team.name}
@@ -2335,14 +2327,14 @@ export default function TeamDashboardPage() {
 
                               {isPlayableType && pendingMessage === '' ? (
                                 <button className="btn btn-primary btn-small" type="button" onClick={() => handlePlayCard(card.id)}>
-                                  {t('teamDashboard.useCard', {}, 'Use card')}
+                                  {t('teamDashboard.useCard', {})}
                                 </button>
                               ) : null}
 
                               {isPlayableType && pendingMessage !== '' ? (
                                 <span className="muted">{pendingMessage}</span>
                               ) : (
-                                !isPlayableType ? <span className="muted">{t('teamDashboard.cardPassive', {}, 'Passive')}</span> : null
+                                !isPlayableType ? <span className="muted">{t('teamDashboard.cardPassive', {})}</span> : null
                               )}
                             </>
                           ) : null}
@@ -2356,8 +2348,8 @@ export default function TeamDashboardPage() {
               </div>
 
               <div id="team-lives-leaderboard" className="team-panel">
-                <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
-                {leaderboard.length === 0 ? <p>{t('teamDashboard.noTeams', {}, 'No teams')}</p> : null}
+                <h2>{t('teamDashboard.highscore', {})}</h2>
+                {leaderboard.length === 0 ? <p>{t('status.noTeams', {})}</p> : null}
                 {leaderboard.length > 0 ? (
                   <ol className="team-leaderboard-list">
                     {leaderboard.map((team) => (

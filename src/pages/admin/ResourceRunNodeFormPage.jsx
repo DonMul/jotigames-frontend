@@ -38,7 +38,7 @@ export default function ResourceRunNodeFormPage() {
         if (isEdit) {
           const nodes = Array.isArray(nodesPayload?.nodes) ? nodesPayload.nodes : []
           const node = nodes.find((n) => String(n.id) === String(nodeId))
-          if (!node) throw new Error(t('resource_run.admin.node_not_found', {}, 'Node not found'))
+          if (!node) throw new Error(t('resource_run.admin.node_not_found', {}))
           setForm({
             title: String(node.title || ''),
             resource_type: String(node.resource_type || 'food'),
@@ -66,14 +66,14 @@ export default function ResourceRunNodeFormPage() {
       marker_color: String(form.marker_color || '#ef4444').trim().toLowerCase(),
     }
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('resource_run.admin.lat_lon_required', {}, 'Latitude and longitude are required'))
+      setError(t('validation.latLonRequired', {}))
       return
     }
     setSaving(true)
     try {
       if (isEdit) { await moduleApi.updateResourceRunNode(auth.token, gameId, nodeId, payload) }
       else { await moduleApi.createResourceRunNode(auth.token, gameId, payload) }
-      navigate('/admin/resource-run/' + gameId + '/nodes', { state: { flashSuccess: t('resource_run.admin.node_saved', {}, 'Node saved') } })
+      navigate('/admin/resource-run/' + gameId + '/nodes', { state: { flashSuccess: t('status.saved', {}) } })
     } catch (err) { setError(err.message || 'Failed to save node') }
     finally { setSaving(false) }
   }
@@ -82,31 +82,31 @@ export default function ResourceRunNodeFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('resource_run.admin.kicker', {}, 'Resource Run')}</p>
-          <h1>{isEdit ? t('resource_run.admin.node_edit_heading', {}, 'Edit node') : t('resource_run.admin.node_new_heading', {}, 'New node')}</h1>
+          <p className="overview-kicker">{t('resource_run.admin.kicker', {})}</p>
+          <h1>{isEdit ? t('resource_run.admin.node_edit_heading', {}) : t('resource_run.admin.node_new_heading', {})}</h1>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/resource-run/' + gameId + '/nodes'}>{t('resource_run.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/resource-run/' + gameId + '/nodes'}>{t('common.back', {})}</Link>
         </div>
       </div>
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
-            <div className="form-row"><label htmlFor="node-title">{t('resource_run.admin.node_field_title', {}, 'Title')}</label><input id="node-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="node-type">{t('resource_run.admin.node_field_type', {}, 'Type')}</label><input id="node-type" value={form.resource_type} onChange={(e) => setForm((c) => ({ ...c, resource_type: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="node-title">{t('field.title', {})}</label><input id="node-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="node-type">{t('table.type', {})}</label><input id="node-type" value={form.resource_type} onChange={(e) => setForm((c) => ({ ...c, resource_type: e.target.value }))} required /></div>
             <div className="form-row">
-              <label>{t('resource_run.admin.node_map_label', {}, 'Node location')}</label>
-              <p className="muted">{t('resource_run.admin.location_map_help', {}, 'Klik op de kaart om de node-locatie te selecteren.')}</p>
-              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('resource_run.admin.node_map_label', {}, 'Node location')} />
+              <label>{t('resource_run.admin.node_map_label', {})}</label>
+              <p className="muted">{t('resource_run.admin.location_map_help', {})}</p>
+              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('resource_run.admin.node_map_label', {})} />
             </div>
-            <div className="form-row"><label htmlFor="node-radius">{t('resource_run.admin.node_field_radius', {}, 'Radius')}</label><input id="node-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="node-points">{t('resource_run.admin.node_field_points', {}, 'Points')}</label><input id="node-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="node-color">{t('common.color', {}, 'Color')}</label><input id="node-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="node-radius">{t('field.radius', {})}</label><input id="node-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="node-points">{t('field.points', {})}</label><input id="node-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="node-color">{t('table.color', {})}</label><input id="node-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
-              <Link className="btn btn-ghost" to={'/admin/resource-run/' + gameId + '/nodes'}>{t('button.cancel', {}, 'Cancel')}</Link>
+              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.state.saving', {}) : t('button.label.save', {})}</button>
+              <Link className="btn btn-ghost" to={'/admin/resource-run/' + gameId + '/nodes'}>{t('button.label.cancel', {})}</Link>
             </div>
           </form>
         </section>

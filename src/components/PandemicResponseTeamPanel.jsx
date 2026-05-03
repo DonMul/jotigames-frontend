@@ -153,14 +153,14 @@ export default function PandemicResponseTeamPanel({
   return (
     <section className="team-dashboard-geo-layout">
       <div className="team-panel">
-        <h2>{t('pandemic_response.team.title', {}, 'Pandemic Response')}</h2>
-        <p><strong>{t('pandemic_response.team.score', {}, 'Score')}:</strong> {score}</p>
-        <p className="muted">{currentPosition ? t('pandemic_response.team.gps_active', {}, 'GPS active') : t('pandemic_response.team.location_required', {}, 'Waiting for location…')}</p>
+        <h2>{t('pandemic_response.team.title', {})}</h2>
+        <p><strong>{t('pandemic_response.team.score', {})}:</strong> {score}</p>
+        <p className="muted">{currentPosition ? t('status.gpsActive', {}) : t('status.waitingForLocation', {})}</p>
         <div ref={mapContainerRef} className="game-map" style={{ height: '350px', marginTop: '0.5rem' }} />
       </div>
 
       <div className="team-panel">
-        <h2>{t('pandemic_response.team.pickups_heading', {}, 'Supply pickups')}</h2>
+        <h2>{t('pandemic_response.team.pickups_heading', {})}</h2>
         {nearbyPickups.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyPickups.map((p) => (
@@ -168,16 +168,16 @@ export default function PandemicResponseTeamPanel({
                 <strong>📦 {p.title}</strong>
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={collectingPickup} onClick={() => onCollectPickup(p.id)}>
-                  {collectingPickup ? t('pandemic_response.team.collecting', {}, 'Collecting…') : t('pandemic_response.team.collect_pickup', {}, 'Collect')}
+                  {collectingPickup ? t('pandemic_response.team.collecting', {}) : t('pandemic_response.team.collect_pickup', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('pandemic_response.team.no_nearby_pickups', {}, 'No supply pickups nearby.') : t('pandemic_response.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('pandemic_response.team.no_nearby_pickups', {}) : t('status.waitingForLocation', {})}</p>
         )}
 
-        <h2 style={{ marginTop: '1.5rem' }}>{t('pandemic_response.team.hotspots_heading', {}, 'Hotspots')}</h2>
+        <h2 style={{ marginTop: '1.5rem' }}>{t('pandemic_response.team.hotspots_heading', {})}</h2>
         {nearbyHotspots.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {nearbyHotspots.map((h) => (
@@ -185,19 +185,19 @@ export default function PandemicResponseTeamPanel({
                 <strong>🔴 {h.title}</strong> — {h.points} pts ({h.severity})
                 <br />
                 <button className="btn btn-primary btn-small" type="button" disabled={resolvingHotspot} onClick={() => onResolveHotspot(h.id)}>
-                  {resolvingHotspot ? t('pandemic_response.team.resolving', {}, 'Resolving…') : t('pandemic_response.team.resolve_hotspot', {}, 'Resolve')}
+                  {resolvingHotspot ? t('pandemic_response.team.resolving', {}) : t('pandemic_response.team.resolve_hotspot', {})}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">{currentPosition ? t('pandemic_response.team.no_nearby_hotspots', {}, 'No hotspots nearby.') : t('pandemic_response.team.location_required', {}, 'Waiting for location…')}</p>
+          <p className="muted">{currentPosition ? t('pandemic_response.team.no_nearby_hotspots', {}) : t('status.waitingForLocation', {})}</p>
         )}
       </div>
 
       {highscore.length > 0 ? (
         <div className="team-panel">
-          <h2>{t('teamDashboard.highscore', {}, 'Highscore')}</h2>
+          <h2>{t('teamDashboard.highscore', {})}</h2>
           <ol className="team-leaderboard-list">
             {highscore.map((team) => (
               <li key={team.teamId} className={`team-leaderboard-item ${team.teamId === String(currentTeamId || '') ? 'is-current-team' : ''}`}>

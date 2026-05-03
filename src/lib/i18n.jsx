@@ -97,10 +97,10 @@ export function I18nProvider({ children }) {
   }, [language])
 
   const value = useMemo(() => {
-    function t(key, params = {}, fallback = '') {
+    function t(key, params = {}) {
       const value = getByPath(messages, key)
       if (value === undefined || value === null) {
-        return fallback || key
+        return key
       }
       return interpolate(String(value), params)
     }

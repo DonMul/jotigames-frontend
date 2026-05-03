@@ -38,7 +38,7 @@ export default function CheckpointHeistCheckpointFormPage() {
         if (isEdit) {
           const checkpoints = Array.isArray(checkpointsPayload?.checkpoints) ? checkpointsPayload.checkpoints : []
           const cp = checkpoints.find((c) => String(c.id) === String(checkpointId))
-          if (!cp) throw new Error(t('checkpoint_heist.admin.checkpoint_not_found', {}, 'Checkpoint not found'))
+          if (!cp) throw new Error(t('checkpoint_heist.admin.checkpoint_not_found', {}))
           setForm({
             title: String(cp.title || ''),
             latitude: cp.latitude == null ? '' : String(cp.latitude),
@@ -67,14 +67,14 @@ export default function CheckpointHeistCheckpointFormPage() {
       is_active: Boolean(form.is_active),
     }
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('checkpoint_heist.admin.lat_lon_required', {}, 'Latitude and longitude are required'))
+      setError(t('validation.latLonRequired', {}))
       return
     }
     setSaving(true)
     try {
       if (isEdit) { await moduleApi.updateCheckpointHeistCheckpoint(auth.token, gameId, checkpointId, payload) }
       else { await moduleApi.createCheckpointHeistCheckpoint(auth.token, gameId, payload) }
-      navigate('/admin/checkpoint-heist/' + gameId + '/checkpoints', { state: { flashSuccess: t('checkpoint_heist.admin.checkpoint_saved', {}, 'Checkpoint saved') } })
+      navigate('/admin/checkpoint-heist/' + gameId + '/checkpoints', { state: { flashSuccess: t('status.saved', {}) } })
     } catch (err) { setError(err.message || 'Failed to save checkpoint') }
     finally { setSaving(false) }
   }
@@ -83,32 +83,32 @@ export default function CheckpointHeistCheckpointFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('checkpoint_heist.admin.kicker', {}, 'Checkpoint Heist')}</p>
-          <h1>{isEdit ? t('checkpoint_heist.admin.checkpoint_edit_heading', {}, 'Edit checkpoint') : t('checkpoint_heist.admin.create_checkpoint', {}, 'Create checkpoint')}</h1>
+          <p className="overview-kicker">{t('checkpoint_heist.admin.kicker', {})}</p>
+          <h1>{isEdit ? t('checkpoint_heist.admin.checkpoint_edit_heading', {}) : t('checkpoint_heist.admin.create_checkpoint', {})}</h1>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints'}>{t('checkpoint_heist.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints'}>{t('common.back', {})}</Link>
         </div>
       </div>
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading...')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
-            <div className="form-row"><label htmlFor="checkpoint-title">{t('checkpoint_heist.admin.table_title', {}, 'Title')}</label><input id="checkpoint-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
-            <div className="form-row"><label htmlFor="checkpoint-points">{t('checkpoint_heist.admin.table_points', {}, 'Points')}</label><input id="checkpoint-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="checkpoint-title">{t('table.title', {})}</label><input id="checkpoint-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} required /></div>
+            <div className="form-row"><label htmlFor="checkpoint-points">{t('table.points', {})}</label><input id="checkpoint-points" type="number" min="1" value={form.points} onChange={(e) => setForm((c) => ({ ...c, points: e.target.value }))} required /></div>
             <div className="form-row">
-              <label>{t('checkpoint_heist.admin.map_label', {}, 'Checkpoint location')}</label>
-              <p className="muted">{t('checkpoint_heist.admin.location_map_help', {}, 'Klik op de kaart om de checkpointlocatie te selecteren.')}</p>
-              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('checkpoint_heist.admin.map_label', {}, 'Checkpoint location')} />
+              <label>{t('checkpoint_heist.admin.map_label', {})}</label>
+              <p className="muted">{t('checkpoint_heist.admin.location_map_help', {})}</p>
+              <GeoLocationPicker latitude={form.latitude} longitude={form.longitude} onChange={(lat, lon) => setForm((c) => ({ ...c, latitude: lat, longitude: lon }))} ariaLabel={t('checkpoint_heist.admin.map_label', {})} />
             </div>
             <div className="form-row form-row-inline">
-              <div><label htmlFor="checkpoint-radius">{t('checkpoint_heist.admin.table_radius', {}, 'Radius')}</label><input id="checkpoint-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
-              <div><label htmlFor="checkpoint-color">{t('common.color', {}, 'Color')}</label><input id="checkpoint-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
+              <div><label htmlFor="checkpoint-radius">{t('table.radius', {})}</label><input id="checkpoint-radius" type="number" min="5" value={form.radius_meters} onChange={(e) => setForm((c) => ({ ...c, radius_meters: e.target.value }))} required /></div>
+              <div><label htmlFor="checkpoint-color">{t('table.color', {})}</label><input id="checkpoint-color" type="color" value={form.marker_color} onChange={(e) => setForm((c) => ({ ...c, marker_color: e.target.value }))} required /></div>
             </div>
             <div className="form-row">
               <label className="blindhike-toggle-row" htmlFor="checkpoint-active-toggle">
-                <span className="blindhike-toggle-label">{t('checkpoint_heist.admin.active', {}, 'Active')}</span>
+                <span className="blindhike-toggle-label">{t('status.active', {})}</span>
                 <span className="game-type-switch">
                   <input id="checkpoint-active-toggle" type="checkbox" checked={form.is_active} onChange={(e) => setForm((c) => ({ ...c, is_active: e.target.checked }))} />
                   <span className="game-type-switch-track" aria-hidden="true" />
@@ -116,8 +116,8 @@ export default function CheckpointHeistCheckpointFormPage() {
               </label>
             </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.saving', {}, 'Saving\u2026') : t('button.save', {}, 'Save')}</button>
-              <Link className="btn btn-ghost" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints'}>{t('button.cancel', {}, 'Cancel')}</Link>
+              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? t('button.state.saving', {}) : t('button.label.save', {})}</button>
+              <Link className="btn btn-ghost" to={'/admin/checkpoint-heist/' + gameId + '/checkpoints'}>{t('button.label.cancel', {})}</Link>
             </div>
           </form>
         </section>

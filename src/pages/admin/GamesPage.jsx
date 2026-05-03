@@ -70,7 +70,6 @@ export default function GamesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{t('gamesPage.title')}</h1>
-          <p className="text-sm text-gray-500 mt-1 dark:text-slate-400">{t('gamesPage.signedInAs', { role: auth.principalType })}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -78,7 +77,7 @@ export default function GamesPage() {
             to="/admin/games/new"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
-            {t('gamesPage.create', {}, 'Create game')}
+            {t('gamesPage.create', {})}
           </Link>
         </div>
       </div>
@@ -92,8 +91,8 @@ export default function GamesPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
       {!loading && !error && games.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-400 text-lg dark:text-slate-500">{t('gamesPage.empty', {}, 'No games found')}</p>
-          <p className="text-sm text-gray-400 mt-1 dark:text-slate-500">{t('gamesPage.emptyHint', {}, 'Create your first game to get started.')}</p>
+          <p className="text-gray-400 text-lg dark:text-slate-500">{t('gamesPage.empty', {})}</p>
+          <p className="text-sm text-gray-400 mt-1 dark:text-slate-500">{t('gamesPage.emptyHint', {})}</p>
         </div>
       ) : null}
 
@@ -103,7 +102,7 @@ export default function GamesPage() {
           {games.map((game) => {
             const gameType = game?.game_type || game?.type
             const gameMeta = GAME_BY_TYPE[gameType]
-            const typeName = t(`gameCatalog.${gameType}.name`, {}, gameMeta?.name || gameType)
+            const typeName = t(`gameCatalog.${gameType}.name`, {})
 
             return (
               <article
@@ -155,7 +154,7 @@ export default function GamesPage() {
                     className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-navy-700 hover:bg-gray-50 transition-colors dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                     to={`/admin/games/${game.id}/live-overview`}
                   >
-                    {t('gamesPage.liveOverview', {}, 'Live overview')}
+                    {t('gamePage.liveOverview', {})}
                   </Link>
                 </div>
               </article>

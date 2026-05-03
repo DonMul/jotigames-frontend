@@ -20,7 +20,7 @@ function buildDetailedGameInfoContent(config, t) {
     kicker: info('kicker'),
     eyebrow: info('eyebrow'),
     heroText: info('heroText'),
-    secondaryCta: info('secondaryCta'),
+    secondaryCta: t('gameInfoDetailed.secondaryCta'),
     panelTitle: t('gameInfoDetailed.panelTitle'),
     panelPoints: [info('panelPointOne'), info('panelPointTwo'), info('panelPointThree')],
     highlights: [
@@ -62,7 +62,7 @@ function buildDetailedGameInfoContent(config, t) {
     perfectFor: [info('perfectForOne'), info('perfectForTwo'), info('perfectForThree'), info('perfectForFour')],
     ctaTitle: info('ctaTitle'),
     ctaText: info('ctaText'),
-    ctaSecondary: t('gameInfoDetailed.ctaSecondary'),
+    ctaSecondary: t('gameInfoDetailed.secondaryCta'),
   }
 }
 
@@ -231,15 +231,15 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
             <div className="mt-8 flex flex-wrap gap-3">
               {isAuthenticated ? (
                 <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
-                  {t('birds_of_prey.info.primaryCtaAuthenticated')}
+                  {t('gameInfo.openGames')}
                 </Link>
               ) : (
                 <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
-                  {t('birds_of_prey.info.primaryCtaGuest')}
+                  {t('gameInfo.getStarted')}
                 </Link>
               )}
               <a href="#birds-how-to-play" className="inline-flex items-center rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm font-semibold text-white transition-all hover:border-brand-300 hover:bg-white/10">
-                {t('birds_of_prey.info.secondaryCta')}
+                {t('gameInfoDetailed.secondaryCta')}
               </a>
             </div>
           </div>
@@ -247,7 +247,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
           <aside className="animate-slide-in-right">
             <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-2xl shadow-navy-950/30 backdrop-blur-sm">
               <div className="rounded-[1.5rem] border border-white/10 bg-navy-950/45 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-200">{t('birds_of_prey.info.panelTitle')}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-200">{t('gameInfoDetailed.panelTitle')}</p>
                 <div className="mt-5 space-y-4">
                   {[
                     t('birds_of_prey.info.panelPointOne'),
@@ -279,7 +279,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:bg-brand-900/20 dark:text-brand-300">
-              {t('birds_of_prey.info.sectionBattleKicker')}
+              {t('gameInfoDetailed.battleKicker')}
             </span>
             <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">
               {t('birds_of_prey.info.sectionBattleTitle')}
@@ -306,7 +306,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
           <div className="grid gap-12 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
             <div>
               <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 shadow-sm ring-1 ring-warm-200 dark:bg-slate-800 dark:text-brand-300 dark:ring-slate-700">
-                {t('birds_of_prey.info.sectionHowKicker')}
+                {t('gameInfoDetailed.howKicker')}
               </span>
               <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 sm:text-4xl dark:text-white">
                 {t('birds_of_prey.info.sectionHowTitle')}
@@ -316,7 +316,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
               </p>
 
               <div className="mt-8 rounded-3xl border border-warm-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{t('birds_of_prey.info.playStylesTitle')}</h3>
+                <h3 className="font-display text-lg font-bold text-navy-900 dark:text-white">{t('gameInfoDetailed.playStylesTitle')}</h3>
                 <ul className="mt-4 space-y-3">
                   {playStyles.map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-navy-600 dark:text-slate-300">
@@ -352,7 +352,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
           <div className="grid gap-12 lg:grid-cols-[1fr_.9fr] lg:items-start">
             <div>
               <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-200">
-                {t('birds_of_prey.info.organizerKicker')}
+                {t('gameInfoDetailed.organizerKicker')}
               </span>
               <h2 className="mt-4 font-display text-3xl font-bold sm:text-4xl">
                 {t('birds_of_prey.info.organizerTitle')}
@@ -380,7 +380,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
             <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
               <div>
                 <span className="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:bg-brand-900/20 dark:text-brand-300">
-                  {t('birds_of_prey.info.perfectForKicker')}
+                  {t('gameInfoDetailed.perfectForKicker')}
                 </span>
                 <h2 className="mt-4 font-display text-3xl font-bold text-navy-900 dark:text-white">
                   {t('birds_of_prey.info.perfectForTitle')}
@@ -414,7 +414,7 @@ function BirdsOfPreyInfoPage({ game, gameName, gameSubtitle, isAuthenticated, sh
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             {isAuthenticated ? (
               <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">
-                {t('birds_of_prey.info.ctaPrimaryAuthenticated')}
+                {t('gameInfo.openGames')}
               </Link>
             ) : (
               <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600">

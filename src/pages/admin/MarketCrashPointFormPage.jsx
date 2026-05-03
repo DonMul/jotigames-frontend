@@ -106,7 +106,7 @@ export default function MarketCrashPointFormPage() {
         if (isEditingPoint) {
           const point = nextPoints.find((row) => String(row?.id || '') === String(pointId || ''))
           if (!point) {
-            throw new Error(t('market_crash.admin.point_not_found', {}, 'Point not found'))
+            throw new Error(t('market_crash.admin.point_not_found', {}))
           }
           buildPointFormFromPoint(point, nextResources)
         } else {
@@ -114,7 +114,7 @@ export default function MarketCrashPointFormPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('market_crash.admin.load_failed', {}, 'Failed to load Market Crash admin data'))
+          setError(err.message || t('market_crash.admin.load_failed', {}))
         }
       } finally {
         if (!cancelled) {
@@ -151,11 +151,11 @@ export default function MarketCrashPointFormPage() {
     }
 
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('market_crash.admin.latitude_longitude_required', {}, 'Latitude and longitude are required'))
+      setError(t('validation.locationRequired', {}))
       return
     }
     if (!payload.resources.length) {
-      setError(t('market_crash.admin.point_resource_required', {}, 'Enable at least one resource for this point'))
+      setError(t('market_crash.admin.point_resource_required', {}))
       return
     }
 
@@ -170,11 +170,11 @@ export default function MarketCrashPointFormPage() {
       navigate(`/admin/market-crash/${gameId}/points`, {
         replace: true,
         state: {
-          flashSuccess: t('market_crash.admin.point_saved', {}, 'Point saved'),
+          flashSuccess: t('status.saved', {}),
         },
       })
     } catch (err) {
-      setError(err.message || t('market_crash.admin.point_save_failed', {}, 'Failed to save point'))
+      setError(err.message || t('error.saveFailed', {}))
     } finally {
       setSaving(false)
     }
@@ -184,27 +184,27 @@ export default function MarketCrashPointFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('market_crash.admin.kicker', {}, 'Market Crash')}</p>
-          <h1>{isEditingPoint ? t('market_crash.admin.point_edit_heading', {}, 'Edit point') : t('market_crash.admin.point_new_heading', {}, 'New point')}</h1>
+          <p className="overview-kicker">{t('market_crash.admin.kicker', {})}</p>
+          <h1>{isEditingPoint ? t('market_crash.admin.point_edit_heading', {}) : t('market_crash.admin.point_new_heading', {})}</h1>
           <p className="overview-subtitle">{game?.name || '-'}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/market-crash/${gameId}/points`}>
-            {t('market_crash.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={submitPoint} className="market-crash-point-form">
             <section className="market-crash-form-section">
-              <h3>{t('market_crash.admin.form_title', {}, 'Point title')}</h3>
+              <h3>{t('market_crash.admin.form_title', {})}</h3>
               <label>
-                <span>{t('market_crash.admin.form_title', {}, 'Point title')}</span>
+                <span>{t('market_crash.admin.form_title', {})}</span>
                 <input
                   value={pointForm.title}
                   onChange={(event) => setPointForm((current) => ({ ...current, title: event.target.value }))}
@@ -214,17 +214,17 @@ export default function MarketCrashPointFormPage() {
             </section>
 
             <section className="market-crash-form-section">
-              <h3>{t('market_crash.admin.form_resource_settings', {}, 'Resource settings')}</h3>
-              <p className="muted">{t('market_crash.admin.form_resource_settings_help', {}, 'Enable resources and configure buy/sell/fluctuation')}</p>
+              <h3>{t('market_crash.admin.form_resource_settings', {})}</h3>
+              <p className="muted">{t('market_crash.admin.form_resource_settings_help', {})}</p>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('market_crash.admin.resource_table_name', {}, 'Name')}</th>
-                    <th>{t('market_crash.admin.enabled', {}, 'Enabled')}</th>
-                    <th>{t('market_crash.admin.form_buy_resources', {}, 'Buy')}</th>
-                    <th>{t('market_crash.admin.form_sell_resources', {}, 'Sell')}</th>
-                    <th>{t('market_crash.admin.form_tick_seconds', {}, 'Tick seconds')}</th>
-                    <th>{t('market_crash.admin.form_fluctuation_percent', {}, 'Max fluctuation %')}</th>
+                    <th>{t('table.name', {})}</th>
+                    <th>{t('status.active', {})}</th>
+                    <th>{t('market_crash.admin.form_buy_resources', {})}</th>
+                    <th>{t('market_crash.admin.form_sell_resources', {})}</th>
+                    <th>{t('market_crash.admin.form_tick_seconds', {})}</th>
+                    <th>{t('market_crash.admin.form_fluctuation_percent', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -348,17 +348,17 @@ export default function MarketCrashPointFormPage() {
             </section>
 
             <section className="market-crash-form-section">
-              <h3>{t('market_crash.admin.form_map', {}, 'Map')}</h3>
+              <h3>{t('market_crash.admin.form_map', {})}</h3>
               <GeoLocationPicker
                 latitude={pointForm.latitude}
                 longitude={pointForm.longitude}
                 onChange={(nextLat, nextLon) => setPointForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
-                ariaLabel={t('market_crash.admin.form_map', {}, 'Point location map')}
+                ariaLabel={t('market_crash.admin.form_map', {})}
               />
-              <p className="muted" style={{ marginTop: '0.5rem' }}>{t('common.map_select_hint', {}, 'Click on the map to set the location.')}</p>
+              <p className="muted" style={{ marginTop: '0.5rem' }}>{t('common.map_select_hint', {})}</p>
               <div className="market-crash-inline-grid">
                 <label>
-                  <span>{t('market_crash.admin.form_radius', {}, 'Radius')}</span>
+                  <span>{t('field.radius', {})}</span>
                   <input
                     type="number"
                     min="5"
@@ -368,7 +368,7 @@ export default function MarketCrashPointFormPage() {
                 </label>
 
                 <label>
-                  <span>{t('common.color', {}, 'Color')}</span>
+                  <span>{t('table.color', {})}</span>
                   <input
                     type="color"
                     value={pointForm.marker_color}
@@ -380,10 +380,10 @@ export default function MarketCrashPointFormPage() {
 
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>
-                {saving ? t('button.saving', {}, 'Saving…') : t('button.save', {}, 'Save')}
+                {saving ? t('button.state.saving', {}) : t('button.label.save', {})}
               </button>
               <Link className="btn btn-ghost" to={`/admin/market-crash/${gameId}/points`}>
-                {t('button.cancel', {}, 'Cancel')}
+                {t('button.label.cancel', {})}
               </Link>
             </div>
           </form>

@@ -28,7 +28,7 @@ export default function PandemicResponseAdminPage() {
       setHotspots(Array.isArray(statePayload?.hotspots) ? statePayload.hotspots : [])
       setPickups(Array.isArray(statePayload?.pickups) ? statePayload.pickups : [])
     } catch (err) {
-      setError(err.message || t('pandemic_response.admin.load_failed', {}, 'Failed to load data'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally { setLoading(false) }
   }
 
@@ -38,30 +38,30 @@ export default function PandemicResponseAdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('pandemic_response.admin.kicker', {}, 'Pandemic Response')}</p>
+          <p className="overview-kicker">{t('pandemic_response.admin.kicker', {})}</p>
           <h1>{game?.name || '-'}</h1>
-          <p className="overview-subtitle">{t('pandemic_response.admin.hotspots_subtitle', {}, 'Current outbreak state')}</p>
+          <p className="overview-subtitle">{t('pandemic_response.admin.hotspots_subtitle', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('pandemic_response.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <div className="geo-layout">
         <section className="overview-panel">
-          <h2>{t('pandemic_response.admin.current_hotspots', {}, 'Current hotspots')}</h2>
+          <h2>{t('pandemic_response.admin.current_hotspots', {})}</h2>
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('pandemic_response.admin.table_title', {}, 'Title')}</th>
-                <th>{t('common.lat', {}, 'Lat')}</th>
-                <th>{t('common.lon', {}, 'Lon')}</th>
-                <th>{t('pandemic_response.admin.table_radius', {}, 'Radius')}</th>
-                <th>{t('pandemic_response.admin.table_points', {}, 'Points')}</th>
-                <th>{t('pandemic_response.admin.table_severity', {}, 'Severity')}</th>
+                <th>{t('table.title', {})}</th>
+                <th>{t('common.lat', {})}</th>
+                <th>{t('common.lon', {})}</th>
+                <th>{t('table.radius', {})}</th>
+                <th>{t('table.points', {})}</th>
+                <th>{t('pandemic_response.admin.table_severity', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -75,22 +75,22 @@ export default function PandemicResponseAdminPage() {
                   <td>{hotspot.severity_level}</td>
                 </tr>
               ))}
-              {hotspots.length === 0 ? (<tr><td colSpan={6} className="muted">{t('pandemic_response.admin.empty_hotspots', {}, 'No hotspots yet')}</td></tr>) : null}
+              {hotspots.length === 0 ? (<tr><td colSpan={6} className="muted">{t('pandemic_response.admin.empty_hotspots', {})}</td></tr>) : null}
             </tbody>
           </table>
         </section>
       </div>
 
       <section className="admin-block">
-        <h2>{t('pandemic_response.admin.current_pickups', {}, 'Current pickup points')}</h2>
+        <h2>{t('pandemic_response.admin.current_pickups', {})}</h2>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>{t('pandemic_response.admin.table_title', {}, 'Title')}</th>
-              <th>{t('pandemic_response.admin.table_resource', {}, 'Resource')}</th>
-              <th>{t('common.lat', {}, 'Lat')}</th>
-              <th>{t('common.lon', {}, 'Lon')}</th>
-              <th>{t('pandemic_response.admin.table_radius', {}, 'Radius')}</th>
+              <th>{t('table.title', {})}</th>
+              <th>{t('pandemic_response.admin.table_resource', {})}</th>
+              <th>{t('common.lat', {})}</th>
+              <th>{t('common.lon', {})}</th>
+              <th>{t('table.radius', {})}</th>
             </tr>
           </thead>
           <tbody>
@@ -103,7 +103,7 @@ export default function PandemicResponseAdminPage() {
                 <td>{pickup.radius_meters}</td>
               </tr>
             ))}
-            {pickups.length === 0 ? (<tr><td colSpan={5} className="muted">{t('pandemic_response.admin.empty_pickups', {}, 'No pickup points yet')}</td></tr>) : null}
+            {pickups.length === 0 ? (<tr><td colSpan={5} className="muted">{t('pandemic_response.admin.empty_pickups', {})}</td></tr>) : null}
           </tbody>
         </table>
       </section>

@@ -57,19 +57,19 @@ export default function RegisterPage() {
         <div className="rounded-2xl border border-warm-200 bg-white shadow-xl shadow-navy-900/5 p-6 sm:p-8 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="registerEmail" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.email')}</label>
+              <label htmlFor="registerEmail" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.user.email')}</label>
               <input id="registerEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerUsername" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.username')}</label>
+              <label htmlFor="registerUsername" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.user.name')}</label>
               <input id="registerUsername" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerPassword" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.password')}</label>
+              <label htmlFor="registerPassword" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.user.password')}</label>
               <input id="registerPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
             <div>
-              <label htmlFor="registerPasswordConfirm" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('auth.confirmPassword')}</label>
+              <label htmlFor="registerPasswordConfirm" className="block text-xs font-medium text-navy-600 mb-1.5 dark:text-slate-300">{t('object.user.password')}</label>
               <input id="registerPasswordConfirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="w-full rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5 text-sm text-navy-900 placeholder:text-navy-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20 outline-none transition dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500" />
             </div>
 
@@ -77,7 +77,7 @@ export default function RegisterPage() {
             {success ? <div className="flash flash-success">{success}</div> : null}
 
             <button type="submit" disabled={loading} className="w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 transition-all">
-              {loading ? t('auth.creating') : t('auth.register')}
+              {loading ? t('button.state.creating') : t('auth.register')}
             </button>
           </form>
 

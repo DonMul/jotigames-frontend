@@ -203,7 +203,7 @@ export default function TeamModulePage() {
       try {
         const gameRecord = await gameApi.getGame(auth.token, gameId)
         if (!gameRecord) {
-          throw new Error(t('teamModule.gameNotFound'))
+          throw new Error(t('error.gameNotFound'))
         }
 
         setActionValues(getInitialActionValues(gameRecord.game_type))
@@ -218,7 +218,7 @@ export default function TeamModulePage() {
         setBootstrapState(state)
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('teamModule.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       } finally {
         if (!cancelled) {
@@ -243,7 +243,7 @@ export default function TeamModulePage() {
       setActionResult(result)
       await reloadBootstrap(game)
     } catch (err) {
-      setError(err.message || t('teamModule.actionFailed'))
+      setError(err.message || t('error.actionFailed'))
     }
   }
 
@@ -254,7 +254,7 @@ export default function TeamModulePage() {
       setActionResult(result)
       await reloadBootstrap(game)
     } catch (err) {
-      setError(err.message || t('teamModule.actionFailed'))
+      setError(err.message || t('error.actionFailed'))
     }
   }
 
@@ -274,19 +274,19 @@ export default function TeamModulePage() {
 
       <section className="overview-stats game-show-summary-stats">
         <article className="stat-card">
-          <span className="stat-label">{t('teamModule.team', {}, 'Team')}</span>
+          <span className="stat-label">{t('teamModule.team', {})}</span>
           <span className="stat-value">{resolvedTeamId || '-'}</span>
         </article>
         <article className="stat-card">
-          <span className="stat-label">{t('moduleOverview.gameType', {}, 'Game type')}</span>
+          <span className="stat-label">{t('moduleOverview.gameType', {})}</span>
           <span className="stat-value">{game?.game_type || '-'}</span>
         </article>
         <article className="stat-card">
-          <span className="stat-label">{t('gamePage.starts', {}, 'Starts')}</span>
+          <span className="stat-label">{t('gamePage.starts', {})}</span>
           <span className="stat-value">{formatDate(game?.start_at)}</span>
         </article>
         <article className="stat-card">
-          <span className="stat-label">{t('gamePage.ends', {}, 'Ends')}</span>
+          <span className="stat-label">{t('gamePage.ends', {})}</span>
           <span className="stat-value">{formatDate(game?.end_at)}</span>
         </article>
       </section>
@@ -294,16 +294,16 @@ export default function TeamModulePage() {
       <section className="game-show-action-board">
         <div className="game-show-action-group">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('teamModule.backToGame')}
+            {t('common.back')}
           </Link>
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}/live-overview`}>
-            {t('gamePage.moduleOverview', {}, 'Admin overview')}
+            {t('gamePage.moduleOverview', {})}
           </Link>
         </div>
       </section>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <div className="geo-layout" style={{ marginTop: '1rem' }}>
         <section className="overview-panel">
@@ -312,13 +312,13 @@ export default function TeamModulePage() {
 
           {game?.game_type === 'courier_rush' ? (
             <div style={{ marginBottom: '1rem' }}>
-              <h3>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h3>
+              <h3>{t('courier_rush.admin.pickups', {})}</h3>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('courier_rush.admin.table_title', {}, 'Title')}</th>
-                    <th>{t('courier_rush.admin.table_points', {}, 'Points')}</th>
-                    <th>{t('gamesPage.actions', {}, 'Actions')}</th>
+                    <th>{t('table.title', {})}</th>
+                    <th>{t('table.points', {})}</th>
+                    <th>{t('table.actions', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,25 +328,25 @@ export default function TeamModulePage() {
                       <td>{pickup.points}</td>
                       <td>
                         <button className="btn btn-primary btn-small" type="button" onClick={() => submitPayload({ pickup_id: pickup.id })}>
-                          {t('courier_rush.team.confirm_pickup', {}, 'Confirm pickup')}
+                          {t('courier_rush.team.confirm_pickup', {})}
                         </button>
                       </td>
                     </tr>
                   ))}
                   {(Array.isArray(bootstrapState?.pickups) ? bootstrapState.pickups : []).length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="muted">{t('courier_rush.admin.empty_pickups', {}, 'No pickups')}</td>
+                      <td colSpan={3} className="muted">{t('courier_rush.admin.empty_pickups', {})}</td>
                     </tr>
                   ) : null}
                 </tbody>
               </table>
 
-              <h3 style={{ marginTop: '1rem' }}>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</h3>
+              <h3 style={{ marginTop: '1rem' }}>{t('courier_rush.admin.dropoffs', {})}</h3>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('courier_rush.admin.table_title', {}, 'Title')}</th>
-                    <th>{t('gamesPage.actions', {}, 'Actions')}</th>
+                    <th>{t('table.title', {})}</th>
+                    <th>{t('table.actions', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -359,14 +359,14 @@ export default function TeamModulePage() {
                           type="button"
                           onClick={() => submitPayload({ dropoff_id: dropoff.id, points: Number(actionValues.points || 1) })}
                         >
-                          {t('courier_rush.team.confirm_dropoff', {}, 'Confirm dropoff')}
+                          {t('courier_rush.team.confirm_dropoff', {})}
                         </button>
                       </td>
                     </tr>
                   ))}
                   {(Array.isArray(bootstrapState?.dropoffs) ? bootstrapState.dropoffs : []).length === 0 ? (
                     <tr>
-                      <td colSpan={2} className="muted">{t('courier_rush.admin.empty_dropoffs', {}, 'No dropoffs')}</td>
+                      <td colSpan={2} className="muted">{t('courier_rush.admin.empty_dropoffs', {})}</td>
                     </tr>
                   ) : null}
                 </tbody>
@@ -376,13 +376,13 @@ export default function TeamModulePage() {
 
           {game?.game_type === 'pandemic_response' ? (
             <div style={{ marginBottom: '1rem' }}>
-              <h3>{t('pandemic_response.admin.current_pickups', {}, 'Pickup points')}</h3>
+              <h3>{t('pandemic_response.admin.current_pickups', {})}</h3>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('pandemic_response.admin.table_title', {}, 'Title')}</th>
-                    <th>{t('pandemic_response.admin.table_resource', {}, 'Resource')}</th>
-                    <th>{t('gamesPage.actions', {}, 'Actions')}</th>
+                    <th>{t('table.title', {})}</th>
+                    <th>{t('pandemic_response.admin.table_resource', {})}</th>
+                    <th>{t('table.actions', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -392,26 +392,26 @@ export default function TeamModulePage() {
                       <td>{pickup.resource_type}</td>
                       <td>
                         <button className="btn btn-primary btn-small" type="button" onClick={() => submitPayload({ pickup_id: pickup.id })}>
-                          {t('pandemic_response.team.collect_pickup', {}, 'Collect')}
+                          {t('pandemic_response.team.collect_pickup', {})}
                         </button>
                       </td>
                     </tr>
                   ))}
                   {(Array.isArray(bootstrapState?.pickups) ? bootstrapState.pickups : []).length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="muted">{t('pandemic_response.admin.empty_pickups', {}, 'No pickups')}</td>
+                      <td colSpan={3} className="muted">{t('pandemic_response.admin.empty_pickups', {})}</td>
                     </tr>
                   ) : null}
                 </tbody>
               </table>
 
-              <h3 style={{ marginTop: '1rem' }}>{t('pandemic_response.admin.current_hotspots', {}, 'Hotspots')}</h3>
+              <h3 style={{ marginTop: '1rem' }}>{t('pandemic_response.admin.current_hotspots', {})}</h3>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('pandemic_response.admin.table_title', {}, 'Title')}</th>
-                    <th>{t('pandemic_response.admin.table_severity', {}, 'Severity')}</th>
-                    <th>{t('gamesPage.actions', {}, 'Actions')}</th>
+                    <th>{t('table.title', {})}</th>
+                    <th>{t('pandemic_response.admin.table_severity', {})}</th>
+                    <th>{t('table.actions', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -425,14 +425,14 @@ export default function TeamModulePage() {
                           type="button"
                           onClick={() => submitPayload({ hotspot_id: hotspot.id, points: Number(actionValues.points || 1) })}
                         >
-                          {t('pandemic_response.team.resolve_hotspot', {}, 'Resolve')}
+                          {t('pandemic_response.team.resolve_hotspot', {})}
                         </button>
                       </td>
                     </tr>
                   ))}
                   {(Array.isArray(bootstrapState?.hotspots) ? bootstrapState.hotspots : []).length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="muted">{t('pandemic_response.admin.empty_hotspots', {}, 'No hotspots')}</td>
+                      <td colSpan={3} className="muted">{t('pandemic_response.admin.empty_hotspots', {})}</td>
                     </tr>
                   ) : null}
                 </tbody>
@@ -442,13 +442,13 @@ export default function TeamModulePage() {
 
           {game?.game_type === 'crazy_88' ? (
             <div style={{ marginBottom: '1rem' }}>
-              <h3>{t('crazy88.admin.task_list', {}, 'Tasks')}</h3>
+              <h3>{t('crazy88.admin.task_list', {})}</h3>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>{t('crazy88.admin.table_title', {}, 'Title')}</th>
-                    <th>{t('crazy88.admin.table_points', {}, 'Points')}</th>
-                    <th>{t('crazy88.admin.table_actions', {}, 'Actions')}</th>
+                    <th>{t('table.title', {})}</th>
+                    <th>{t('table.points', {})}</th>
+                    <th>{t('table.actions', {})}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -462,14 +462,14 @@ export default function TeamModulePage() {
                       <td>{task.points}</td>
                       <td>
                         <button className="btn btn-primary btn-small" type="button" onClick={() => submitPayload({ task_id: task.id })}>
-                          {t('crazy88.team.submit_task', {}, 'Submit task')}
+                          {t('crazy88.team.submit_task', {})}
                         </button>
                       </td>
                     </tr>
                   ))}
                   {(Array.isArray(bootstrapState?.tasks) ? bootstrapState.tasks : []).length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="muted">{t('crazy88.admin.task_empty', {}, 'No tasks')}</td>
+                      <td colSpan={3} className="muted">{t('crazy88.admin.task_empty', {})}</td>
                     </tr>
                   ) : null}
                 </tbody>
@@ -479,15 +479,15 @@ export default function TeamModulePage() {
 
           {game?.game_type === 'code_conspiracy' ? (
             <div style={{ marginBottom: '1rem' }}>
-              <h3>{t('code_conspiracy.team.quick_submit', {}, 'Quick submit')}</h3>
+              <h3>{t('code_conspiracy.team.quick_submit', {})}</h3>
               <div className="form-row">
-                <label htmlFor="code-conspiracy-target">{t('code_conspiracy.team.target_team', {}, 'Target team')}</label>
+                <label htmlFor="code-conspiracy-target">{t('code_conspiracy.team.target_team', {})}</label>
                 <select
                   id="code-conspiracy-target"
                   value={String(actionValues.target_team_id ?? '')}
                   onChange={(event) => setActionValues((prev) => ({ ...prev, target_team_id: event.target.value }))}
                 >
-                  <option value="">{t('teamDashboard.chooseTarget', {}, 'Choose target')}</option>
+                  <option value="">{t('teamDashboard.chooseTarget', {})}</option>
                   {(Array.isArray(bootstrapState?.target_teams) ? bootstrapState.target_teams : []).map((team) => (
                     <option key={team.id} value={team.id}>
                       {team.name || team.id}
@@ -497,7 +497,7 @@ export default function TeamModulePage() {
               </div>
               <div className="form-row form-row-inline">
                 <div>
-                  <label htmlFor="code-conspiracy-code">{t('code_conspiracy.team.code', {}, 'Code')}</label>
+                  <label htmlFor="code-conspiracy-code">{t('code_conspiracy.team.code', {})}</label>
                   <input
                     id="code-conspiracy-code"
                     value={String(actionValues.code ?? '')}
@@ -505,7 +505,7 @@ export default function TeamModulePage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="code-conspiracy-points">{t('code_conspiracy.team.points_delta', {}, 'Points delta')}</label>
+                  <label htmlFor="code-conspiracy-points">{t('code_conspiracy.team.points_delta', {})}</label>
                   <input
                     id="code-conspiracy-points"
                     type="number"
@@ -525,7 +525,7 @@ export default function TeamModulePage() {
                   })
                 }
               >
-                {t('code_conspiracy.team.submit_code', {}, 'Submit code')}
+                {t('code_conspiracy.team.submit_code', {})}
               </button>
             </div>
           ) : null}
@@ -577,7 +577,7 @@ export default function TeamModulePage() {
               )
             })}
             <button className="btn btn-primary" type="submit">
-              {t('teamModule.submitActionButton')}
+              {t('teamModule.submitAction')}
             </button>
           </form>
 

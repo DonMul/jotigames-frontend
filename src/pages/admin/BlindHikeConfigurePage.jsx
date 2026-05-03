@@ -60,7 +60,7 @@ export default function BlindHikeConfigurePage() {
         finish_radius_meters: String(Number(data.finish_radius_meters || 25)),
       })
     } catch (err) {
-      setError(err.message || t('blindhike.load_failed', {}, 'Failed to load Blind Hike config'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally {
       setLoading(false)
     }
@@ -88,17 +88,17 @@ export default function BlindHikeConfigurePage() {
     }
 
     if (payload.target_lat !== null && !Number.isFinite(payload.target_lat)) {
-      setError(t('blindhike.target_lat_invalid', {}, 'Target latitude is invalid'))
+      setError(t('blindhike.target_lat_invalid', {}))
       return
     }
 
     if (payload.target_lon !== null && !Number.isFinite(payload.target_lon)) {
-      setError(t('blindhike.target_lon_invalid', {}, 'Target longitude is invalid'))
+      setError(t('blindhike.target_lon_invalid', {}))
       return
     }
 
     if (!Number.isFinite(payload.finish_radius_meters) || payload.finish_radius_meters < 1) {
-      setError(t('blindhike.finish_radius_invalid', {}, 'Finish radius must be at least 1 meter'))
+      setError(t('blindhike.finish_radius_invalid', {}))
       return
     }
 
@@ -116,9 +116,9 @@ export default function BlindHikeConfigurePage() {
         marker_cooldown: String(Number(data.marker_cooldown || 0)),
         finish_radius_meters: String(Number(data.finish_radius_meters || 25)),
       })
-      setSuccess(t('blindhike.saved', {}, 'Saved'))
+      setSuccess(t('status.saved', {}))
     } catch (err) {
-      setError(err.message || t('blindhike.save_failed', {}, 'Failed to save Blind Hike config'))
+      setError(err.message || t('error.saveFailed', {}))
     }
   }
 
@@ -126,40 +126,40 @@ export default function BlindHikeConfigurePage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <p className="overview-kicker">{t('blindhike.configure', {}, 'Configure Blind Hike')}</p>
+          <p className="overview-kicker">{t('blindhike.configure', {})}</p>
           <h1>{game?.name || '-'}</h1>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('blindhike.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </section>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="overview-panel">
         <form onSubmit={handleSubmit}>
           <div className="form-section">
-            <h2>{t('blindhike.target_location', {}, 'Target location')}</h2>
-            <p className="muted">{t('blindhike.target_location_help', {}, 'Set the finish target teams must estimate and reach.')}</p>
-            <p className="muted">{t('blindhike.map_pick_hint', {}, 'Click on the map to set the target marker.')}</p>
+            <h2>{t('blindhike.target_location', {})}</h2>
+            <p className="muted">{t('blindhike.target_location_help', {})}</p>
+            <p className="muted">{t('blindhike.map_pick_hint', {})}</p>
             <GeoLocationPicker
               latitude={config.target_lat}
               longitude={config.target_lon}
               onChange={handleMapPick}
-              ariaLabel={t('blindhike.target_location', {}, 'Target location')}
+              ariaLabel={t('blindhike.target_location', {})}
             />
           </div>
 
           <div className="form-section">
-            <h2>{t('blindhike.obstacles', {}, 'Obstacles')}</h2>
-            <p className="muted">{t('blindhike.obstacles_help', {}, 'Apply map distortions that make orientation harder for teams.')}</p>
+            <h2>{t('blindhike.obstacles', {})}</h2>
+            <p className="muted">{t('blindhike.obstacles_help', {})}</p>
             <label className="blindhike-toggle-row" htmlFor="horizontal-flip-toggle">
               <span className="blindhike-toggle-label">
-                {t('blindhike.horizontal_flip', {}, 'Horizontal flip')}
+                {t('blindhike.horizontal_flip', {})}
               </span>
               <span className="game-type-switch">
                 <input
@@ -171,10 +171,10 @@ export default function BlindHikeConfigurePage() {
                 <span className="game-type-switch-track" aria-hidden="true" />
               </span>
             </label>
-            <p className="muted">{t('blindhike.horizontal_flip_help', {}, 'Mirror the map left-to-right for all teams.')}</p>
+            <p className="muted">{t('blindhike.horizontal_flip_help', {})}</p>
             <label className="blindhike-toggle-row" htmlFor="vertical-flip-toggle">
               <span className="blindhike-toggle-label">
-                {t('blindhike.vertical_flip', {}, 'Vertical flip')}
+                {t('blindhike.vertical_flip', {})}
               </span>
               <span className="game-type-switch">
                 <input
@@ -186,11 +186,11 @@ export default function BlindHikeConfigurePage() {
                 <span className="game-type-switch-track" aria-hidden="true" />
               </span>
             </label>
-            <p className="muted">{t('blindhike.vertical_flip_help', {}, 'Mirror the map top-to-bottom for all teams.')}</p>
+            <p className="muted">{t('blindhike.vertical_flip_help', {})}</p>
 
             <div className="form-row">
-              <label htmlFor="scale-factor">{t('blindhike.scale_factor', {}, 'Scale factor')}</label>
-              <p className="muted">{t('blindhike.scale_factor_help', {}, 'Scales perceived distance: 1.0 = normal, higher = farther, lower = closer.')}</p>
+              <label htmlFor="scale-factor">{t('blindhike.scale_factor', {})}</label>
+              <p className="muted">{t('blindhike.scale_factor_help', {})}</p>
               <input
                 id="scale-factor"
                 type="number"
@@ -203,8 +203,8 @@ export default function BlindHikeConfigurePage() {
             </div>
 
             <div className="form-row">
-              <label htmlFor="rotation">{t('blindhike.rotation', {}, 'Rotation')}</label>
-              <p className="muted">{t('blindhike.rotation_help', {}, 'Rotate the map view by degrees (0-360) for all teams.')}</p>
+              <label htmlFor="rotation">{t('blindhike.rotation', {})}</label>
+              <p className="muted">{t('blindhike.rotation_help', {})}</p>
               <input
                 id="rotation"
                 type="number"
@@ -217,11 +217,11 @@ export default function BlindHikeConfigurePage() {
           </div>
 
           <div className="form-section">
-            <h2>{t('blindhike.constraints', {}, 'Constraints')}</h2>
-            <p className="muted">{t('blindhike.constraints_help', {}, 'Limit marker usage so teams must place guesses strategically.')}</p>
+            <h2>{t('blindhike.constraints', {})}</h2>
+            <p className="muted">{t('blindhike.constraints_help', {})}</p>
             <div className="form-row">
-              <label htmlFor="max-markers">{t('blindhike.max_markers', {}, 'Max markers')}</label>
-              <p className="muted">{t('blindhike.max_markers_help', {}, 'Maximum number of markers each team can place (empty = no limit).')}</p>
+              <label htmlFor="max-markers">{t('blindhike.max_markers', {})}</label>
+              <p className="muted">{t('blindhike.max_markers_help', {})}</p>
               <input
                 id="max-markers"
                 type="number"
@@ -232,8 +232,8 @@ export default function BlindHikeConfigurePage() {
             </div>
 
             <div className="form-row">
-              <label htmlFor="marker-cooldown">{t('blindhike.marker_cooldown', {}, 'Marker cooldown')}</label>
-              <p className="muted">{t('blindhike.marker_cooldown_help', {}, 'Seconds a team must wait between marker placements.')}</p>
+              <label htmlFor="marker-cooldown">{t('blindhike.marker_cooldown', {})}</label>
+              <p className="muted">{t('blindhike.marker_cooldown_help', {})}</p>
               <input
                 id="marker-cooldown"
                 type="number"
@@ -244,8 +244,8 @@ export default function BlindHikeConfigurePage() {
             </div>
 
             <div className="form-row">
-              <label htmlFor="finish-radius-meters">{t('blindhike.finish_radius_meters', {}, 'Finish radius (meters)')}</label>
-              <p className="muted">{t('blindhike.finish_radius_meters_help', {}, 'A team finishes when a marker is placed within this radius of the target.')}</p>
+              <label htmlFor="finish-radius-meters">{t('blindhike.finish_radius_meters', {})}</label>
+              <p className="muted">{t('blindhike.finish_radius_meters_help', {})}</p>
               <input
                 id="finish-radius-meters"
                 type="number"
@@ -257,9 +257,9 @@ export default function BlindHikeConfigurePage() {
           </div>
 
           <div className="overview-actions" style={{ marginTop: '1rem' }}>
-            <button className="btn btn-primary" type="submit">{t('blindhike.save', {}, 'Save')}</button>
+            <button className="btn btn-primary" type="submit">{t('button.label.save', {})}</button>
             <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-              {t('blindhike.cancel', {}, 'Cancel')}
+              {t('button.label.cancel', {})}
             </Link>
           </div>
         </form>

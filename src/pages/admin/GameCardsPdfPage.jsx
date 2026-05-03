@@ -43,7 +43,7 @@ export default function GameCardsPdfPage() {
       window.URL.revokeObjectURL(objectUrl)
       setSuccess(t('gameCardsPage.exportSuccess'))
     } catch (err) {
-      setError(err.message || t('gameCardsPage.exportFailed'))
+      setError(err.message || t('error.exportFailed'))
     } finally {
       setExporting(false)
     }
@@ -53,7 +53,7 @@ export default function GameCardsPdfPage() {
     <main className="page-shell">
       <section className="overview-header">
         <div>
-          <h1>{t('gameCardsPage.exportPageTitle')}</h1>
+          <h1>{t('gameCardsPage.exportPdf')}</h1>
           <p className="overview-subtitle">{t('gameCardsPage.exportPageSubtitle')}</p>
         </div>
         <div className="overview-actions">
@@ -61,7 +61,7 @@ export default function GameCardsPdfPage() {
             {t('gameCardsPage.title')}
           </Link>
           <Link className="btn btn-ghost" to={`/admin/games/${gameId}`}>
-            {t('gameCardsPage.back')}
+            {t('common.back')}
           </Link>
         </div>
       </section>

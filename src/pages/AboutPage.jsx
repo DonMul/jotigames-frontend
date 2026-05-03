@@ -51,11 +51,11 @@ export default function AboutPage() {
           <div className="flex flex-wrap justify-center gap-4">
             {isAuthenticated ? (
               <Link to="/admin/games" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
-                {t('about.openGames')}
+                {t('gameInfo.openGames')}
               </Link>
             ) : (
               <Link to="/register" className="inline-flex items-center rounded-full bg-brand-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 transition-all">
-                {t('about.getStarted')}
+                {t('gameInfo.getStarted')}
               </Link>
             )}
             <Link to="/faq" className="inline-flex items-center rounded-full border-2 border-navy-200 px-8 py-3 text-sm font-semibold text-navy-700 hover:border-brand-300 hover:text-brand-600 transition-all dark:border-slate-600 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300">

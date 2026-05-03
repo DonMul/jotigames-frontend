@@ -51,7 +51,7 @@ export default function MarketCrashResourceFormPage() {
         const resources = Array.isArray(adminData?.resources) ? adminData.resources : []
         const resource = resources.find((row) => String(row?.id || '') === String(resourceId || ''))
         if (!resource) {
-          throw new Error(t('market_crash.admin.resource_not_found', {}, 'Resource not found'))
+          throw new Error(t('market_crash.admin.resource_not_found', {}))
         }
 
         setForm({
@@ -60,7 +60,7 @@ export default function MarketCrashResourceFormPage() {
         })
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('market_crash.admin.load_failed', {}, 'Failed to load Market Crash admin data'))
+          setError(err.message || t('market_crash.admin.load_failed', {}))
         }
       } finally {
         if (!cancelled) {
@@ -85,12 +85,12 @@ export default function MarketCrashResourceFormPage() {
     }
 
     if (!payload.name) {
-      setError(t('market_crash.admin.resource_required_name', {}, 'Resource name is required'))
+      setError(t('market_crash.admin.resource_required_name', {}))
       return
     }
 
     if (!Number.isFinite(payload.default_price) || payload.default_price < 1) {
-      setError(t('market_crash.admin.resource_invalid_price', {}, 'Default price must be at least 1'))
+      setError(t('market_crash.admin.resource_invalid_price', {}))
       return
     }
 
@@ -105,11 +105,11 @@ export default function MarketCrashResourceFormPage() {
       navigate(`/admin/market-crash/${gameId}/resources`, {
         replace: true,
         state: {
-          flashSuccess: t('button.save', {}, 'Saved'),
+          flashSuccess: t('button.label.save', {}),
         },
       })
     } catch (err) {
-      setError(err.message || t('market_crash.admin.resource_save_failed', {}, 'Failed to save resource'))
+      setError(err.message || t('error.saveFailed', {}))
     } finally {
       setSaving(false)
     }
@@ -119,25 +119,25 @@ export default function MarketCrashResourceFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('market_crash.admin.kicker', {}, 'Market Crash')}</p>
-          <h1>{isEdit ? t('market_crash.admin.resource_edit_heading', {}, 'Edit resource') : t('market_crash.admin.resource_new_heading', {}, 'New resource')}</h1>
+          <p className="overview-kicker">{t('market_crash.admin.kicker', {})}</p>
+          <h1>{isEdit ? t('market_crash.admin.resource_edit_heading', {}) : t('market_crash.admin.resource_new_heading', {})}</h1>
           <p className="overview-subtitle">{game?.name || '-'}</p>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/market-crash/${gameId}/resources`}>
-            {t('market_crash.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={submitResource} className="form-grid">
             <div className="form-row">
-              <label htmlFor="market-resource-name">{t('market_crash.admin.resource_table_name', {}, 'Name')}</label>
+              <label htmlFor="market-resource-name">{t('table.name', {})}</label>
               <input
                 id="market-resource-name"
                 value={form.name}
@@ -146,7 +146,7 @@ export default function MarketCrashResourceFormPage() {
               />
             </div>
             <div className="form-row">
-              <label htmlFor="market-resource-default-price">{t('market_crash.admin.resource_table_default_price', {}, 'Default price')}</label>
+              <label htmlFor="market-resource-default-price">{t('market_crash.admin.resource_table_default_price', {})}</label>
               <input
                 id="market-resource-default-price"
                 type="number"
@@ -158,10 +158,10 @@ export default function MarketCrashResourceFormPage() {
             </div>
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>
-                {saving ? t('button.saving', {}, 'Saving…') : t('button.save', {}, 'Save')}
+                {saving ? t('button.state.saving', {}) : t('button.label.save', {})}
               </button>
               <Link className="btn btn-ghost" to={`/admin/market-crash/${gameId}/resources`}>
-                {t('button.cancel', {}, 'Cancel')}
+                {t('button.label.cancel', {})}
               </Link>
             </div>
           </form>

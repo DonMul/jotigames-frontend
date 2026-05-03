@@ -1000,6 +1000,8 @@
       "poi_empty": "No POIs yet",
       "poi_edit": "Edit POI",
       "poi_add": "Add POI",
+      "poi_new_heading": "New POI",
+      "poi_edit_heading": "Edit POI",
       "poi_saved": "POI saved",
       "poi_delete_confirm": "Remove {title}?",
       "load_failed": "Loading failed",

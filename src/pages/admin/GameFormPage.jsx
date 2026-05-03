@@ -94,7 +94,7 @@ export default function GameFormPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || t('gameForm.loadFailed'))
+          setError(err.message || t('error.loadFailed'))
         }
       } finally {
         if (!cancelled) {
@@ -140,20 +140,22 @@ export default function GameFormPage() {
         navigate(`/admin/games/${created?.id || ''}`)
       }
     } catch (err) {
-      setError(err.message || t('gameForm.saveFailed'))
+      setError(err.message || t('error.saveFailed'))
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-slate-950">
+    <main className="page-shell">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-navy-900 dark:text-white">{isEdit ? t('gameForm.editTitle') : t('gameForm.newTitle')}</h1>
-        <Link className="btn btn-ghost" to={backPath}>
-          {t('gameForm.back')}
-        </Link>
+      <div className="geo-header">
+        <h1>{isEdit ? t('gamePage.editGame') : t('gamesPage.create')}</h1>
+        <div className="overview-actions">
+          <Link className="btn btn-ghost" to={backPath}>
+            {t('common.back')}
+          </Link>
+        </div>
       </div>
 
       {loading ? (
@@ -164,23 +166,23 @@ export default function GameFormPage() {
       {error ? <div className="flash flash-error">{error}</div> : null}
 
       {!loading ? (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6 dark:border-slate-700 dark:bg-slate-900">
+        <form onSubmit={handleSubmit} className="admin-block space-y-6">
           {/* Name */}
           <div className="space-y-1.5">
-            <label htmlFor="game-name" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.name')}</label>
+            <label htmlFor="game-name" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.game.name')}</label>
             <input
               id="game-name"
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 placeholder-gray-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
-              placeholder={t('gameForm.namePlaceholder', {}, 'e.g. Saturday Night Hunt')}
+              placeholder={t('gameForm.namePlaceholder', {})}
             />
           </div>
 
           {/* Game type picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.type')}</label>
+            <label className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.game.type')}</label>
             {/* Hidden native select for accessibility */}
             <select
               id="game-type"
@@ -193,14 +195,14 @@ export default function GameFormPage() {
               <option value="">{t('gameForm.selectType')}</option>
               {gameTypes.map((type) => (
                 <option key={type} value={type}>
-                  {t(`gameCatalog.${type}.name`, {}, GAME_BY_TYPE[type]?.name || type)}
+                  {t(`gameCatalog.${type}.name`, {})}
                 </option>
               ))}
             </select>
             <div
               className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 ${isEdit ? 'opacity-60 pointer-events-none' : ''}`}
               role="radiogroup"
-              aria-label={t('gameForm.type')}
+              aria-label={t('object.game.type')}
             >
               {gameTypes.map((type) => {
                 const isSelected = type === gameType
@@ -228,7 +230,7 @@ export default function GameFormPage() {
                     {gameInfo?.logo ? (
                       <img
                         src={gameInfo.logo}
-                        alt={t(`gameCatalog.${type}.name`, {}, gameInfo.name || type)}
+                        alt={t(`gameCatalog.${type}.name`, {})}
                         className="w-8 h-8 object-contain"
                         loading="lazy"
                         decoding="async"
@@ -239,7 +241,7 @@ export default function GameFormPage() {
                       </div>
                     )}
                     <span className={`text-xs font-medium ${isSelected ? 'text-brand-700 dark:text-brand-300' : 'text-navy-700 dark:text-slate-300'}`}>
-                      {t(`gameCatalog.${type}.name`, {}, gameInfo?.name || type)}
+                      {t(`gameCatalog.${type}.name`, {})}
                     </span>
                   </button>
                 )
@@ -250,7 +252,7 @@ export default function GameFormPage() {
           {/* Code (edit only) */}
           {isEdit ? (
             <div className="space-y-1.5">
-              <label htmlFor="game-code" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.code')}</label>
+              <label htmlFor="game-code" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.game.code')}</label>
               <input
                 id="game-code"
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 font-mono focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
@@ -265,7 +267,7 @@ export default function GameFormPage() {
           {/* Date/time row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="game-start" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.starts')}</label>
+              <label htmlFor="game-start" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.game.starts')}</label>
               <input
                 id="game-start"
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
@@ -276,7 +278,7 @@ export default function GameFormPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="game-end" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('gameForm.ends')}</label>
+              <label htmlFor="game-end" className="block text-sm font-medium text-navy-700 dark:text-slate-300">{t('object.game.ends')}</label>
               <input
                 id="game-end"
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy-900 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none transition-colors dark:border-slate-600 dark:bg-slate-800 dark:text-white"
@@ -295,7 +297,7 @@ export default function GameFormPage() {
               type="submit"
               disabled={saving}
             >
-              {saving ? t('gameForm.saving') : t('gameForm.save')}
+              {saving ? t('button.state.saving') : t('button.label.save')}
             </button>
           </div>
         </form>

@@ -28,8 +28,8 @@ export default function PublicLayout({ children }) {
   const allGames = useMemo(() => {
     const source = gameLinks.length > 0 ? gameLinks : GAME_CATALOG
     return [...source].sort((left, right) => {
-      const leftName = t(`gameCatalog.${left.type}.name`, {}, left.name)
-      const rightName = t(`gameCatalog.${right.type}.name`, {}, right.name)
+      const leftName = t(`gameCatalog.${left.type}.name`, {})
+      const rightName = t(`gameCatalog.${right.type}.name`, {})
       return leftName.localeCompare(rightName, locale, { sensitivity: 'base' })
     })
   }, [gameLinks, t, locale])
@@ -148,7 +148,7 @@ export default function PublicLayout({ children }) {
                   {allGames.map((game) => (
                     <NavLink key={game.type} to={`/info/games/${game.slug}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-700 hover:bg-brand-50 hover:text-brand-700 transition-colors dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-brand-300" onClick={closeAll}>
                       <img src={game.logo} alt="" className="w-16 h-full rounded-md object-contain" loading="lazy" />
-                      <span className="font-medium">{t(`gameCatalog.${game.type}.name`, {}, game.name)}</span>
+                      <span className="font-medium">{t(`gameCatalog.${game.type}.name`, {})}</span>
                     </NavLink>
                   ))}
                 </div>
@@ -276,7 +276,7 @@ export default function PublicLayout({ children }) {
               {allGames.map((game) => (
                 <NavLink key={game.type} to={`/info/games/${game.slug}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-navy-600 hover:bg-brand-50 dark:text-slate-300 dark:hover:bg-slate-800" onClick={closeAll}>
                   <img src={game.logo} alt="" className="w-7 h-7 rounded object-cover" loading="lazy" />
-                  {t(`gameCatalog.${game.type}.name`, {}, game.name)}
+                  {t(`gameCatalog.${game.type}.name`, {})}
                 </NavLink>
               ))}
 
@@ -343,7 +343,7 @@ export default function PublicLayout({ children }) {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-navy-400 mb-4 dark:text-slate-500">{t('footer.gameTypes')}</h4>
               <ul className="space-y-2.5">
                 {GAME_CATALOG.slice(0, 6).map((game) => (
-                  <li key={game.type}><Link to={`/info/games/${game.slug}`} className="text-sm text-navy-300 hover:text-white transition-colors">{t(`gameCatalog.${game.type}.name`, {}, game.name)}</Link></li>
+                  <li key={game.type}><Link to={`/info/games/${game.slug}`} className="text-sm text-navy-300 hover:text-white transition-colors">{t(`gameCatalog.${game.type}.name`, {})}</Link></li>
                 ))}
               </ul>
             </div>

@@ -36,29 +36,29 @@ export default function CourierRushAdminPage() {
       setPickups(Array.isArray(pickupsPayload?.pickups) ? pickupsPayload.pickups : [])
       setDropoffs(Array.isArray(dropoffsPayload?.dropoffs) ? dropoffsPayload.dropoffs : [])
     } catch (err) {
-      setError(err.message || t('courier_rush.admin.load_failed', {}, 'Failed to load data'))
+      setError(err.message || t('error.loadFailed', {}))
     } finally { setLoading(false) }
   }
 
   useEffect(() => { loadAll() }, [auth.token, gameId])
 
   async function deletePickup(pickup) {
-    if (!window.confirm(t('courier_rush.admin.delete_confirm_pickup', {}, 'Delete pickup?'))) return
+    if (!window.confirm(t('courier_rush.admin.delete_confirm_pickup', {}))) return
     setError(''); setSuccess('')
     try {
       await moduleApi.deleteCourierRushPickup(auth.token, gameId, pickup.id)
       await loadAll()
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) { setError(err.message || 'Failed to delete pickup') }
   }
 
   async function deleteDropoff(dropoff) {
-    if (!window.confirm(t('courier_rush.admin.delete_confirm_dropoff', {}, 'Delete dropoff?'))) return
+    if (!window.confirm(t('courier_rush.admin.delete_confirm_dropoff', {}))) return
     setError(''); setSuccess('')
     try {
       await moduleApi.deleteCourierRushDropoff(auth.token, gameId, dropoff.id)
       await loadAll()
-      setSuccess(t('moduleOverview.delete', {}, 'Deleted'))
+      setSuccess(t('status.deleted', {}))
     } catch (err) { setError(err.message || 'Failed to delete dropoff') }
   }
 
@@ -66,47 +66,47 @@ export default function CourierRushAdminPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('courier_rush.admin.kicker', {}, 'Courier Rush')}</p>
+          <p className="overview-kicker">{t('courier_rush.admin.kicker', {})}</p>
           <h1>{game?.name || '-'}</h1>
-          <p className="overview-subtitle">{t('courier_rush.admin.objects_subtitle', {}, 'Manage pickups and dropoffs')}</p>
+          <p className="overview-subtitle">{t('courier_rush.admin.objects_subtitle', {})}</p>
         </div>
         <div className="overview-actions">
-          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('courier_rush.admin.back', {}, 'Back')}</Link>
+          <Link className="btn btn-ghost" to={'/admin/games/' + gameId}>{t('common.back', {})}</Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
       {success ? <div className="flash flash-success">{success}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading\u2026')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       <section className="admin-block">
-        <h2>{t('common.map', {}, 'Map')}</h2>
+        <h2>{t('common.map', {})}</h2>
         <AdminOverviewMap
           entities={[...pickups.map((p) => ({ ...p, _type: 'pickup' })), ...dropoffs.map((d) => ({ ...d, _type: 'dropoff' }))]}
-          getLabel={(e) => `${e.title || '-'} (${e._type === 'pickup' ? t('courier_rush.admin.pickups', {}, 'Pickup') : t('courier_rush.admin.dropoffs', {}, 'Dropoff')})`}
+          getLabel={(e) => `${e.title || '-'} (${e._type === 'pickup' ? t('courier_rush.admin.pickups', {}) : t('courier_rush.admin.dropoffs', {})})`}
           getColor={(e) => e.marker_color || (e._type === 'pickup' ? '#2563eb' : '#16a34a')}
           getRadius={(e) => Number(e.radius_meters || 25)}
-          ariaLabel={t('courier_rush.admin.map_label', {}, 'Pickups and dropoffs map')}
+          ariaLabel={t('courier_rush.admin.map_label', {})}
         />
       </section>
 
       <div className="geo-layout">
         <section className="overview-panel">
           <div className="overview-header" style={{ marginBottom: '0.5rem' }}>
-            <h2>{t('courier_rush.admin.pickups', {}, 'Pickups')}</h2>
+            <h2>{t('courier_rush.admin.pickups', {})}</h2>
             {configForm.pickup_mode === 'predefined' ? (
-              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/new'}>{t('courier_rush.admin.pickup_new_heading', {}, 'New pickup')}</Link>
+              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/new'}>{t('courier_rush.admin.pickup_new_heading', {})}</Link>
             ) : null}
           </div>
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('courier_rush.admin.table_title', {}, 'Title')}</th>
-                <th>{t('common.lat', {}, 'Lat')}</th>
-                <th>{t('common.lon', {}, 'Lon')}</th>
-                <th>{t('courier_rush.admin.table_radius', {}, 'Radius')}</th>
-                <th>{t('courier_rush.admin.table_points', {}, 'Points')}</th>
-                <th>{t('courier_rush.admin.table_actions', {}, 'Actions')}</th>
+                <th>{t('table.title', {})}</th>
+                <th>{t('common.lat', {})}</th>
+                <th>{t('common.lon', {})}</th>
+                <th>{t('table.radius', {})}</th>
+                <th>{t('table.points', {})}</th>
+                <th>{t('table.actions', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -118,31 +118,31 @@ export default function CourierRushAdminPage() {
                   <td>{pickup.radius_meters}</td>
                   <td>{pickup.points}</td>
                   <td className="table-actions-inline">
-                    <Link className="btn btn-edit btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/' + pickup.id + '/edit'}>{t('button.edit', {}, 'Edit')}</Link>
-                    <button className="btn btn-remove btn-small" type="button" onClick={() => deletePickup(pickup)}>{t('button.delete', {}, 'Delete')}</button>
+                    <Link className="btn btn-edit btn-small" to={'/admin/courier-rush/' + gameId + '/pickups/' + pickup.id + '/edit'}>{t('button.label.edit', {})}</Link>
+                    <button className="btn btn-remove btn-small" type="button" onClick={() => deletePickup(pickup)}>{t('button.label.delete', {})}</button>
                   </td>
                 </tr>
               ))}
-              {pickups.length === 0 ? (<tr><td colSpan={6} className="muted">{t('courier_rush.admin.empty_pickups', {}, 'No pickups yet')}</td></tr>) : null}
+              {pickups.length === 0 ? (<tr><td colSpan={6} className="muted">{t('courier_rush.admin.empty_pickups', {})}</td></tr>) : null}
             </tbody>
           </table>
         </section>
 
         <section className="overview-panel">
           <div className="overview-header" style={{ marginBottom: '0.5rem' }}>
-            <h2>{t('courier_rush.admin.dropoffs', {}, 'Dropoffs')}</h2>
+            <h2>{t('courier_rush.admin.dropoffs', {})}</h2>
             {configForm.dropoff_mode === 'fixed' ? (
-              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/new'}>{t('courier_rush.admin.dropoff_new_heading', {}, 'New dropoff')}</Link>
+              <Link className="btn btn-primary btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/new'}>{t('courier_rush.admin.dropoff_new_heading', {})}</Link>
             ) : null}
           </div>
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('courier_rush.admin.table_title', {}, 'Title')}</th>
-                <th>{t('common.lat', {}, 'Lat')}</th>
-                <th>{t('common.lon', {}, 'Lon')}</th>
-                <th>{t('courier_rush.admin.table_radius', {}, 'Radius')}</th>
-                <th>{t('courier_rush.admin.table_actions', {}, 'Actions')}</th>
+                <th>{t('table.title', {})}</th>
+                <th>{t('common.lat', {})}</th>
+                <th>{t('common.lon', {})}</th>
+                <th>{t('table.radius', {})}</th>
+                <th>{t('table.actions', {})}</th>
               </tr>
             </thead>
             <tbody>
@@ -153,12 +153,12 @@ export default function CourierRushAdminPage() {
                   <td>{dropoff.longitude}</td>
                   <td>{dropoff.radius_meters}</td>
                   <td className="table-actions-inline">
-                    <Link className="btn btn-edit btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/' + dropoff.id + '/edit'}>{t('button.edit', {}, 'Edit')}</Link>
-                    <button className="btn btn-remove btn-small" type="button" onClick={() => deleteDropoff(dropoff)}>{t('button.delete', {}, 'Delete')}</button>
+                    <Link className="btn btn-edit btn-small" to={'/admin/courier-rush/' + gameId + '/dropoffs/' + dropoff.id + '/edit'}>{t('button.label.edit', {})}</Link>
+                    <button className="btn btn-remove btn-small" type="button" onClick={() => deleteDropoff(dropoff)}>{t('button.label.delete', {})}</button>
                   </td>
                 </tr>
               ))}
-              {dropoffs.length === 0 ? (<tr><td colSpan={5} className="muted">{t('courier_rush.admin.empty_dropoffs', {}, 'No dropoffs yet')}</td></tr>) : null}
+              {dropoffs.length === 0 ? (<tr><td colSpan={5} className="muted">{t('courier_rush.admin.empty_dropoffs', {})}</td></tr>) : null}
             </tbody>
           </table>
         </section>

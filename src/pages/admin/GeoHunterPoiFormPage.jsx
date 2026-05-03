@@ -57,7 +57,7 @@ export default function GeoHunterPoiFormPage() {
           const pois = Array.isArray(poisPayload?.pois) ? poisPayload.pois : []
           const poi = pois.find((p) => String(p.id) === String(poiId))
           if (!poi) {
-            throw new Error(t('geohunter.admin.poi_not_found', {}, 'POI not found'))
+            throw new Error(t('geohunter.admin.poi_not_found', {}))
           }
           setForm({
             id: String(poi.id || ''),
@@ -80,7 +80,7 @@ export default function GeoHunterPoiFormPage() {
           })
         }
       } catch (err) {
-        if (!cancelled) setError(err.message || t('geohunter.admin.load_failed', {}, 'Failed to load data'))
+        if (!cancelled) setError(err.message || t('error.loadFailed', {}))
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -136,12 +136,12 @@ export default function GeoHunterPoiFormPage() {
     }
 
     if (!Number.isFinite(payload.latitude) || !Number.isFinite(payload.longitude)) {
-      setError(t('geohunter.admin.lat_lon_required', {}, 'Latitude and longitude are required'))
+      setError(t('validation.latLonRequired', {}))
       return
     }
 
     if (!Number.isFinite(payload.points) || payload.points < 0) {
-      setError(t('geohunter.admin.points_required', {}, 'Points must be 0 or higher'))
+      setError(t('geohunter.admin.points_required', {}))
       return
     }
 
@@ -153,16 +153,14 @@ export default function GeoHunterPoiFormPage() {
         await moduleApi.createGeoHunterPoi(auth.token, gameId, payload)
       }
       navigate(`/admin/geohunter/${gameId}/pois`, {
-        state: { flashSuccess: t('geohunter.admin.poi_saved', {}, 'POI saved') },
+        state: { flashSuccess: t('status.saved', {}) },
       })
     } catch (err) {
       setError(
         err.message
           || t(
-            isEdit ? 'geohunter.poi.updateFailed' : 'geohunter.poi.createFailed',
-            {},
-            isEdit ? 'POI bijwerken mislukt' : 'POI aanmaken mislukt',
-          ),
+            isEdit ? 'error.saveFailed' : 'error.createFailed',
+            {}),
       )
     } finally {
       setSaving(false)
@@ -173,24 +171,24 @@ export default function GeoHunterPoiFormPage() {
     <main className="page-shell">
       <div className="geo-header">
         <div>
-          <p className="overview-kicker">{t('geohunter.admin.kicker', {}, 'GeoHunter')}</p>
-          <h1>{isEdit ? t('geohunter.admin.poi_edit_heading', { title: form.title }, 'Edit POI') : t('geohunter.admin.poi_new_heading', { game: game?.name || '' }, 'New POI')}</h1>
+          <p className="overview-kicker">{t('gameCatalog.geohunter.name', {})} - {game?.name}</p>
+          <h1>{isEdit ? t('geohunter.admin.poi_edit_heading', { title: form.title }) : t('geohunter.admin.poi_new_heading', { game: game?.name || '' })}</h1>
         </div>
         <div className="overview-actions">
           <Link className="btn btn-ghost" to={`/admin/geohunter/${gameId}/pois`}>
-            {t('geohunter.admin.back', {}, 'Back')}
+            {t('common.back', {})}
           </Link>
         </div>
       </div>
 
       {error ? <div className="flash flash-error">{error}</div> : null}
-      {loading ? <p>{t('gamesPage.loading', {}, 'Loading…')}</p> : null}
+      {loading ? <p>{t('gamesPage.loading', {})}</p> : null}
 
       {!loading ? (
         <section className="admin-block">
           <form onSubmit={handleSubmit}>
             <div className="form-row">
-              <label htmlFor="poi-title">{t('geohunter.admin.poi_field_title', {}, 'Title')}</label>
+              <label htmlFor="poi-title">{t('object.poi.title', {})}</label>
               <input
                 id="poi-title"
                 value={form.title}
@@ -200,21 +198,21 @@ export default function GeoHunterPoiFormPage() {
             </div>
 
             <div className="form-row">
-              <label htmlFor="poi-type">{t('geohunter.admin.poi_field_type', {}, 'Type')}</label>
+              <label htmlFor="poi-type">{t('object.poi.type', {})}</label>
               <select
                 id="poi-type"
                 value={form.type}
                 onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))}
                 required
               >
-                <option value="text">{t('geohunter.poi.type.text', {}, 'Text')}</option>
-                <option value="multiple_choice">{t('geohunter.poi.type.multiple_choice', {}, 'Multiple choice')}</option>
-                <option value="open_answer">{t('geohunter.poi.type.open_answer', {}, 'Open answer')}</option>
+                <option value="text">{t('geohunter.poi.type.text', {})}</option>
+                <option value="multiple_choice">{t('geohunter.poi.type.multiple_choice', {})}</option>
+                <option value="open_answer">{t('geohunter.poi.type.open_answer', {})}</option>
               </select>
             </div>
 
             <div className="form-row">
-              <label htmlFor="poi-points">{t('geohunter.admin.poi_field_points', {}, 'Points')}</label>
+              <label htmlFor="poi-points">{t('object.poi.points', {})}</label>
               <input
                 id="poi-points"
                 type="number"
@@ -226,18 +224,18 @@ export default function GeoHunterPoiFormPage() {
             </div>
 
             <div className="form-row">
-              <label>{t('geohunter.admin.poi_field_location', {}, 'Location')}</label>
-              <p className="muted">{t('geohunter.admin.poi_map_help', {}, 'Click on the map to place the POI.')}</p>
+              <label>{t('table.location', {})}</label>
+              <p className="muted">{t('geohunter.admin.poi_map_help', {})}</p>
               <GeoLocationPicker
                 latitude={form.latitude}
                 longitude={form.longitude}
                 onChange={(nextLat, nextLon) => setForm((current) => ({ ...current, latitude: nextLat, longitude: nextLon }))}
-                ariaLabel={t('geohunter.admin.poi_field_title', {}, 'POI location')}
+                ariaLabel={t('table.location', {})}
               />
             </div>
 
             <div className="form-row">
-              <label htmlFor="poi-radius">{t('geohunter.admin.poi_field_radius', {}, 'Radius')}</label>
+              <label htmlFor="poi-radius">{t('object.poi.radius', {})}</label>
               <input
                 id="poi-radius"
                 type="number"
@@ -250,7 +248,7 @@ export default function GeoHunterPoiFormPage() {
 
             {form.type === 'text' ? (
               <div className="form-row">
-                <label htmlFor="poi-content">{t('geohunter.admin.poi_field_content', {}, 'Content')}</label>
+                <label htmlFor="poi-content">{t('object.poi.content', {})}</label>
                 <textarea
                   id="poi-content"
                   rows={4}
@@ -262,7 +260,7 @@ export default function GeoHunterPoiFormPage() {
 
             {form.type !== 'text' ? (
               <div className="form-row">
-                <label htmlFor="poi-question">{t('geohunter.admin.poi_field_question', {}, 'Question')}</label>
+                <label htmlFor="poi-question">{t('object.poi.question', {})}</label>
                 <textarea
                   id="poi-question"
                   rows={3}
@@ -274,7 +272,7 @@ export default function GeoHunterPoiFormPage() {
 
             {form.type === 'open_answer' ? (
               <div className="form-row">
-                <label htmlFor="poi-expected">{t('geohunter.admin.poi_field_expected', {}, 'Expected answers')}</label>
+                <label htmlFor="poi-expected">{t('object.poi.answer', {})}</label>
                 <textarea
                   id="poi-expected"
                   rows={3}
@@ -286,13 +284,13 @@ export default function GeoHunterPoiFormPage() {
 
             {form.type === 'multiple_choice' ? (
               <div className="form-row">
-                <label>{t('geohunter.admin.poi_field_choices', {}, 'Choices')}</label>
+                <label>{t('object.poi.choices', {})}</label>
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>{t('geohunter.admin.poi_choice_label', {}, 'Antwoord')}</th>
-                      <th>{t('geohunter.admin.poi_choice_correct', {}, 'Correct')}</th>
-                      <th>{t('button.delete', {}, 'Delete')}</th>
+                      <th>{t('object.poi.answer', {})}</th>
+                      <th>{t('geohunter.admin.poi_choice_correct', {})}</th>
+                      <th>{t('button.label.delete', {})}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -302,7 +300,7 @@ export default function GeoHunterPoiFormPage() {
                           <input
                             type="text"
                             value={choice.label}
-                            placeholder={t('geohunter.admin.poi_choice_label_placeholder', {}, 'Typ antwoord')}
+                            placeholder={t('object.poi.answer', {})}
                             onChange={(event) => updateChoice(index, { label: event.target.value })}
                             required
                           />
@@ -320,7 +318,7 @@ export default function GeoHunterPoiFormPage() {
                         </td>
                         <td>
                           <button className="btn btn-remove btn-small" type="button" onClick={() => removeChoice(index)}>
-                            {t('button.delete', {}, 'Delete')}
+                            {t('button.label.delete', {})}
                           </button>
                         </td>
                       </tr>
@@ -328,17 +326,17 @@ export default function GeoHunterPoiFormPage() {
                   </tbody>
                 </table>
                 <button className="btn btn-add btn-small" type="button" onClick={addChoice}>
-                  {t('geohunter.admin.poi_choice_add', {}, 'Add choice')}
+                  {t('geohunter.admin.poi_choice_add', {})}
                 </button>
               </div>
             ) : null}
 
             <div className="overview-actions" style={{ marginTop: '1rem' }}>
               <button className="btn btn-primary" type="submit" disabled={saving}>
-                {saving ? t('gamesPage.loading', {}, 'Saving…') : t('button.save', {}, 'Save')}
+                {saving ? t('button.state.saving', {}) : t('button.label.save', {})}
               </button>
               <Link className="btn btn-ghost" to={`/admin/geohunter/${gameId}/pois`}>
-                {t('button.cancel', {}, 'Cancel')}
+                {t('button.label.cancel', {})}
               </Link>
             </div>
           </form>

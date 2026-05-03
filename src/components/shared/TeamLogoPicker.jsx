@@ -45,7 +45,7 @@ export default function TeamLogoPicker({ value, onChange, disabled = false }) {
         }
       } catch (err) {
         if (!cancelled) {
-          setLoadError(err.message || t('teamForm.logoLoadFailed'))
+          setLoadError(err.message || t('error.loadFailed'))
         }
       } finally {
         if (!cancelled) {
@@ -94,7 +94,7 @@ export default function TeamLogoPicker({ value, onChange, disabled = false }) {
 
   return (
     <div className="team-logo-field">
-      <label>{t('teamForm.logo')}</label>
+      <label>{t('object.team.logo')}</label>
 
       <div className="team-logo-current" data-logo-current>
         <img
@@ -122,7 +122,7 @@ export default function TeamLogoPicker({ value, onChange, disabled = false }) {
         <div className="modal-backdrop" onClick={() => setIsOpen(false)} />
         <div className="modal-card modal-card-wide team-logo-modal-card">
           <div className="team-logo-modal-header">
-            <h2>{t('teamForm.logo')}</h2>
+            <h2>{t('object.team.logo')}</h2>
           </div>
 
           <div className="team-logo-toolbar">
@@ -199,7 +199,7 @@ export default function TeamLogoPicker({ value, onChange, disabled = false }) {
 
           <div className="modal-actions">
             <button className="btn btn-ghost" type="button" onClick={() => setIsOpen(false)}>
-              {t('teamForm.closePicker')}
+              {t('button.label.close')}
             </button>
           </div>
         </div>

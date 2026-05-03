@@ -15,8 +15,8 @@ export default function GameTypesCarousel({ enabledTypes }) {
 
     const unsorted = source.length > 0 ? source : GAME_CATALOG
     return [...unsorted].sort((left, right) => {
-      const leftName = t(`gameCatalog.${left.type}.name`, {}, left.name)
-      const rightName = t(`gameCatalog.${right.type}.name`, {}, right.name)
+      const leftName = t(`gameCatalog.${left.type}.name`, {})
+      const rightName = t(`gameCatalog.${right.type}.name`, {})
       return leftName.localeCompare(rightName, undefined, { sensitivity: 'base' })
     })
   }, [enabledTypes, t])
@@ -47,9 +47,9 @@ export default function GameTypesCarousel({ enabledTypes }) {
             {games.map((game) => (
               <Link key={game.type} to={`/info/games/${game.slug}`} className="snap-start shrink-0 w-64 sm:w-72 group">
                 <div className="rounded-2xl border border-warm-200 bg-white p-6 h-full flex flex-col hover:border-brand-300 hover:shadow-xl hover:shadow-brand-500/5 transition-all duration-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/50 dark:hover:shadow-black/20">
-                  <img src={game.logo} alt={t(`gameCatalog.${game.type}.name`, {}, game.name)} className="w-full h-full mb-4 object-contain" loading="lazy" decoding="async" />
-                  <h3 className="font-display font-bold text-navy-900 mb-2 dark:text-white">{t(`gameCatalog.${game.type}.name`, {}, game.name)}</h3>
-                  <p className="text-sm text-navy-500 leading-relaxed flex-1 dark:text-slate-400">{t(`gameCatalog.${game.type}.shortDescription`, {}, game.shortDescription)}</p>
+                  <img src={game.logo} alt={t(`gameCatalog.${game.type}.name`, {})} className="w-full h-full mb-4 object-contain" loading="lazy" decoding="async" />
+                  <h3 className="font-display font-bold text-navy-900 mb-2 dark:text-white">{t(`gameCatalog.${game.type}.name`, {})}</h3>
+                  <p className="text-sm text-navy-500 leading-relaxed flex-1 dark:text-slate-400">{t(`gameCatalog.${game.type}.shortDescription`, {})}</p>
                   <span className="inline-flex items-center gap-1 mt-4 text-sm font-semibold text-brand-600 group-hover:gap-2 transition-all">
                     {t('carousel.learnMore')}
                   </span>

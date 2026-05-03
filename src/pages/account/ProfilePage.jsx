@@ -30,7 +30,7 @@ export default function ProfilePage() {
       setEmail(data.email || '')
       setUsername(data.username || '')
     } catch (err) {
-      setProfileFlash({ type: 'error', text: err.message || t('account.loadFailed') })
+      setProfileFlash({ type: 'error', text: err.message || t('error.loadFailed') })
     } finally {
       setLoading(false)
     }
@@ -54,11 +54,22 @@ export default function ProfilePage() {
       setUsername(data.username || '')
 
       // Update auth state with new username
-      login({ ...auth, username: data.username || auth.username })
+      const resolvedName = data.username || auth?.object?.user?.name || auth?.username || ''
+      login({
+        ...auth,
+        object: {
+          ...(auth?.object || {}),
+          user: {
+            ...(auth?.object?.user || {}),
+            name: resolvedName,
+          },
+        },
+        username: resolvedName,
+      })
 
       setProfileFlash({ type: 'success', text: t('account.profileSaved') })
     } catch (err) {
-      setProfileFlash({ type: 'error', text: err.message || t('account.profileSaveFailed') })
+      setProfileFlash({ type: 'error', text: err.message || t('error.saveFailed') })
     } finally {
       setProfileSaving(false)
     }
@@ -85,7 +96,7 @@ export default function ProfilePage() {
       setConfirmPassword('')
       setPasswordFlash({ type: 'success', text: t('account.passwordChanged') })
     } catch (err) {
-      setPasswordFlash({ type: 'error', text: err.message || t('account.passwordChangeFailed') })
+      setPasswordFlash({ type: 'error', text: err.message || t('error.saveFailed') })
     } finally {
       setPasswordSaving(false)
     }
@@ -125,7 +136,7 @@ export default function ProfilePage() {
         <form onSubmit={handleProfileSubmit} className="space-y-5">
           <div>
             <label htmlFor="profile-email" className="block text-sm font-medium text-navy-700 dark:text-slate-300 mb-1.5">
-              {t('account.emailLabel')}
+              {t('object.user.email')}
             </label>
             <input
               id="profile-email"
@@ -139,7 +150,7 @@ export default function ProfilePage() {
 
           <div>
             <label htmlFor="profile-username" className="block text-sm font-medium text-navy-700 dark:text-slate-300 mb-1.5">
-              {t('account.displayNameLabel')}
+              {t('object.user.name')}
             </label>
             <input
               id="profile-username"
@@ -159,7 +170,7 @@ export default function ProfilePage() {
               disabled={profileSaving}
               className="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 transition-colors"
             >
-              {profileSaving ? t('account.saving') : t('account.saveProfile')}
+              {profileSaving ? t('button.state.saving') : t('button.label.save')}
             </button>
           </div>
         </form>
@@ -189,7 +200,7 @@ export default function ProfilePage() {
         <form onSubmit={handlePasswordSubmit} className="space-y-5">
           <div>
             <label htmlFor="current-password" className="block text-sm font-medium text-navy-700 dark:text-slate-300 mb-1.5">
-              {t('account.currentPasswordLabel')}
+              {t('object.user.password')}
             </label>
             <input
               id="current-password"
@@ -203,7 +214,7 @@ export default function ProfilePage() {
 
           <div>
             <label htmlFor="new-password" className="block text-sm font-medium text-navy-700 dark:text-slate-300 mb-1.5">
-              {t('account.newPasswordLabel')}
+              {t('object.user.password')}
             </label>
             <input
               id="new-password"
@@ -218,7 +229,7 @@ export default function ProfilePage() {
 
           <div>
             <label htmlFor="confirm-password" className="block text-sm font-medium text-navy-700 dark:text-slate-300 mb-1.5">
-              {t('account.confirmPasswordLabel')}
+              {t('object.user.password')}
             </label>
             <input
               id="confirm-password"
@@ -237,7 +248,7 @@ export default function ProfilePage() {
               disabled={passwordSaving}
               className="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 active:bg-brand-700 disabled:opacity-50 transition-colors"
             >
-              {passwordSaving ? t('account.saving') : t('account.changePassword')}
+              {passwordSaving ? t('button.state.updating') : t('button.label.update')}
             </button>
           </div>
         </form>

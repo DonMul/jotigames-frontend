@@ -146,9 +146,9 @@ export default function BlindHikeAdminOverviewMap({ target, markers, teams, t })
 
   return (
     <div className="blindhike-admin-overview">
-      <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('blindhike.target_location', {}, 'Target location')} />
+      <div ref={mapContainerRef} className="game-map blindhike-admin-overview-map" aria-label={t('blindhike.target_location', {})} />
       <aside className="blindhike-admin-legend">
-        <h3>{t('moduleOverview.legend', {}, 'Legend')}</h3>
+        <h3>{t('moduleOverview.legend', {})}</h3>
         <ul>
           {(Array.isArray(teams) ? teams : []).map((team) => {
             const teamId = String(team?.id || team?.team_id || '')
